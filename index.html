@@ -12,7 +12,12 @@ button {
 
 #result {
   margin-top: 20px;
-  font-size: 20px;
+  font-size: 18px;
+}
+
+#prompt {
+  margin-top: 20px;
+  color: blue;
 }
 
 </style>
@@ -24,14 +29,22 @@ button {
 
 <h3>タグを選んでください</h3>
 
-<button onclick="addTag('猫耳')">猫耳</button>
-<button onclick="addTag('金髪')">金髪</button>
-<button onclick="addTag('黒髪')">黒髪</button>
-<button onclick="addTag('ファンタジー')">ファンタジー</button>
-<button onclick="addTag('サイバー')">サイバー</button>
+<button onclick="addTag('cat ears')">猫耳</button>
+<button onclick="addTag('blonde hair')">金髪</button>
+<button onclick="addTag('black hair')">黒髪</button>
+<button onclick="addTag('fantasy')">ファンタジー</button>
+<button onclick="addTag('cyberpunk')">サイバー</button>
+
+<br><br>
+
+<button onclick="makePrompt()">生成</button>
 
 <div id="result">
 選択:
+</div>
+
+<div id="prompt">
+プロンプト:
 </div>
 
 <script>
@@ -44,6 +57,15 @@ tags.push(tag);
 
 document.getElementById("result").innerText =
 "選択: " + tags.join(" ");
+
+}
+
+function makePrompt() {
+
+let prompt = tags.join(", ") + ", anime style, masterpiece";
+
+document.getElementById("prompt").innerText =
+"プロンプト: " + prompt;
 
 }
 
