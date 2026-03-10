@@ -1,13 +1,53 @@
 <!DOCTYPE html>
 <html>
 <head>
-<title>AI画像サイト</title>
+<title>AI画像生成サイト</title>
+
+<style>
+
+button {
+  margin: 5px;
+  padding: 10px;
+}
+
+#result {
+  margin-top: 20px;
+  font-size: 20px;
+}
+
+</style>
+
 </head>
 <body>
 
 <h1>AI画像生成サイト</h1>
 
-<button>生成</button>
+<h3>タグを選んでください</h3>
+
+<button onclick="addTag('猫耳')">猫耳</button>
+<button onclick="addTag('金髪')">金髪</button>
+<button onclick="addTag('黒髪')">黒髪</button>
+<button onclick="addTag('ファンタジー')">ファンタジー</button>
+<button onclick="addTag('サイバー')">サイバー</button>
+
+<div id="result">
+選択:
+</div>
+
+<script>
+
+let tags = [];
+
+function addTag(tag) {
+
+tags.push(tag);
+
+document.getElementById("result").innerText =
+"選択: " + tags.join(" ");
+
+}
+
+</script>
 
 </body>
 </html>
