@@ -7,8 +7,20 @@
 <style>
 
 button {
-margin:5px;
-padding:10px;
+margin:4px;
+padding:8px;
+}
+
+.category {
+margin-top:10px;
+}
+
+.tag {
+background:#ddd;
+display:inline-block;
+padding:5px;
+margin:3px;
+cursor:pointer;
 }
 
 img {
@@ -24,27 +36,56 @@ margin-top:20px;
 
 <h2>アイコン生成AI</h2>
 
-<h3>タグ</h3>
+<div class="category">
+<h3>性別</h3>
 
 <button onclick="addTag('boy')">男</button>
 <button onclick="addTag('girl')">女</button>
-<button onclick="addTag('glasses')">メガネ</button>
-<button onclick="addTag('smile')">笑顔</button>
 
+</div>
+
+
+<div class="category">
+<h3>表情</h3>
+
+<button onclick="addTag('smile')">笑顔</button>
+<button onclick="addTag('angry')">怒り</button>
+<button onclick="addTag('sad')">悲しい</button>
+
+</div>
+
+
+<div class="category">
+<h3>アクセ</h3>
+
+<button onclick="addTag('glasses')">メガネ</button>
+<button onclick="addTag('hat')">帽子</button>
+<button onclick="addTag('earrings')">ピアス</button>
+
+</div>
+
+
+<div class="category">
 <h3>スタイル</h3>
 
 <button onclick="setStyle('cute icon')">かわいい</button>
 <button onclick="setStyle('simple flat icon')">シンプル</button>
 <button onclick="setStyle('soft illustration')">ゆるい</button>
 <button onclick="setStyle('business avatar')">ビジネス</button>
-<button onclick="setStyle('pixel art icon')">ドット</button>
 
-<br><br>
+</div>
 
+
+<h3>選択タグ（クリックで削除）</h3>
+
+<div id="tagList"></div>
+
+<br>
+
+<button onclick="resetTags()">リセット</button>
 <button onclick="generate()">生成</button>
 
-<p id="tags"></p>
-<p id="style"></p>
+<br>
 
 <img id="img">
 
@@ -56,9 +97,38 @@ let style = "";
 function addTag(tag){
 
 tags.push(tag);
+showTags();
 
-document.getElementById("tags").innerText =
-"タグ: " + tags.join(", ");
+}
+
+function removeTag(index){
+
+tags.splice(index,1);
+showTags();
+
+}
+
+function showTags(){
+
+let html="";
+
+for(let i=0;i<tags.length;i++){
+
+html +=
+'<span class="tag" onclick="removeTag('+i+')">'
++ tags[i] +
+'</span>';
+
+}
+
+document.getElementById("tagList").innerHTML = html;
+
+}
+
+function resetTags(){
+
+tags=[];
+showTags();
 
 }
 
@@ -66,18 +136,15 @@ function setStyle(s){
 
 style = s;
 
-document.getElementById("style").innerText =
-"スタイル: " + style;
-
 }
 
 function generate(){
 
-let prompt = tags.join(", ");
+let prompt = tags.join(", ") + ", " + style;
 
 let url =
 "https://imagi-api.amekaze-shinogin.workers.dev/?prompt="
-+ encodeURIComponent(prompt + ", " + style);
++ encodeURIComponent(prompt);
 
 document.getElementById("img").src = url;
 
