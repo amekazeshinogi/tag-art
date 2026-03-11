@@ -53,10 +53,11 @@ function generate() {
 
 let prompt = tags.join(", ");
 
-let url =
-"https://imagi-api.amekaze-shinogin.workers.dev?prompt=" + prompt;
+alert("生成: " + prompt);
 
-httpsから全部入れる
+let url =
+"https://imagi-api.amekaze-shinogin.workers.dev/?prompt="
++ encodeURIComponent(prompt);
 
 document.getElementById("img").src = url;
 
