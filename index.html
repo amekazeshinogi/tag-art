@@ -1,23 +1,19 @@
 <!DOCTYPE html>
 <html>
 <head>
-<title>AI画像生成サイト</title>
+
+<title>AI画像生成</title>
 
 <style>
 
 button {
-  margin: 5px;
-  padding: 10px;
+margin:5px;
+padding:10px;
 }
 
-#result {
-  margin-top: 20px;
-  font-size: 18px;
-}
-
-#prompt {
-  margin-top: 20px;
-  color: blue;
+img {
+margin-top:20px;
+width:300px;
 }
 
 </style>
@@ -25,27 +21,20 @@ button {
 </head>
 <body>
 
-<h1>AI画像生成サイト</h1>
+<h2>AI画像生成</h2>
 
-<h3>タグを選んでください</h3>
-
+<button onclick="addTag('anime girl')">女の子</button>
 <button onclick="addTag('cat ears')">猫耳</button>
 <button onclick="addTag('blonde hair')">金髪</button>
-<button onclick="addTag('black hair')">黒髪</button>
 <button onclick="addTag('fantasy')">ファンタジー</button>
-<button onclick="addTag('cyberpunk')">サイバー</button>
 
 <br><br>
 
-<button onclick="makePrompt()">生成</button>
+<button onclick="generate()">生成</button>
 
-<div id="result">
-選択:
-</div>
+<p id="tags"></p>
 
-<div id="prompt">
-プロンプト:
-</div>
+<img id="img">
 
 <script>
 
@@ -55,17 +44,19 @@ function addTag(tag) {
 
 tags.push(tag);
 
-document.getElementById("result").innerText =
-"選択: " + tags.join(" ");
+document.getElementById("tags").innerText =
+tags.join(", ");
 
 }
 
-function makePrompt() {
+function generate() {
 
-let prompt = tags.join(", ") + ", anime style, masterpiece";
+let prompt = tags.join(", ");
 
-document.getElementById("prompt").innerText =
-"プロンプト: " + prompt;
+let url =
+"https://imagi-api.amekaze-shinogin.workers.dev" + prompt;
+
+document.getElementById("img").src = url;
 
 }
 
