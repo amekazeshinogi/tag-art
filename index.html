@@ -2,7 +2,7 @@
 <html>
 <head>
 
-<title>AI生成</title>
+<title>アイコン生成AI</title>
 
 <style>
 
@@ -12,7 +12,8 @@ padding:10px;
 }
 
 img {
-width:300px;
+width:256px;
+height:256px;
 margin-top:20px;
 }
 
@@ -21,20 +22,22 @@ margin-top:20px;
 </head>
 <body>
 
-<h2>AI画像生成</h2>
+<h2>アイコン生成AI</h2>
 
 <h3>タグ</h3>
 
-<button onclick="addTag('anime girl')">女の子</button>
-<button onclick="addTag('cat ears')">猫耳</button>
-<button onclick="addTag('blonde hair')">金髪</button>
+<button onclick="addTag('boy')">男</button>
+<button onclick="addTag('girl')">女</button>
+<button onclick="addTag('glasses')">メガネ</button>
+<button onclick="addTag('smile')">笑顔</button>
 
 <h3>スタイル</h3>
 
-<button onclick="setStyle('anime style')">アニメ</button>
-<button onclick="setStyle('realistic photo')">リアル</button>
-<button onclick="setStyle('fantasy art')">ファンタジー</button>
-<button onclick="setStyle('cyberpunk')">サイバー</button>
+<button onclick="setStyle('cute icon')">かわいい</button>
+<button onclick="setStyle('simple flat icon')">シンプル</button>
+<button onclick="setStyle('soft illustration')">ゆるい</button>
+<button onclick="setStyle('business avatar')">ビジネス</button>
+<button onclick="setStyle('pixel art icon')">ドット</button>
 
 <br><br>
 
@@ -74,9 +77,7 @@ let prompt = tags.join(", ");
 
 let url =
 "https://imagi-api.amekaze-shinogin.workers.dev/?prompt="
-+ encodeURIComponent(prompt)
-+ "&style="
-+ encodeURIComponent(style);
++ encodeURIComponent(prompt + ", " + style);
 
 document.getElementById("img").src = url;
 
