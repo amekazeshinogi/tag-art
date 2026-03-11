@@ -54,7 +54,7 @@ function generate() {
 let prompt = tags.join(", ");
 
 let url =
-"https://imagi-api.amekaze-shinogin.workers.dev" + prompt;
+"https://imagi-api.amekaze-shinogin.workers.dev/" + prompt;
 
 document.getElementById("img").src = url;
 
