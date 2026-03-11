@@ -2,7 +2,7 @@
 <html>
 <head>
 
-<title>AI画像生成</title>
+<title>AI生成</title>
 
 <style>
 
@@ -12,8 +12,8 @@ padding:10px;
 }
 
 img {
-margin-top:20px;
 width:300px;
+margin-top:20px;
 }
 
 </style>
@@ -23,41 +23,60 @@ width:300px;
 
 <h2>AI画像生成</h2>
 
+<h3>タグ</h3>
+
 <button onclick="addTag('anime girl')">女の子</button>
 <button onclick="addTag('cat ears')">猫耳</button>
 <button onclick="addTag('blonde hair')">金髪</button>
-<button onclick="addTag('fantasy')">ファンタジー</button>
+
+<h3>スタイル</h3>
+
+<button onclick="setStyle('anime style')">アニメ</button>
+<button onclick="setStyle('realistic photo')">リアル</button>
+<button onclick="setStyle('fantasy art')">ファンタジー</button>
+<button onclick="setStyle('cyberpunk')">サイバー</button>
 
 <br><br>
 
 <button onclick="generate()">生成</button>
 
 <p id="tags"></p>
+<p id="style"></p>
 
 <img id="img">
 
 <script>
 
 let tags = [];
+let style = "";
 
-function addTag(tag) {
+function addTag(tag){
 
 tags.push(tag);
 
 document.getElementById("tags").innerText =
-tags.join(", ");
+"タグ: " + tags.join(", ");
 
 }
 
-function generate() {
+function setStyle(s){
+
+style = s;
+
+document.getElementById("style").innerText =
+"スタイル: " + style;
+
+}
+
+function generate(){
 
 let prompt = tags.join(", ");
 
-alert("生成: " + prompt);
-
 let url =
 "https://imagi-api.amekaze-shinogin.workers.dev/?prompt="
-+ encodeURIComponent(prompt);
++ encodeURIComponent(prompt)
++ "&style="
++ encodeURIComponent(style);
 
 document.getElementById("img").src = url;
 
