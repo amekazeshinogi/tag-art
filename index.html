@@ -73,6 +73,7 @@ margin-top:20px;
 <div id="tagList"></div>
 
 <p id="styleText">スタイル: 未選択</p>
+<p id="countText">本日の残り回数：3回</p>
 
 <button onclick="resetTags()">リセット</button>
 <button onclick="generate()">生成</button>
@@ -83,7 +84,48 @@ margin-top:20px;
 
 <script>
 
+let tags = [];
+let style = "";
+
+function addTag(tag){
+  tags.push(tag);
+  showTags();
+}
+
+function removeTag(index){
+  tags.splice(index,1);
+  showTags();
+}
+
+function showTags(){
+  let html="";
+  for(let i=0;i<tags.length;i++){
+    html += '<span class="tag" onclick="removeTag('+i+')">'
+      + tags[i] + ' ×</span>';
+  }
+  document.getElementById("tagList").innerHTML = html;
+}
+
+function resetTags(){
+  tags=[];
+  style="";
+  showTags();
+  document.getElementById("styleText").innerText="スタイル: 未選択";
+  let btns = document.querySelectorAll(".category button");
+  btns.forEach(b => b.classList.remove("selected"));
+  document.getElementById("img").style.display="none";
+}
+
+function setStyle(btn, s){
+  style = s;
+  document.getElementById("styleText").innerText = "スタイル: " + style;
+  let btns = document.querySelectorAll(".category button");
+  btns.forEach(b => b.classList.remove("selected"));
+  btn.classList.add("selected");
+}
+
 function generate(){
+
   // 回数制限チェック
   let today = new Date().toDateString();
   let data = JSON.parse(localStorage.getItem("genData") || '{"date":"","count":0}');
@@ -92,7 +134,7 @@ function generate(){
     data = { date: today, count: 0 };
   }
 
-  let limit = 3; // 無料回数
+  let limit = 3;
 
   if(data.count >= limit){
     alert("本日の無料生成回数（" + limit + "回）を超えました。\n有料プランにアップグレードしてください。");
