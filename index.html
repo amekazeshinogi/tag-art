@@ -6,32 +6,72 @@
 
 <style>
 
-button {
-margin:4px;
-padding:8px;
+body {
+  font-family: sans-serif;
+  padding: 15px;
+  max-width: 600px;
+  margin: 0 auto;
 }
 
-.category {
-margin-top:10px;
+button {
+  margin: 4px;
+  padding: 8px 12px;
+  border: 1px solid #ccc;
+  border-radius: 6px;
+  background: white;
+  cursor: pointer;
 }
+
+button:hover { background: #f0f0f0; }
+
+.category { margin-top: 15px; }
+.category h3 { margin-bottom: 5px; color: #333; }
 
 .tag {
-background:#ddd;
-display:inline-block;
-padding:5px;
-margin:3px;
-cursor:pointer;
+  background: #ddd;
+  display: inline-block;
+  padding: 5px 10px;
+  margin: 3px;
+  cursor: pointer;
+  border-radius: 20px;
+  font-size: 14px;
 }
 
 .selected {
-background:orange;
-color:white;
+  background: orange;
+  color: white;
 }
 
+#tagList { min-height: 30px; margin-top: 5px; }
+
+#countText { color: #e44; font-weight: bold; }
+
+#generate-btn {
+  background: #ff5722;
+  color: white;
+  border: none;
+  padding: 12px 30px;
+  font-size: 16px;
+  border-radius: 8px;
+  cursor: pointer;
+  margin-top: 10px;
+}
+
+#generate-btn:hover { background: #e64a19; }
+
 img {
-width:256px;
-height:256px;
-margin-top:20px;
+  width: 256px;
+  height: 256px;
+  margin-top: 20px;
+  border-radius: 12px;
+  display: none;
+}
+
+#loading {
+  display: none;
+  margin-top: 20px;
+  color: #888;
+  font-size: 16px;
 }
 
 </style>
@@ -39,48 +79,118 @@ margin-top:20px;
 </head>
 <body>
 
-<h2>アイコン生成AI</h2>
+<h2>🎨 アイコン生成AI</h2>
 
 <div class="category">
-<h3>性別</h3>
-<button onclick="addTag('boy')">男</button>
-<button onclick="addTag('girl')">女</button>
+<h3>👤 性別</h3>
+<button onclick="addTag('boy')">男性</button>
+<button onclick="addTag('girl')">女性</button>
+<button onclick="addTag('neutral')">中性</button>
 </div>
 
 <div class="category">
-<h3>表情</h3>
+<h3>💇 髪型</h3>
+<button onclick="addTag('short hair')">ショート</button>
+<button onclick="addTag('long hair')">ロング</button>
+<button onclick="addTag('twin tails')">ツインテール</button>
+<button onclick="addTag('ponytail')">ポニーテール</button>
+<button onclick="addTag('bob cut')">ボブ</button>
+<button onclick="addTag('wavy hair')">ウェーブ</button>
+<button onclick="addTag('curly hair')">くるくる</button>
+</div>
+
+<div class="category">
+<h3>🎨 髪色</h3>
+<button onclick="addTag('blonde hair')">金髪</button>
+<button onclick="addTag('black hair')">黒髪</button>
+<button onclick="addTag('brown hair')">茶髪</button>
+<button onclick="addTag('white hair')">白髪</button>
+<button onclick="addTag('pink hair')">ピンク</button>
+<button onclick="addTag('blue hair')">ブルー</button>
+<button onclick="addTag('silver hair')">シルバー</button>
+</div>
+
+<div class="category">
+<h3>😊 表情</h3>
 <button onclick="addTag('smile')">笑顔</button>
-<button onclick="addTag('angry')">怒り</button>
-<button onclick="addTag('sad')">悲しい</button>
+<button onclick="addTag('serious')">真剣</button>
+<button onclick="addTag('wink')">ウィンク</button>
+<button onclick="addTag('surprised')">驚き</button>
+<button onclick="addTag('cool expression')">クール</button>
+<button onclick="addTag('happy')">嬉しい</button>
 </div>
 
 <div class="category">
-<h3>アクセ</h3>
+<h3>👁️ 目</h3>
+<button onclick="addTag('big eyes')">大きい目</button>
+<button onclick="addTag('blue eyes')">青い目</button>
+<button onclick="addTag('red eyes')">赤い目</button>
+<button onclick="addTag('green eyes')">緑の目</button>
+<button onclick="addTag('heterochromia')">オッドアイ</button>
+</div>
+
+<div class="category">
+<h3>👗 服装</h3>
+<button onclick="addTag('school uniform')">制服</button>
+<button onclick="addTag('casual clothes')">カジュアル</button>
+<button onclick="addTag('suit')">スーツ</button>
+<button onclick="addTag('kimono')">着物</button>
+<button onclick="addTag('hoodie')">パーカー</button>
+<button onclick="addTag('maid outfit')">メイド服</button>
+</div>
+
+<div class="category">
+<h3>✨ 属性</h3>
+<button onclick="addTag('cat ears')">猫耳</button>
+<button onclick="addTag('fox ears')">狐耳</button>
+<button onclick="addTag('angel wings')">天使</button>
+<button onclick="addTag('demon horns')">悪魔</button>
+<button onclick="addTag('elf ears')">エルフ</button>
+<button onclick="addTag('dragon')">ドラゴン</button>
+</div>
+
+<div class="category">
+<h3>👓 アクセサリー</h3>
 <button onclick="addTag('glasses')">メガネ</button>
 <button onclick="addTag('hat')">帽子</button>
 <button onclick="addTag('earrings')">ピアス</button>
+<button onclick="addTag('headband')">カチューシャ</button>
+<button onclick="addTag('ribbon')">リボン</button>
+<button onclick="addTag('mask')">マスク</button>
 </div>
 
 <div class="category">
-<h3>スタイル</h3>
+<h3>🌍 背景・世界観</h3>
+<button onclick="addTag('fantasy background')">ファンタジー</button>
+<button onclick="addTag('cyberpunk background')">サイバーパンク</button>
+<button onclick="addTag('nature background')">自然</button>
+<button onclick="addTag('white background')">白背景</button>
+<button onclick="addTag('gradient background')">グラデーション</button>
+</div>
+
+<div class="category">
+<h3>🎨 スタイル</h3>
 <button onclick="setStyle(this,'cute icon')">かわいい</button>
 <button onclick="setStyle(this,'simple flat icon')">シンプル</button>
 <button onclick="setStyle(this,'soft illustration')">ゆるい</button>
 <button onclick="setStyle(this,'business avatar')">ビジネス</button>
+<button onclick="setStyle(this,'pixel art')">ドット絵</button>
+<button onclick="setStyle(this,'anime style')">アニメ</button>
+<button onclick="setStyle(this,'realistic')">リアル</button>
 </div>
 
-<h3>選択タグ（クリックで削除）</h3>
+<h3>選択中タグ（タップで削除）</h3>
 <div id="tagList"></div>
 
 <p id="styleText">スタイル: 未選択</p>
 <p id="countText">本日の残り回数：3回</p>
 
-<button onclick="resetTags()">リセット</button>
-<button onclick="generate()">生成</button>
+<button onclick="resetTags()">🔄 リセット</button>
+<button id="generate-btn" onclick="generate()">✨ 生成する</button>
 
-<br>
+<div id="loading">⏳ 生成中...（20〜30秒かかります）</div>
 
-<img id="img" style="display:none">
+<img id="img">
 
 <script>
 
@@ -103,7 +213,8 @@ function showTags(){
     html += '<span class="tag" onclick="removeTag('+i+')">'
       + tags[i] + ' ×</span>';
   }
-  document.getElementById("tagList").innerHTML = html;
+  document.getElementById("tagList").innerHTML =
+    html || '<span style="color:#aaa">未選択</span>';
 }
 
 function resetTags(){
@@ -114,6 +225,7 @@ function resetTags(){
   let btns = document.querySelectorAll(".category button");
   btns.forEach(b => b.classList.remove("selected"));
   document.getElementById("img").style.display="none";
+  document.getElementById("loading").style.display="none";
 }
 
 function setStyle(btn, s){
@@ -126,7 +238,6 @@ function setStyle(btn, s){
 
 function generate(){
 
-  // 回数制限チェック
   let today = new Date().toDateString();
   let data = JSON.parse(localStorage.getItem("genData") || '{"date":"","count":0}');
 
@@ -150,7 +261,8 @@ function generate(){
   localStorage.setItem("genData", JSON.stringify(data));
 
   let remaining = limit - data.count;
-  document.getElementById("countText").innerText = "本日の残り回数：" + remaining + "回";
+  document.getElementById("countText").innerText =
+    "本日の残り回数：" + remaining + "回";
 
   let prompt = tags.join(", ");
 
@@ -160,8 +272,18 @@ function generate(){
     + "&style="
     + encodeURIComponent(style);
 
+  document.getElementById("loading").style.display="block";
+  document.getElementById("img").style.display="none";
+
   let img = document.getElementById("img");
-  img.style.display="block";
+  img.onload = function(){
+    document.getElementById("loading").style.display="none";
+    img.style.display="block";
+  };
+  img.onerror = function(){
+    document.getElementById("loading").style.display="none";
+    alert("生成に失敗しました。もう一度お試しください。");
+  };
   img.src = url;
 }
 
