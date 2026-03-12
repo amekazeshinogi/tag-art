@@ -1,62 +1,148 @@
 <!DOCTYPE html>
 <html>
 <head>
+
 <title>アイコン生成AI</title>
+
 <style>
-body { font-family: sans-serif; padding: 20px; }
-.category { margin-top: 15px; }
-.category h3 { margin-bottom: 5px; }
-.tag-btn {
-  margin: 4px; padding: 8px 14px;
-  border: 2px solid #ccc; background: white;
-  cursor: pointer; border-radius: 8px;
+
+button {
+margin:4px;
+padding:8px;
 }
-.tag-btn.active { background: #4CAF50; color: white; border-color: #4CAF50; }
-.style-btn {
-  margin: 4px; padding: 8px 14px;
-  border: 2px solid #ccc; background: white;
-  cursor: pointer; border-radius: 8px;
+
+.category {
+margin-top:10px;
 }
-.style-btn.active { background: #2196F3; color: white; border-color: #2196F3; }
-.selected-tag {
-  display: inline-block; background: #eee;
-  padding: 4px 10px; margin: 3px;
-  border-radius: 20px; cursor: pointer;
-  font-size: 14px;
+
+.tag {
+background:#ddd;
+display:inline-block;
+padding:5px;
+margin:3px;
+cursor:pointer;
 }
-.selected-tag:after { content: " ×"; color: red; }
-#generate-btn {
-  margin-top: 15px; padding: 12px 30px;
-  background: #ff5722; color: white;
-  border: none; border-radius: 8px;
-  font-size: 16px; cursor: pointer;
+
+.selected {
+background:orange;
+color:white;
 }
-img { width: 256px; height: 256px; margin-top: 20px; display: block; border-radius: 12px; }
-#loading { display: none; margin-top: 20px; font-size: 16px; color: #888; }
+
+img {
+width:256px;
+height:256px;
+margin-top:20px;
+}
+
 </style>
+
 </head>
 <body>
 
-<h2>🎨 アイコン生成AI</h2>
+<h2>アイコン生成AI</h2>
 
 <div class="category">
-  <h3>👤 性別</h3>
-  <button class="tag-btn" data-cat="gender" onclick="selectTag(this,'boy')">男</button>
-  <button class="tag-btn" data-cat="gender" onclick="selectTag(this,'girl')">女</button>
-  <button class="tag-btn" data-cat="gender" onclick="selectTag(this,'neutral person')">中性</button>
+<h3>性別</h3>
+<button onclick="addTag('boy')">男</button>
+<button onclick="addTag('girl')">女</button>
 </div>
 
 <div class="category">
-  <h3>💇 髪型</h3>
-  <button class="tag-btn" data-cat="hair" onclick="selectTag(this,'short hair')">ショート</button>
-  <button class="tag-btn" data-cat="hair" onclick="selectTag(this,'long hair')">ロング</button>
-  <button class="tag-btn" data-cat="hair" onclick="selectTag(this,'twin tails')">ツインテール</button>
-  <button class="tag-btn" data-cat="hair" onclick="selectTag(this,'ponytail')">ポニーテール</button>
+<h3>表情</h3>
+<button onclick="addTag('smile')">笑顔</button>
+<button onclick="addTag('angry')">怒り</button>
+<button onclick="addTag('sad')">悲しい</button>
 </div>
 
 <div class="category">
-  <h3>😊 表情</h3>
-  <button class="tag-btn" data-cat="face" onclick="selectTag(this,'smile')">笑顔</button>
-  <button class="tag-btn" data-cat="face" onclick="selectTag(this,'serious')">真剣</button>
-  <button class="tag-btn" data-cat="face" onclick="selectTag(this,'wink')">ウィンク</button>
-  <button class="tag-btn" data-cat="face" onclick="selectTag(this,'surpri
+<h3>アクセ</h3>
+<button onclick="addTag('glasses')">メガネ</button>
+<button onclick="addTag('hat')">帽子</button>
+<button onclick="addTag('earrings')">ピアス</button>
+</div>
+
+<div class="category">
+<h3>スタイル</h3>
+<button onclick="setStyle(this,'cute icon')">かわいい</button>
+<button onclick="setStyle(this,'simple flat icon')">シンプル</button>
+<button onclick="setStyle(this,'soft illustration')">ゆるい</button>
+<button onclick="setStyle(this,'business avatar')">ビジネス</button>
+</div>
+
+<h3>選択タグ（クリックで削除）</h3>
+<div id="tagList"></div>
+
+<p id="styleText">スタイル: 未選択</p>
+
+<button onclick="resetTags()">リセット</button>
+<button onclick="generate()">生成</button>
+
+<br>
+
+<img id="img" style="display:none">
+
+<script>
+
+let tags = [];
+let style = "";
+
+function addTag(tag){
+  tags.push(tag);
+  showTags();
+}
+
+function removeTag(index){
+  tags.splice(index,1);
+  showTags();
+}
+
+function showTags(){
+  let html="";
+  for(let i=0;i<tags.length;i++){
+    html += '<span class="tag" onclick="removeTag('+i+')">'
+      + tags[i] + ' ×</span>';
+  }
+  document.getElementById("tagList").innerHTML = html;
+}
+
+function resetTags(){
+  tags=[];
+  style="";
+  showTags();
+  document.getElementById("styleText").innerText="スタイル: 未選択";
+  let btns = document.querySelectorAll(".category button");
+  btns.forEach(b => b.classList.remove("selected"));
+  document.getElementById("img").style.display="none";
+}
+
+function setStyle(btn, s){
+  style = s;
+  document.getElementById("styleText").innerText = "スタイル: " + style;
+  let btns = document.querySelectorAll(".category button");
+  btns.forEach(b => b.classList.remove("selected"));
+  btn.classList.add("selected");
+}
+
+function generate(){
+  if(tags.length === 0 && style === ""){
+    alert("タグまたはスタイルを選択してください");
+    return;
+  }
+
+  let prompt = tags.join(", ");
+
+  let url =
+    "https://imagi-api.amekaze-shinogin.workers.dev/?prompt="
+    + encodeURIComponent(prompt)
+    + "&style="
+    + encodeURIComponent(style);
+
+  let img = document.getElementById("img");
+  img.style.display="block";
+  img.src = url;
+}
+
+</script>
+
+</body>
+</html>
