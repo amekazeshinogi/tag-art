@@ -1,73 +1,63 @@
 <!DOCTYPE html>
 <html>
 <head>
-
 <title>🎨 アイコン生成AI</title>
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-
 <style>
-
 * { box-sizing: border-box; margin: 0; padding: 0; }
 
 body {
   font-family: 'Helvetica Neue', sans-serif;
   background: #f0f2f5;
   color: #333;
+  min-height: 100vh;
   padding-bottom: 40px;
 }
 
 header {
   background: linear-gradient(135deg, #667eea, #764ba2);
   color: white;
-  padding: 20px;
+  padding: 16px 20px;
   text-align: center;
 }
-
-header h1 { font-size: 24px; margin-bottom: 5px; }
-header p { font-size: 13px; opacity: 0.85; }
+header h1 { font-size: 22px; margin-bottom: 4px; }
+header p { font-size: 12px; opacity: 0.85; }
 
 #auth-bar {
   background: white;
-  padding: 10px 15px;
+  padding: 8px 15px;
   text-align: right;
   font-size: 13px;
   color: #666;
   box-shadow: 0 1px 4px rgba(0,0,0,0.08);
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 8px;
 }
-
 #auth-bar button {
-  margin-left: 8px;
   padding: 6px 14px;
   border: none;
   border-radius: 6px;
   cursor: pointer;
   font-size: 13px;
 }
-
 #login-btn { background: #667eea; color: white; }
 #logout-btn { background: #e44; color: white; display: none; }
 
-.container {
-  max-width: 620px;
-  margin: 20px auto;
-  padding: 0 15px;
-}
-
-/* ログインモーダル */
+/* モーダル */
 #modal {
   display: none;
   position: fixed;
   top: 0; left: 0;
   width: 100%; height: 100%;
   background: rgba(0,0,0,0.5);
-  z-index: 100;
+  z-index: 200;
   justify-content: center;
   align-items: center;
 }
-
 #modal.show { display: flex; }
-
 .modal-box {
   background: white;
   border-radius: 16px;
@@ -75,97 +65,271 @@ header p { font-size: 13px; opacity: 0.85; }
   width: 90%;
   max-width: 400px;
 }
-
-.modal-box h2 { margin-bottom: 20px; text-align: center; color: #333; }
-
+.modal-box h2 { margin-bottom: 20px; text-align: center; }
 .modal-box input {
-  width: 100%;
-  padding: 12px;
+  width: 100%; padding: 12px;
   margin-bottom: 12px;
   border: 1px solid #ddd;
   border-radius: 8px;
   font-size: 15px;
 }
-
 .modal-box button {
-  width: 100%;
-  padding: 13px;
-  border: none;
-  border-radius: 8px;
-  font-size: 15px;
-  cursor: pointer;
+  width: 100%; padding: 13px;
+  border: none; border-radius: 8px;
+  font-size: 15px; cursor: pointer;
   margin-bottom: 8px;
 }
-
 #do-login { background: linear-gradient(135deg, #667eea, #764ba2); color: white; }
 #do-signup { background: #f0f2f5; color: #333; }
 #close-modal { background: white; color: #999; }
 
-.card {
+.container {
+  max-width: 600px;
+  margin: 0 auto;
+  padding: 15px;
+}
+
+/* モード切替タブ */
+.mode-tabs {
+  display: flex;
   background: white;
   border-radius: 12px;
-  padding: 15px;
+  padding: 5px;
   margin-bottom: 15px;
   box-shadow: 0 2px 8px rgba(0,0,0,0.08);
 }
-
-.card h3 {
-  font-size: 14px;
+.mode-tab {
+  flex: 1;
+  padding: 10px;
+  border: none;
+  border-radius: 8px;
+  background: transparent;
   color: #888;
-  margin-bottom: 10px;
-  text-transform: uppercase;
-  letter-spacing: 1px;
-}
-
-.tag-btn {
-  margin: 4px;
-  padding: 8px 14px;
-  border: 1.5px solid #ddd;
-  border-radius: 20px;
-  background: white;
-  color: #333;
+  font-size: 14px;
   cursor: pointer;
-  font-size: 13px;
   transition: all 0.2s;
 }
+.mode-tab.active {
+  background: linear-gradient(135deg, #667eea, #764ba2);
+  color: white;
+  font-weight: bold;
+}
 
-.tag-btn:hover { border-color: #764ba2; color: #764ba2; }
+/* ===== ドラッグ&ドロップモード ===== */
+#dragMode { display: block; }
+#swipeMode { display: none; }
 
-.tag-btn.selected {
+.tag-section {
+  background: white;
+  border-radius: 12px;
+  padding: 12px;
+  margin-bottom: 12px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+}
+.tag-section h3 {
+  font-size: 12px;
+  color: #888;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  margin-bottom: 8px;
+}
+.tag-source {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+.draggable-tag {
+  padding: 8px 14px;
+  background: #f0f2f5;
+  border-radius: 20px;
+  font-size: 13px;
+  color: #333;
+  cursor: grab;
+  border: 1.5px solid #ddd;
+  user-select: none;
+  transition: all 0.2s;
+  touch-action: none;
+}
+.draggable-tag:hover {
+  border-color: #764ba2;
+  color: #764ba2;
+  background: #f3eeff;
+}
+.draggable-tag.dragging {
+  opacity: 0.5;
+  cursor: grabbing;
+}
+.draggable-tag.used {
+  opacity: 0.3;
+  pointer-events: none;
+}
+
+/* ドロップゾーン */
+.drop-zone {
+  background: white;
+  border-radius: 12px;
+  padding: 15px;
+  margin-bottom: 12px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+  min-height: 80px;
+  border: 2px dashed #ddd;
+  transition: all 0.2s;
+}
+.drop-zone.drag-over {
+  border-color: #764ba2;
+  background: #f3eeff;
+}
+.drop-zone h3 {
+  font-size: 12px;
+  color: #888;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  margin-bottom: 8px;
+}
+.dropped-tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  min-height: 36px;
+}
+.dropped-tag {
+  padding: 7px 12px;
+  background: linear-gradient(135deg, #667eea, #764ba2);
+  color: white;
+  border-radius: 20px;
+  font-size: 13px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+.dropped-tag:hover { opacity: 0.85; }
+.drop-hint {
+  color: #aaa;
+  font-size: 13px;
+  text-align: center;
+  padding: 10px 0;
+  width: 100%;
+}
+
+/* ===== スワイプモード ===== */
+.swipe-container {
+  text-align: center;
+}
+.card-stack {
+  position: relative;
+  height: 220px;
+  width: 280px;
+  margin: 0 auto 15px;
+}
+.swipe-card {
+  position: absolute;
+  width: 280px;
+  height: 200px;
+  background: white;
+  border-radius: 20px;
+  box-shadow: 0 8px 30px rgba(0,0,0,0.12);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  cursor: grab;
+  user-select: none;
+  top: 0; left: 0;
+}
+.swipe-card.top { z-index: 2; }
+.swipe-card:nth-child(2) { transform: scale(0.95) translateY(8px); z-index: 1; }
+.swipe-card:nth-child(3) { transform: scale(0.9) translateY(16px); z-index: 0; }
+.card-emoji { font-size: 52px; margin-bottom: 10px; }
+.card-label { font-size: 22px; font-weight: bold; }
+.card-sublabel { font-size: 12px; color: #aaa; margin-top: 4px; }
+.like-overlay {
+  position: absolute; top: 20px; left: 20px;
+  background: #4CAF50; color: white;
+  font-size: 18px; font-weight: bold;
+  padding: 6px 14px; border-radius: 8px;
+  opacity: 0; transform: rotate(-15deg);
+  pointer-events: none;
+}
+.nope-overlay {
+  position: absolute; top: 20px; right: 20px;
+  background: #e44; color: white;
+  font-size: 18px; font-weight: bold;
+  padding: 6px 14px; border-radius: 8px;
+  opacity: 0; transform: rotate(15deg);
+  pointer-events: none;
+}
+.swipe-hint {
+  display: flex;
+  justify-content: space-between;
+  padding: 0 30px;
+  margin-bottom: 12px;
+  font-size: 13px;
+  font-weight: bold;
+}
+.hint-left { color: #e44; }
+.hint-right { color: #4CAF50; }
+.swipe-btns {
+  display: flex;
+  justify-content: center;
+  gap: 25px;
+  margin-bottom: 15px;
+}
+.btn-skip {
+  width: 58px; height: 58px;
+  border-radius: 50%;
+  border: 2px solid #e44;
+  background: white; color: #e44;
+  font-size: 22px; cursor: pointer;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+}
+.btn-add {
+  width: 58px; height: 58px;
+  border-radius: 50%; border: none;
+  background: linear-gradient(135deg, #667eea, #764ba2);
+  color: white; font-size: 22px; cursor: pointer;
+  box-shadow: 0 4px 12px rgba(102,126,234,0.4);
+}
+.swipe-cat-tabs {
+  display: flex;
+  gap: 6px;
+  overflow-x: auto;
+  padding-bottom: 5px;
+  margin-bottom: 12px;
+  scrollbar-width: none;
+}
+.swipe-cat-tabs::-webkit-scrollbar { display: none; }
+.swipe-cat-tab {
+  padding: 6px 12px;
+  border-radius: 20px;
+  border: 1.5px solid #ddd;
+  background: white;
+  color: #666;
+  font-size: 12px;
+  cursor: pointer;
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+.swipe-cat-tab.active {
   background: linear-gradient(135deg, #667eea, #764ba2);
   color: white;
   border-color: transparent;
 }
 
-.selected-area {
+/* 共通下部 */
+.bottom-section {
   background: white;
   border-radius: 12px;
   padding: 15px;
-  margin-bottom: 15px;
+  margin-bottom: 12px;
   box-shadow: 0 2px 8px rgba(0,0,0,0.08);
-  min-height: 60px;
 }
-
-.selected-area h3 {
-  font-size: 14px;
-  color: #888;
-  margin-bottom: 10px;
+.bottom-section h3 {
+  font-size: 12px; color: #888;
   text-transform: uppercase;
   letter-spacing: 1px;
+  margin-bottom: 8px;
 }
-
-.tag {
-  display: inline-block;
-  background: #f0f2f5;
-  color: #333;
-  padding: 6px 12px;
-  margin: 3px;
-  border-radius: 20px;
-  font-size: 13px;
-  cursor: pointer;
-}
-
-.tag:hover { background: #fde8e8; color: #e44; }
 
 #countText {
   text-align: center;
@@ -175,43 +339,36 @@ header p { font-size: 13px; opacity: 0.85; }
   margin-bottom: 10px;
 }
 
-.btn-row {
+.action-row {
   display: flex;
-  gap: 10px;
+  gap: 8px;
   margin-bottom: 10px;
 }
-
 #reset-btn {
-  flex: 1;
-  padding: 14px;
-  background: #f0f2f5;
-  color: #666;
-  border: none;
-  border-radius: 10px;
-  font-size: 15px;
-  cursor: pointer;
+  flex: 1; padding: 13px;
+  background: #f0f2f5; color: #666;
+  border: none; border-radius: 10px;
+  font-size: 14px; cursor: pointer;
 }
-
+#random-btn {
+  flex: 1; padding: 13px;
+  background: #ff9800; color: white;
+  border: none; border-radius: 10px;
+  font-size: 14px; cursor: pointer;
+}
 #generate-btn {
-  flex: 2;
-  padding: 14px;
+  flex: 2; padding: 13px;
   background: linear-gradient(135deg, #667eea, #764ba2);
-  color: white;
-  border: none;
+  color: white; border: none;
   border-radius: 10px;
-  font-size: 15px;
-  font-weight: bold;
+  font-size: 14px; font-weight: bold;
   cursor: pointer;
 }
 
 #loading {
-  display: none;
-  text-align: center;
-  padding: 30px;
-  color: #888;
-  font-size: 15px;
+  display: none; text-align: center;
+  padding: 30px; color: #888; font-size: 15px;
 }
-
 .result-card {
   display: none;
   background: white;
@@ -219,35 +376,44 @@ header p { font-size: 13px; opacity: 0.85; }
   padding: 20px;
   text-align: center;
   box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+  margin-bottom: 15px;
 }
-
 #img {
-  width: 256px;
-  height: 256px;
+  width: 256px; height: 256px;
   border-radius: 12px;
   display: block;
   margin: 0 auto 15px;
 }
-
 #save-btn {
   display: none;
   padding: 12px 30px;
-  background: #4CAF50;
-  color: white;
-  border: none;
-  border-radius: 10px;
-  font-size: 15px;
-  cursor: pointer;
+  background: #4CAF50; color: white;
+  border: none; border-radius: 10px;
+  font-size: 15px; cursor: pointer;
   width: 100%;
 }
 
+/* ドラッグ中のゴースト */
+#drag-ghost {
+  position: fixed;
+  pointer-events: none;
+  z-index: 999;
+  padding: 8px 14px;
+  background: linear-gradient(135deg, #667eea, #764ba2);
+  color: white;
+  border-radius: 20px;
+  font-size: 13px;
+  opacity: 0.9;
+  display: none;
+  transform: translate(-50%, -50%);
+}
 </style>
 </head>
 <body>
 
 <header>
   <h1>🎨 アイコン生成AI</h1>
-  <p>タグを選んでオリジナルアイコンを作ろう</p>
+  <p>タグを組み合わせてオリジナルアイコンを作ろう</p>
 </header>
 
 <div id="auth-bar">
@@ -256,7 +422,6 @@ header p { font-size: 13px; opacity: 0.85; }
   <button id="logout-btn" onclick="logout()">ログアウト</button>
 </div>
 
-<!-- ログインモーダル -->
 <div id="modal">
   <div class="modal-box">
     <h2>🔐 ログイン / 新規登録</h2>
@@ -269,147 +434,572 @@ header p { font-size: 13px; opacity: 0.85; }
   </div>
 </div>
 
+<!-- ドラッグ中のゴースト -->
+<div id="drag-ghost"></div>
+
 <div class="container">
 
-<div class="card">
-<h3>👤 性別</h3>
-<button class="tag-btn" onclick="addTag('boy')">男性</button>
-<button class="tag-btn" onclick="addTag('girl')">女性</button>
-<button class="tag-btn" onclick="addTag('neutral')">中性</button>
-</div>
+  <!-- モード切替 -->
+  <div class="mode-tabs">
+    <button class="mode-tab active" onclick="switchMode('drag')">🧩 ドラッグ&ドロップ</button>
+    <button class="mode-tab" onclick="switchMode('swipe')">👆 スワイプ</button>
+  </div>
 
-<div class="card">
-<h3>💇 髪型</h3>
-<button class="tag-btn" onclick="addTag('short hair')">ショート</button>
-<button class="tag-btn" onclick="addTag('long hair')">ロング</button>
-<button class="tag-btn" onclick="addTag('twin tails')">ツインテール</button>
-<button class="tag-btn" onclick="addTag('ponytail')">ポニーテール</button>
-<button class="tag-btn" onclick="addTag('bob cut')">ボブ</button>
-<button class="tag-btn" onclick="addTag('wavy hair')">ウェーブ</button>
-<button class="tag-btn" onclick="addTag('curly hair')">くるくる</button>
-</div>
+  <!-- ドラッグ&ドロップモード -->
+  <div id="dragMode">
 
-<div class="card">
-<h3>🎨 髪色</h3>
-<button class="tag-btn" onclick="addTag('blonde hair')">金髪</button>
-<button class="tag-btn" onclick="addTag('black hair')">黒髪</button>
-<button class="tag-btn" onclick="addTag('brown hair')">茶髪</button>
-<button class="tag-btn" onclick="addTag('white hair')">白髪</button>
-<button class="tag-btn" onclick="addTag('pink hair')">ピンク</button>
-<button class="tag-btn" onclick="addTag('blue hair')">ブルー</button>
-<button class="tag-btn" onclick="addTag('silver hair')">シルバー</button>
-</div>
+    <div class="tag-section">
+      <h3>👤 性別</h3>
+      <div class="tag-source" id="src-gender">
+        <div class="draggable-tag" data-tag="boy">男性</div>
+        <div class="draggable-tag" data-tag="girl">女性</div>
+        <div class="draggable-tag" data-tag="neutral">中性</div>
+      </div>
+    </div>
 
-<div class="card">
-<h3>😊 表情</h3>
-<button class="tag-btn" onclick="addTag('smile')">笑顔</button>
-<button class="tag-btn" onclick="addTag('serious')">真剣</button>
-<button class="tag-btn" onclick="addTag('wink')">ウィンク</button>
-<button class="tag-btn" onclick="addTag('surprised')">驚き</button>
-<button class="tag-btn" onclick="addTag('cool expression')">クール</button>
-<button class="tag-btn" onclick="addTag('happy')">嬉しい</button>
-</div>
+    <div class="tag-section">
+      <h3>💇 髪型</h3>
+      <div class="tag-source" id="src-hair">
+        <div class="draggable-tag" data-tag="short hair">ショート</div>
+        <div class="draggable-tag" data-tag="long hair">ロング</div>
+        <div class="draggable-tag" data-tag="twin tails">ツインテール</div>
+        <div class="draggable-tag" data-tag="ponytail">ポニーテール</div>
+        <div class="draggable-tag" data-tag="bob cut">ボブ</div>
+        <div class="draggable-tag" data-tag="wavy hair">ウェーブ</div>
+      </div>
+    </div>
 
-<div class="card">
-<h3>👁️ 目</h3>
-<button class="tag-btn" onclick="addTag('big eyes')">大きい目</button>
-<button class="tag-btn" onclick="addTag('blue eyes')">青い目</button>
-<button class="tag-btn" onclick="addTag('red eyes')">赤い目</button>
-<button class="tag-btn" onclick="addTag('green eyes')">緑の目</button>
-<button class="tag-btn" onclick="addTag('heterochromia')">オッドアイ</button>
-</div>
+    <div class="tag-section">
+      <h3>🎨 髪色</h3>
+      <div class="tag-source" id="src-color">
+        <div class="draggable-tag" data-tag="blonde hair">金髪</div>
+        <div class="draggable-tag" data-tag="black hair">黒髪</div>
+        <div class="draggable-tag" data-tag="brown hair">茶髪</div>
+        <div class="draggable-tag" data-tag="white hair">白髪</div>
+        <div class="draggable-tag" data-tag="pink hair">ピンク</div>
+        <div class="draggable-tag" data-tag="blue hair">ブルー</div>
+      </div>
+    </div>
 
-<div class="card">
-<h3>👗 服装</h3>
-<button class="tag-btn" onclick="addTag('school uniform')">制服</button>
-<button class="tag-btn" onclick="addTag('casual clothes')">カジュアル</button>
-<button class="tag-btn" onclick="addTag('suit')">スーツ</button>
-<button class="tag-btn" onclick="addTag('kimono')">着物</button>
-<button class="tag-btn" onclick="addTag('hoodie')">パーカー</button>
-<button class="tag-btn" onclick="addTag('maid outfit')">メイド服</button>
-</div>
+    <div class="tag-section">
+      <h3>😊 表情</h3>
+      <div class="tag-source" id="src-face">
+        <div class="draggable-tag" data-tag="smile">笑顔</div>
+        <div class="draggable-tag" data-tag="serious">真剣</div>
+        <div class="draggable-tag" data-tag="wink">ウィンク</div>
+        <div class="draggable-tag" data-tag="surprised">驚き</div>
+        <div class="draggable-tag" data-tag="cool expression">クール</div>
+      </div>
+    </div>
 
-<div class="card">
-<h3>✨ 属性</h3>
-<button class="tag-btn" onclick="addTag('cat ears')">猫耳</button>
-<button class="tag-btn" onclick="addTag('fox ears')">狐耳</button>
-<button class="tag-btn" onclick="addTag('angel wings')">天使</button>
-<button class="tag-btn" onclick="addTag('demon horns')">悪魔</button>
-<button class="tag-btn" onclick="addTag('elf ears')">エルフ</button>
-<button class="tag-btn" onclick="addTag('dragon')">ドラゴン</button>
-</div>
+    <div class="tag-section">
+      <h3>✨ 属性</h3>
+      <div class="tag-source" id="src-attr">
+        <div class="draggable-tag" data-tag="cat ears">猫耳</div>
+        <div class="draggable-tag" data-tag="fox ears">狐耳</div>
+        <div class="draggable-tag" data-tag="angel wings">天使</div>
+        <div class="draggable-tag" data-tag="demon horns">悪魔</div>
+        <div class="draggable-tag" data-tag="elf ears">エルフ</div>
+      </div>
+    </div>
 
-<div class="card">
-<h3>👓 アクセサリー</h3>
-<button class="tag-btn" onclick="addTag('glasses')">メガネ</button>
-<button class="tag-btn" onclick="addTag('hat')">帽子</button>
-<button class="tag-btn" onclick="addTag('earrings')">ピアス</button>
-<button class="tag-btn" onclick="addTag('headband')">カチューシャ</button>
-<button class="tag-btn" onclick="addTag('ribbon')">リボン</button>
-<button class="tag-btn" onclick="addTag('mask')">マスク</button>
-</div>
+    <div class="tag-section">
+      <h3>👗 服装</h3>
+      <div class="tag-source" id="src-outfit">
+        <div class="draggable-tag" data-tag="school uniform">制服</div>
+        <div class="draggable-tag" data-tag="casual clothes">カジュアル</div>
+        <div class="draggable-tag" data-tag="suit">スーツ</div>
+        <div class="draggable-tag" data-tag="kimono">着物</div>
+        <div class="draggable-tag" data-tag="hoodie">パーカー</div>
+      </div>
+    </div>
 
-<div class="card">
-<h3>🌍 背景・世界観</h3>
-<button class="tag-btn" onclick="addTag('fantasy background')">ファンタジー</button>
-<button class="tag-btn" onclick="addTag('cyberpunk background')">サイバーパンク</button>
-<button class="tag-btn" onclick="addTag('nature background')">自然</button>
-<button class="tag-btn" onclick="addTag('white background')">白背景</button>
-<button class="tag-btn" onclick="addTag('gradient background')">グラデーション</button>
-</div>
+    <div class="tag-section">
+      <h3>👓 アクセサリー</h3>
+      <div class="tag-source" id="src-acc">
+        <div class="draggable-tag" data-tag="glasses">メガネ</div>
+        <div class="draggable-tag" data-tag="hat">帽子</div>
+        <div class="draggable-tag" data-tag="earrings">ピアス</div>
+        <div class="draggable-tag" data-tag="ribbon">リボン</div>
+        <div class="draggable-tag" data-tag="mask">マスク</div>
+      </div>
+    </div>
 
-<div class="card">
-<h3>🎨 スタイル</h3>
-<button class="tag-btn" onclick="setStyle(this,'cute icon')">かわいい</button>
-<button class="tag-btn" onclick="setStyle(this,'simple flat icon')">シンプル</button>
-<button class="tag-btn" onclick="setStyle(this,'soft illustration')">ゆるい</button>
-<button class="tag-btn" onclick="setStyle(this,'business avatar')">ビジネス</button>
-<button class="tag-btn" onclick="setStyle(this,'pixel art')">ドット絵</button>
-<button class="tag-btn" onclick="setStyle(this,'anime style')">アニメ</button>
-<button class="tag-btn" onclick="setStyle(this,'realistic')">リアル</button>
-</div>
+    <div class="tag-section">
+      <h3>🎨 スタイル</h3>
+      <div class="tag-source" id="src-style">
+        <div class="draggable-tag" data-tag="cute icon" data-style="true">かわいい</div>
+        <div class="draggable-tag" data-tag="simple flat icon" data-style="true">シンプル</div>
+        <div class="draggable-tag" data-tag="anime style" data-style="true">アニメ</div>
+        <div class="draggable-tag" data-tag="business avatar" data-style="true">ビジネス</div>
+        <div class="draggable-tag" data-tag="pixel art" data-style="true">ドット絵</div>
+      </div>
+    </div>
 
-<div class="selected-area">
-<h3>選択中タグ（タップで削除）</h3>
-<div id="tagList"><span style="color:#aaa;font-size:13px">タグを選んでください</span></div>
-<p style="margin-top:8px;font-size:13px;color:#888" id="styleText">スタイル: 未選択</p>
-</div>
+    <!-- ドロップゾーン -->
+    <div class="drop-zone" id="dropZone">
+      <h3>🎯 ここにタグをドロップ</h3>
+      <div class="dropped-tags" id="droppedTags">
+        <span class="drop-hint">タグをここにドラッグしてね</span>
+      </div>
+    </div>
 
-<p id="countText">本日の残り回数：3回</p>
+  </div>
 
-<div class="btn-row">
-<button id="reset-btn" onclick="resetTags()">🔄 リセット</button>
-<button id="generate-btn" onclick="generate()">✨ 生成する</button>
-</div>
+  <!-- スワイプモード -->
+  <div id="swipeMode">
+    <div class="swipe-cat-tabs" id="swipeCatTabs"></div>
+    <div class="swipe-container">
+      <div class="card-stack" id="cardStack"></div>
+      <div class="swipe-hint">
+        <span class="hint-left">← スキップ</span>
+        <span class="hint-right">追加 →</span>
+      </div>
+      <div class="swipe-btns">
+        <button class="btn-skip" onclick="swipeLeft()">✕</button>
+        <button class="btn-add" onclick="swipeRight()">♥</button>
+      </div>
+    </div>
+  </div>
 
-<div id="loading">⏳ 生成中...（20〜30秒かかります）</div>
+  <!-- 選択済みタグ表示 -->
+  <div class="bottom-section">
+    <h3>選択中タグ（タップで削除）</h3>
+    <div id="tagList"><span style="color:#aaa;font-size:13px">タグを選んでください</span></div>
+    <p style="margin-top:6px;font-size:12px;color:#888" id="styleText">スタイル: 未選択</p>
+  </div>
 
-<div class="result-card" id="resultCard">
-<img id="img">
-<button id="save-btn" onclick="saveImage()">💾 画像を保存する</button>
-</div>
+  <p id="countText">本日の残り回数：3回</p>
+
+  <div class="action-row">
+    <button id="reset-btn" onclick="resetAll()">🔄 リセット</button>
+    <button id="random-btn" onclick="randomGenerate()">🎲 ランダム</button>
+    <button id="generate-btn" onclick="generate()">✨ 生成する</button>
+  </div>
+
+  <div id="loading">⏳ 生成中...（20〜30秒かかります）</div>
+
+  <div class="result-card" id="resultCard">
+    <img id="img">
+    <button id="save-btn" onclick="saveImage()">💾 画像を保存する</button>
+  </div>
 
 </div>
 
 <script>
-
 const SUPABASE_URL = "https://eoademoyfyopqfnljhyf.supabase.co";
 const SUPABASE_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImVvYWRlbW95ZnlvcHFmbmxqaHlmIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzM0OTIyODIsImV4cCI6MjA4OTA2ODI4Mn0.EXk-W1fcaZ8g_b2avAjMIzOJhszdAUWssbivZhCyPFs";
-
 const sb = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
-let tags = [];
-let style = "";
 let currentUser = null;
+let tags = [];
+let selectedStyle = "";
+let dragTag = null;
+let dragEl = null;
 
-// 起動時にログイン状態確認
-sb.auth.getSession().then(({ data }) => {
-  if (data.session) {
-    currentUser = data.session.user;
-    updateAuthUI();
+// 全タグデータ
+const allTags = {
+  gender: [{tag:"boy",label:"男性"},{tag:"girl",label:"女性"},{tag:"neutral",label:"中性"}],
+  hair: [{tag:"short hair",label:"ショート"},{tag:"long hair",label:"ロング"},{tag:"twin tails",label:"ツインテール"},{tag:"ponytail",label:"ポニーテール"},{tag:"bob cut",label:"ボブ"},{tag:"wavy hair",label:"ウェーブ"}],
+  color: [{tag:"blonde hair",label:"金髪"},{tag:"black hair",label:"黒髪"},{tag:"brown hair",label:"茶髪"},{tag:"white hair",label:"白髪"},{tag:"pink hair",label:"ピンク"},{tag:"blue hair",label:"ブルー"}],
+  face: [{tag:"smile",label:"笑顔"},{tag:"serious",label:"真剣"},{tag:"wink",label:"ウィンク"},{tag:"surprised",label:"驚き"},{tag:"cool expression",label:"クール"}],
+  attr: [{tag:"cat ears",label:"猫耳"},{tag:"fox ears",label:"狐耳"},{tag:"angel wings",label:"天使"},{tag:"demon horns",label:"悪魔"},{tag:"elf ears",label:"エルフ"}],
+  outfit: [{tag:"school uniform",label:"制服"},{tag:"casual clothes",label:"カジュアル"},{tag:"suit",label:"スーツ"},{tag:"kimono",label:"着物"},{tag:"hoodie",label:"パーカー"}],
+  acc: [{tag:"glasses",label:"メガネ"},{tag:"hat",label:"帽子"},{tag:"earrings",label:"ピアス"},{tag:"ribbon",label:"リボン"},{tag:"mask",label:"マスク"}],
+  style: [{tag:"cute icon",label:"かわいい",isStyle:true},{tag:"simple flat icon",label:"シンプル",isStyle:true},{tag:"anime style",label:"アニメ",isStyle:true},{tag:"business avatar",label:"ビジネス",isStyle:true},{tag:"pixel art",label:"ドット絵",isStyle:true}]
+};
+
+const categoryLabels = {
+  gender:"👤 性別", hair:"💇 髪型", color:"🎨 髪色",
+  face:"😊 表情", attr:"✨ 属性", outfit:"👗 服装",
+  acc:"👓 アクセ", style:"🎨 スタイル"
+};
+
+// ===== モード切替 =====
+function switchMode(mode) {
+  document.getElementById("dragMode").style.display = mode === "drag" ? "block" : "none";
+  document.getElementById("swipeMode").style.display = mode === "swipe" ? "block" : "none";
+  document.querySelectorAll(".mode-tab").forEach((t, i) => {
+    t.classList.toggle("active", (mode === "drag" && i === 0) || (mode === "swipe" && i === 1));
+  });
+  if (mode === "swipe") initSwipe();
+}
+
+// ===== ドラッグ&ドロップ =====
+function initDrag() {
+  document.querySelectorAll(".draggable-tag").forEach(el => {
+    // マウス
+    el.addEventListener("mousedown", e => startDrag(e, el));
+    // タッチ
+    el.addEventListener("touchstart", e => startDragTouch(e, el), { passive: false });
+  });
+
+  let dropZone = document.getElementById("dropZone");
+  dropZone.addEventListener("dragover", e => { e.preventDefault(); dropZone.classList.add("drag-over"); });
+  dropZone.addEventListener("dragleave", () => dropZone.classList.remove("drag-over"));
+  dropZone.addEventListener("drop", e => { e.preventDefault(); dropZone.classList.remove("drag-over"); if(dragTag) dropTag(); });
+}
+
+let ghostEl = null;
+
+function startDrag(e, el) {
+  dragTag = el.dataset.tag;
+  dragEl = el;
+  ghostEl = document.getElementById("drag-ghost");
+  ghostEl.innerText = el.innerText;
+  ghostEl.style.display = "block";
+  ghostEl.style.left = e.clientX + "px";
+  ghostEl.style.top = e.clientY + "px";
+
+  document.addEventListener("mousemove", onMouseMove);
+  document.addEventListener("mouseup", onMouseUp);
+}
+
+function onMouseMove(e) {
+  if (!ghostEl) return;
+  ghostEl.style.left = e.clientX + "px";
+  ghostEl.style.top = e.clientY + "px";
+
+  // ドロップゾーンのハイライト
+  let dropZone = document.getElementById("dropZone");
+  let rect = dropZone.getBoundingClientRect();
+  if (e.clientX >= rect.left && e.clientX <= rect.right &&
+      e.clientY >= rect.top && e.clientY <= rect.bottom) {
+    dropZone.classList.add("drag-over");
+  } else {
+    dropZone.classList.remove("drag-over");
   }
-});
+}
 
+function onMouseUp(e) {
+  if (!ghostEl) return;
+  ghostEl.style.display = "none";
+  document.removeEventListener("mousemove", onMouseMove);
+  document.removeEventListener("mouseup", onMouseUp);
+
+  let dropZone = document.getElementById("dropZone");
+  let rect = dropZone.getBoundingClientRect();
+  if (e.clientX >= rect.left && e.clientX <= rect.right &&
+      e.clientY >= rect.top && e.clientY <= rect.bottom) {
+    dropZone.classList.remove("drag-over");
+    dropTag();
+  }
+  dragTag = null;
+  dragEl = null;
+}
+
+function startDragTouch(e, el) {
+  e.preventDefault();
+  dragTag = el.dataset.tag;
+  dragEl = el;
+  ghostEl = document.getElementById("drag-ghost");
+  ghostEl.innerText = el.innerText;
+  ghostEl.style.display = "block";
+
+  document.addEventListener("touchmove", onTouchMove, { passive: false });
+  document.addEventListener("touchend", onTouchEnd);
+}
+
+function onTouchMove(e) {
+  e.preventDefault();
+  let t = e.touches[0];
+  ghostEl.style.left = t.clientX + "px";
+  ghostEl.style.top = t.clientY + "px";
+
+  let dropZone = document.getElementById("dropZone");
+  let rect = dropZone.getBoundingClientRect();
+  if (t.clientX >= rect.left && t.clientX <= rect.right &&
+      t.clientY >= rect.top && t.clientY <= rect.bottom) {
+    dropZone.classList.add("drag-over");
+  } else {
+    dropZone.classList.remove("drag-over");
+  }
+}
+
+function onTouchEnd(e) {
+  ghostEl.style.display = "none";
+  document.removeEventListener("touchmove", onTouchMove);
+  document.removeEventListener("touchend", onTouchEnd);
+
+  let t = e.changedTouches[0];
+  let dropZone = document.getElementById("dropZone");
+  let rect = dropZone.getBoundingClientRect();
+  if (t.clientX >= rect.left && t.clientX <= rect.right &&
+      t.clientY >= rect.top && t.clientY <= rect.bottom) {
+    dropZone.classList.remove("drag-over");
+    dropTag();
+  }
+  dragTag = null;
+  dragEl = null;
+}
+
+function dropTag() {
+  if (!dragTag) return;
+  let isStyle = dragEl && dragEl.dataset.style === "true";
+
+  if (isStyle) {
+    selectedStyle = dragTag;
+  } else {
+    if (!tags.includes(dragTag)) tags.push(dragTag);
+  }
+
+  if (dragEl) dragEl.classList.add("used");
+  showTags();
+  showDropped();
+}
+
+function showDropped() {
+  let html = "";
+  tags.forEach((tag, i) => {
+    let label = getLabelByTag(tag);
+    html += `<span class="dropped-tag" onclick="removeDropped(${i}, '${tag}')">${label} ×</span>`;
+  });
+  if (selectedStyle) {
+    let label = getLabelByTag(selectedStyle);
+    html += `<span class="dropped-tag" style="background:linear-gradient(135deg,#ff9800,#ff5722)" onclick="removeStyle()">🎨 ${label} ×</span>`;
+  }
+  document.getElementById("droppedTags").innerHTML =
+    html || '<span class="drop-hint">タグをここにドラッグしてね</span>';
+}
+
+function removeDropped(i, tag) {
+  tags.splice(i, 1);
+  // タグを元に戻す
+  document.querySelectorAll(".draggable-tag").forEach(el => {
+    if (el.dataset.tag === tag) el.classList.remove("used");
+  });
+  showTags();
+  showDropped();
+}
+
+function removeStyle() {
+  let tag = selectedStyle;
+  selectedStyle = "";
+  document.querySelectorAll(".draggable-tag").forEach(el => {
+    if (el.dataset.tag === tag) el.classList.remove("used");
+  });
+  showTags();
+  showDropped();
+}
+
+function getLabelByTag(tag) {
+  for (let cat in allTags) {
+    let found = allTags[cat].find(t => t.tag === tag);
+    if (found) return found.label;
+  }
+  return tag;
+}
+
+// ===== スワイプモード =====
+let swipeCatKeys = Object.keys(allTags);
+let swipeCatIndex = 0;
+let swipeCardIndex = 0;
+
+function initSwipe() {
+  let tabHtml = swipeCatKeys.map((key, i) =>
+    `<button class="swipe-cat-tab ${i===0?'active':''}" onclick="loadSwipeCat(${i})">${categoryLabels[key]}</button>`
+  ).join("");
+  document.getElementById("swipeCatTabs").innerHTML = tabHtml;
+  loadSwipeCat(0);
+}
+
+function loadSwipeCat(index) {
+  swipeCatIndex = index;
+  swipeCardIndex = 0;
+  document.querySelectorAll(".swipe-cat-tab").forEach((t, i) => t.classList.toggle("active", i === index));
+  renderSwipeCards();
+}
+
+function renderSwipeCards() {
+  let stack = document.getElementById("cardStack");
+  let catKey = swipeCatKeys[swipeCatIndex];
+  let cards = allTags[catKey];
+  let remaining = cards.slice(swipeCardIndex, swipeCardIndex + 3);
+
+  stack.innerHTML = "";
+
+  if (remaining.length === 0) {
+    stack.innerHTML = '<div style="text-align:center;padding:70px 0;color:#aaa;font-size:14px">✅ 完了！次のカテゴリーへ</div>';
+    return;
+  }
+
+  [...remaining].reverse().forEach((card, i) => {
+    let isTop = i === remaining.length - 1;
+    let div = document.createElement("div");
+    div.className = "swipe-card" + (isTop ? " top" : "");
+    div.innerHTML = `
+      <div class="like-overlay">追加！</div>
+      <div class="nope-overlay">スキップ</div>
+      <div class="card-emoji">${getEmoji(card.tag)}</div>
+      <div class="card-label">${card.label}</div>
+      <div class="card-sublabel">${card.tag}</div>
+    `;
+    if (isTop) setupSwipeDrag(div, card);
+    stack.appendChild(div);
+  });
+}
+
+function getEmoji(tag) {
+  const map = {
+    "boy":"👦","girl":"👧","neutral":"🧑",
+    "short hair":"✂️","long hair":"💁","twin tails":"🎀","ponytail":"🐴","bob cut":"💆","wavy hair":"🌊",
+    "blonde hair":"💛","black hair":"🖤","brown hair":"🤎","white hair":"🤍","pink hair":"🌸","blue hair":"💙",
+    "smile":"😊","serious":"😐","wink":"😉","surprised":"😮","cool expression":"😎",
+    "cat ears":"🐱","fox ears":"🦊","angel wings":"😇","demon horns":"😈","elf ears":"🧝",
+    "school uniform":"🎓","casual clothes":"👕","suit":"💼","kimono":"👘","hoodie":"🧥",
+    "glasses":"👓","hat":"🎩","earrings":"💎","ribbon":"🎀","mask":"😷",
+    "cute icon":"🌸","simple flat icon":"📐","anime style":"🎌","business avatar":"💼","pixel art":"🕹️"
+  };
+  return map[tag] || "✨";
+}
+
+function setupSwipeDrag(el, card) {
+  let startX = 0;
+  let isDragging = false;
+
+  function onStart(clientX) { startX = clientX; isDragging = true; }
+  function onMove(clientX) {
+    if (!isDragging) return;
+    let diff = clientX - startX;
+    el.style.transform = `translateX(${diff}px) rotate(${diff * 0.05}deg)`;
+    el.querySelector(".like-overlay").style.opacity = diff > 30 ? Math.min(diff/100, 1) : 0;
+    el.querySelector(".nope-overlay").style.opacity = diff < -30 ? Math.min(-diff/100, 1) : 0;
+  }
+  function onEnd(clientX) {
+    if (!isDragging) return;
+    isDragging = false;
+    let diff = clientX - startX;
+    if (diff > 80) animateSwipe(el, true, card);
+    else if (diff < -80) animateSwipe(el, false, card);
+    else {
+      el.style.transform = "";
+      el.querySelector(".like-overlay").style.opacity = 0;
+      el.querySelector(".nope-overlay").style.opacity = 0;
+    }
+  }
+
+  el.addEventListener("mousedown", e => onStart(e.clientX));
+  document.addEventListener("mousemove", e => { if(isDragging) onMove(e.clientX); });
+  document.addEventListener("mouseup", e => onEnd(e.clientX));
+  el.addEventListener("touchstart", e => onStart(e.touches[0].clientX), { passive: true });
+  el.addEventListener("touchmove", e => onMove(e.touches[0].clientX), { passive: true });
+  el.addEventListener("touchend", e => onEnd(e.changedTouches[0].clientX));
+}
+
+function animateSwipe(el, isRight, card) {
+  el.style.transition = "transform 0.3s ease";
+  el.style.transform = `translateX(${isRight ? 500 : -500}px) rotate(${isRight ? 20 : -20}deg)`;
+  setTimeout(() => {
+    if (isRight) addFromSwipe(card);
+    swipeCardIndex++;
+    renderSwipeCards();
+  }, 300);
+}
+
+function swipeRight() {
+  let cards = allTags[swipeCatKeys[swipeCatIndex]];
+  if (swipeCardIndex >= cards.length) return;
+  let top = document.querySelector(".swipe-card.top");
+  if (top) animateSwipe(top, true, cards[swipeCardIndex]);
+}
+
+function swipeLeft() {
+  let cards = allTags[swipeCatKeys[swipeCatIndex]];
+  if (swipeCardIndex >= cards.length) return;
+  let top = document.querySelector(".swipe-card.top");
+  if (top) animateSwipe(top, false, cards[swipeCardIndex]);
+}
+
+function addFromSwipe(card) {
+  if (card.isStyle) {
+    selectedStyle = card.tag;
+  } else {
+    if (!tags.includes(card.tag)) tags.push(card.tag);
+  }
+  showTags();
+  showDropped();
+}
+
+// ===== 共通タグ表示 =====
+function showTags() {
+  let html = tags.map((tag, i) =>
+    `<span style="display:inline-block;background:#f0f2f5;color:#333;padding:6px 12px;margin:3px;border-radius:20px;font-size:13px;cursor:pointer" onclick="removeTag(${i})">${getLabelByTag(tag)} ×</span>`
+  ).join("");
+  if (selectedStyle) {
+    html += `<span style="display:inline-block;background:#e8d5ff;color:#764ba2;padding:6px 12px;margin:3px;border-radius:20px;font-size:13px;cursor:pointer" onclick="removeStyleAll()">🎨 ${getLabelByTag(selectedStyle)} ×</span>`;
+  }
+  document.getElementById("tagList").innerHTML =
+    html || '<span style="color:#aaa;font-size:13px">タグを選んでください</span>';
+  document.getElementById("styleText").innerText =
+    selectedStyle ? "スタイル: " + getLabelByTag(selectedStyle) : "スタイル: 未選択";
+}
+
+function removeTag(i) {
+  let tag = tags[i];
+  tags.splice(i, 1);
+  document.querySelectorAll(".draggable-tag").forEach(el => {
+    if (el.dataset.tag === tag) el.classList.remove("used");
+  });
+  showTags();
+  showDropped();
+}
+
+function removeStyleAll() {
+  let tag = selectedStyle;
+  selectedStyle = "";
+  document.querySelectorAll(".draggable-tag").forEach(el => {
+    if (el.dataset.tag === tag) el.classList.remove("used");
+  });
+  showTags();
+  showDropped();
+}
+
+// ===== ランダム生成 =====
+function randomGenerate() {
+  tags = [];
+  selectedStyle = "";
+  document.querySelectorAll(".draggable-tag").forEach(el => el.classList.remove("used"));
+
+  let pick = (arr) => arr[Math.floor(Math.random() * arr.length)];
+  let g = pick(allTags.gender); tags.push(g.tag);
+  let h = pick(allTags.hair); tags.push(h.tag);
+  let c = pick(allTags.color); tags.push(c.tag);
+  let f = pick(allTags.face); tags.push(f.tag);
+  if (Math.random() > 0.5) { let a = pick(allTags.attr); tags.push(a.tag); }
+  let s = pick(allTags.style); selectedStyle = s.tag;
+
+  // ドラッグゾーンにも反映
+  tags.forEach(tag => {
+    document.querySelectorAll(".draggable-tag").forEach(el => {
+      if (el.dataset.tag === tag) el.classList.add("used");
+    });
+  });
+  if (selectedStyle) {
+    document.querySelectorAll(".draggable-tag").forEach(el => {
+      if (el.dataset.tag === selectedStyle) el.classList.add("used");
+    });
+  }
+
+  showTags();
+  showDropped();
+}
+
+// ===== リセット =====
+function resetAll() {
+  tags = [];
+  selectedStyle = "";
+  document.querySelectorAll(".draggable-tag").forEach(el => el.classList.remove("used"));
+  showTags();
+  showDropped();
+  document.getElementById("resultCard").style.display = "none";
+  document.getElementById("loading").style.display = "none";
+  document.getElementById("save-btn").style.display = "none";
+}
+
+// ===== 認証 =====
+sb.auth.getSession().then(({ data }) => {
+  if (data.session) { currentUser = data.session.user; updateAuthUI(); }
+});
 sb.auth.onAuthStateChange((event, session) => {
   currentUser = session ? session.user : null;
   updateAuthUI();
@@ -427,10 +1017,7 @@ function updateAuthUI() {
   }
 }
 
-function showModal() {
-  document.getElementById("modal").classList.add("show");
-}
-
+function showModal() { document.getElementById("modal").classList.add("show"); }
 function hideModal() {
   document.getElementById("modal").classList.remove("show");
   document.getElementById("auth-msg").innerText = "";
@@ -440,11 +1027,8 @@ async function login() {
   let email = document.getElementById("email-input").value;
   let password = document.getElementById("password-input").value;
   let { error } = await sb.auth.signInWithPassword({ email, password });
-  if (error) {
-    document.getElementById("auth-msg").innerText = "ログイン失敗: " + error.message;
-  } else {
-    hideModal();
-  }
+  if (error) document.getElementById("auth-msg").innerText = "ログイン失敗: " + error.message;
+  else hideModal();
 }
 
 async function signup() {
@@ -459,91 +1043,33 @@ async function signup() {
   }
 }
 
-async function logout() {
-  await sb.auth.signOut();
-}
+async function logout() { await sb.auth.signOut(); }
 
-function addTag(tag){
-  tags.push(tag);
-  showTags();
-}
-
-function removeTag(index){
-  tags.splice(index,1);
-  showTags();
-}
-
-function showTags(){
-  let html="";
-  for(let i=0;i<tags.length;i++){
-    html += '<span class="tag" onclick="removeTag('+i+')">'
-      + tags[i] + ' ×</span>';
-  }
-  document.getElementById("tagList").innerHTML =
-    html || '<span style="color:#aaa;font-size:13px">タグを選んでください</span>';
-}
-
-function resetTags(){
-  tags=[];
-  style="";
-  showTags();
-  document.getElementById("styleText").innerText="スタイル: 未選択";
-  let btns = document.querySelectorAll(".tag-btn");
-  btns.forEach(b => b.classList.remove("selected"));
-  document.getElementById("resultCard").style.display="none";
-  document.getElementById("loading").style.display="none";
-  document.getElementById("save-btn").style.display="none";
-}
-
-function setStyle(btn, s){
-  style = s;
-  document.getElementById("styleText").innerText = "スタイル: " + style;
-  let btns = document.querySelectorAll(".tag-btn");
-  btns.forEach(b => b.classList.remove("selected"));
-  btn.classList.add("selected");
-}
-
-function saveImage(){
-  let img = document.getElementById("img");
-  let a = document.createElement("a");
-  a.href = img.src;
-  a.download = "icon.jpg";
-  a.click();
-}
-
-async function generate(){
-
-  // ログインチェック
+// ===== 画像生成 =====
+async function generate() {
   if (!currentUser) {
     alert("生成するにはログインが必要です。");
     showModal();
     return;
   }
 
-  // 回数制限チェック（Supabaseで管理）
   let today = new Date().toISOString().split("T")[0];
-
-  let { data, error } = await sb
-    .from("usage")
-    .select("count")
-    .eq("user_id", currentUser.id)
-    .eq("date", today)
-    .single();
+  let { data } = await sb.from("usage").select("count")
+    .eq("user_id", currentUser.id).eq("date", today).single();
 
   let count = data ? data.count : 0;
   let limit = 3;
 
   if (count >= limit) {
-    alert("本日の無料生成回数（" + limit + "回）を超えました。\n有料プランにアップグレードしてください。");
+    alert("本日の無料生成回数（" + limit + "回）を超えました。");
     return;
   }
 
-  if(tags.length === 0 && style === ""){
-    alert("タグまたはスタイルを選択してください");
+  if (tags.length === 0 && !selectedStyle) {
+    alert("タグを選択してください");
     return;
   }
 
-  // 回数を更新
   if (data) {
     await sb.from("usage").update({ count: count + 1 })
       .eq("user_id", currentUser.id).eq("date", today);
@@ -551,34 +1077,41 @@ async function generate(){
     await sb.from("usage").insert({ user_id: currentUser.id, date: today, count: 1 });
   }
 
-  let remaining = limit - (count + 1);
-  document.getElementById("countText").innerText =
-    "本日の残り回数：" + remaining + "回";
+  document.getElementById("countText").innerText = "本日の残り回数：" + (limit - count - 1) + "回";
 
   let prompt = tags.join(", ");
+  let style = selectedStyle || "anime style";
 
-  let url =
-    "https://imagi-api.amekaze-shinogin.workers.dev/?prompt="
-    + encodeURIComponent(prompt)
-    + "&style="
-    + encodeURIComponent(style);
+  let url = "https://imagi-api.amekaze-shinogin.workers.dev/?prompt="
+    + encodeURIComponent(prompt) + "&style=" + encodeURIComponent(style);
 
-  document.getElementById("loading").style.display="block";
-  document.getElementById("resultCard").style.display="none";
+  document.getElementById("loading").style.display = "block";
+  document.getElementById("resultCard").style.display = "none";
 
   let img = document.getElementById("img");
-  img.onload = function(){
-    document.getElementById("loading").style.display="none";
-    document.getElementById("resultCard").style.display="block";
-    document.getElementById("save-btn").style.display="block";
+  img.onload = function() {
+    document.getElementById("loading").style.display = "none";
+    document.getElementById("resultCard").style.display = "block";
+    document.getElementById("save-btn").style.display = "block";
+    img.scrollIntoView({ behavior: "smooth" });
   };
-  img.onerror = function(){
-    document.getElementById("loading").style.display="none";
+  img.onerror = function() {
+    document.getElementById("loading").style.display = "none";
     alert("生成に失敗しました。もう一度お試しください。");
   };
   img.src = url;
 }
 
+function saveImage() {
+  let img = document.getElementById("img");
+  let a = document.createElement("a");
+  a.href = img.src;
+  a.download = "icon.jpg";
+  a.click();
+}
+
+// 初期化
+initDrag();
 </script>
 
 </body>
