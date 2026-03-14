@@ -381,9 +381,10 @@
     <button onclick="login()">ログイン</button>
     <button onclick="signup()">登録</button>
   </div>
-  <div id="userInfo" style="display:none;">
+  <div id="userInfo" style="display:none;align-items:center;gap:8px;">
     <span id="userEmail"></span>
-    <button onclick="logout()" style="margin-left:8px;">ログアウト</button>
+    <button onclick="location.href='history.html'" style="background:rgba(255,255,255,0.25);">📷 履歴</button>
+    <button onclick="logout()">ログアウト</button>
   </div>
 </div>
 
@@ -913,11 +914,19 @@ async function generate() {
   document.getElementById("resultCard").style.display = "none";
 
   const img = document.getElementById("img");
-  img.onload = () => {
+  img.onload = async () => {
     document.getElementById("loading").style.display = "none";
     document.getElementById("resultCard").style.display = "block";
     document.getElementById("save-btn").style.display = "inline-block";
     img.scrollIntoView({behavior:"smooth"});
+
+    // 自動保存（historyテーブルへ）
+    await sb.from("history").insert({
+      user_id: currentUser.id,
+      image_url: url,
+      tags: selected,
+      style: style
+    });
   };
   img.onerror = () => {
     document.getElementById("loading").style.display = "none";
