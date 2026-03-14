@@ -908,31 +908,44 @@ async function generate() {
 
   const tags = Object.values(selected).join(", ");
   const style = selectedStyle || "anime style";
-  const url = "https://imagi-api.amekaze-shinogin.workers.dev/?prompt=" + encodeURIComponent(tags) + "&style=" + encodeURIComponent(style);
+  const workerUrl = "https://imagi-api.amekaze-shinogin.workers.dev/?prompt=" + encodeURIComponent(tags) + "&style=" + encodeURIComponent(style);
 
   document.getElementById("loading").style.display = "block";
   document.getElementById("resultCard").style.display = "none";
 
-  const img = document.getElementById("img");
-  img.onload = async () => {
-    document.getElementById("loading").style.display = "none";
-    document.getElementById("resultCard").style.display = "block";
-    document.getElementById("save-btn").style.display = "inline-block";
-    img.scrollIntoView({behavior:"smooth"});
+  try {
+    // WorkerからJSONでStorageURLを受け取る
+    const res = await fetch(workerUrl);
+    const json = await res.json();
+    const storageUrl = json.url;
 
-    // 自動保存（historyテーブルへ）
-    await sb.from("history").insert({
-      user_id: currentUser.id,
-      image_url: url,
-      tags: selected,
-      style: style
-    });
-  };
-  img.onerror = () => {
+    if (!storageUrl) throw new Error("URLが取得できませんでした");
+
+    const img = document.getElementById("img");
+    img.onload = async () => {
+      document.getElementById("loading").style.display = "none";
+      document.getElementById("resultCard").style.display = "block";
+      document.getElementById("save-btn").style.display = "inline-block";
+      img.scrollIntoView({behavior:"smooth"});
+
+      // 自動保存（Storage URLをhistoryテーブルへ）
+      await sb.from("history").insert({
+        user_id: currentUser.id,
+        image_url: storageUrl,
+        tags: selected,
+        style: style
+      });
+    };
+    img.onerror = () => {
+      document.getElementById("loading").style.display = "none";
+      alert("生成に失敗しました。もう一度お試しください。");
+    };
+    img.src = storageUrl;
+
+  } catch(e) {
     document.getElementById("loading").style.display = "none";
     alert("生成に失敗しました。もう一度お試しください。");
-  };
-  img.src = url;
+  }
 }
 
 function saveImage() {
