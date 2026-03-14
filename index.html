@@ -6,7 +6,6 @@
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <style>
 * { box-sizing: border-box; margin: 0; padding: 0; }
-
 body {
   font-family: 'Helvetica Neue', sans-serif;
   background: #f0f2f5;
@@ -14,228 +13,115 @@ body {
   min-height: 100vh;
   padding-bottom: 40px;
 }
-
 header {
   background: linear-gradient(135deg, #667eea, #764ba2);
-  color: white;
-  padding: 16px 20px;
-  text-align: center;
+  color: white; padding: 16px 20px; text-align: center;
 }
 header h1 { font-size: 22px; margin-bottom: 4px; }
 header p { font-size: 12px; opacity: 0.85; }
 
 #auth-bar {
-  background: white;
-  padding: 8px 15px;
-  text-align: right;
-  font-size: 13px;
-  color: #666;
+  background: white; padding: 8px 15px;
+  text-align: right; font-size: 13px; color: #666;
   box-shadow: 0 1px 4px rgba(0,0,0,0.08);
-  display: flex;
-  align-items: center;
-  justify-content: flex-end;
-  gap: 8px;
+  display: flex; align-items: center; justify-content: flex-end; gap: 8px;
 }
-#auth-bar button {
-  padding: 6px 14px;
-  border: none;
-  border-radius: 6px;
-  cursor: pointer;
-  font-size: 13px;
-}
+#auth-bar button { padding: 6px 14px; border: none; border-radius: 6px; cursor: pointer; font-size: 13px; }
 #login-btn { background: #667eea; color: white; }
 #logout-btn { background: #e44; color: white; display: none; }
 
-/* モーダル */
 #modal {
-  display: none;
-  position: fixed;
-  top: 0; left: 0;
-  width: 100%; height: 100%;
-  background: rgba(0,0,0,0.5);
-  z-index: 200;
-  justify-content: center;
-  align-items: center;
+  display: none; position: fixed; top: 0; left: 0;
+  width: 100%; height: 100%; background: rgba(0,0,0,0.5);
+  z-index: 200; justify-content: center; align-items: center;
 }
 #modal.show { display: flex; }
-.modal-box {
-  background: white;
-  border-radius: 16px;
-  padding: 30px;
-  width: 90%;
-  max-width: 400px;
-}
+.modal-box { background: white; border-radius: 16px; padding: 30px; width: 90%; max-width: 400px; }
 .modal-box h2 { margin-bottom: 20px; text-align: center; }
-.modal-box input {
-  width: 100%; padding: 12px;
-  margin-bottom: 12px;
-  border: 1px solid #ddd;
-  border-radius: 8px;
-  font-size: 15px;
-}
-.modal-box button {
-  width: 100%; padding: 13px;
-  border: none; border-radius: 8px;
-  font-size: 15px; cursor: pointer;
-  margin-bottom: 8px;
-}
+.modal-box input { width: 100%; padding: 12px; margin-bottom: 12px; border: 1px solid #ddd; border-radius: 8px; font-size: 15px; }
+.modal-box button { width: 100%; padding: 13px; border: none; border-radius: 8px; font-size: 15px; cursor: pointer; margin-bottom: 8px; }
 #do-login { background: linear-gradient(135deg, #667eea, #764ba2); color: white; }
 #do-signup { background: #f0f2f5; color: #333; }
 #close-modal { background: white; color: #999; }
 
-.container {
-  max-width: 600px;
-  margin: 0 auto;
-  padding: 15px;
-}
+.container { max-width: 600px; margin: 0 auto; padding: 15px; }
 
-/* モード切替タブ */
 .mode-tabs {
-  display: flex;
-  background: white;
-  border-radius: 12px;
-  padding: 5px;
-  margin-bottom: 15px;
+  display: flex; background: white; border-radius: 12px;
+  padding: 5px; margin-bottom: 15px;
   box-shadow: 0 2px 8px rgba(0,0,0,0.08);
 }
 .mode-tab {
-  flex: 1;
-  padding: 10px;
-  border: none;
-  border-radius: 8px;
-  background: transparent;
-  color: #888;
-  font-size: 14px;
-  cursor: pointer;
-  transition: all 0.2s;
+  flex: 1; padding: 10px; border: none; border-radius: 8px;
+  background: transparent; color: #888; font-size: 14px; cursor: pointer;
 }
-.mode-tab.active {
-  background: linear-gradient(135deg, #667eea, #764ba2);
-  color: white;
-  font-weight: bold;
-}
+.mode-tab.active { background: linear-gradient(135deg, #667eea, #764ba2); color: white; font-weight: bold; }
 
-/* ===== ドラッグ&ドロップモード ===== */
+/* ===== ドラッグ&ドロップ ===== */
 #dragMode { display: block; }
 #swipeMode { display: none; }
 
-.tag-section {
-  background: white;
-  border-radius: 12px;
-  padding: 12px;
-  margin-bottom: 12px;
+.tag-category {
+  background: white; border-radius: 12px;
+  padding: 12px; margin-bottom: 10px;
   box-shadow: 0 2px 8px rgba(0,0,0,0.08);
 }
-.tag-section h3 {
-  font-size: 12px;
-  color: #888;
-  text-transform: uppercase;
-  letter-spacing: 1px;
-  margin-bottom: 8px;
-}
-.tag-source {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 6px;
-}
-.draggable-tag {
-  padding: 8px 14px;
-  background: #f0f2f5;
-  border-radius: 20px;
-  font-size: 13px;
-  color: #333;
-  cursor: grab;
-  border: 1.5px solid #ddd;
-  user-select: none;
-  transition: all 0.2s;
-  touch-action: none;
-}
-.draggable-tag:hover {
-  border-color: #764ba2;
-  color: #764ba2;
-  background: #f3eeff;
-}
-.draggable-tag.dragging {
-  opacity: 0.5;
-  cursor: grabbing;
-}
-.draggable-tag.used {
-  opacity: 0.3;
-  pointer-events: none;
-}
+.tag-category h3 { font-size: 12px; color: #888; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 8px; }
 
-/* ドロップゾーン */
-.drop-zone {
-  background: white;
-  border-radius: 12px;
-  padding: 15px;
-  margin-bottom: 12px;
-  box-shadow: 0 2px 8px rgba(0,0,0,0.08);
-  min-height: 80px;
-  border: 2px dashed #ddd;
-  transition: all 0.2s;
+.tag-source { display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 8px; }
+
+.draggable-tag {
+  padding: 8px 14px; background: #f0f2f5;
+  border-radius: 20px; font-size: 13px; color: #333;
+  cursor: grab; border: 1.5px solid #ddd; user-select: none;
+  touch-action: none; transition: all 0.2s;
 }
-.drop-zone.drag-over {
-  border-color: #764ba2;
-  background: #f3eeff;
+.draggable-tag:hover { border-color: #764ba2; color: #764ba2; background: #f3eeff; }
+.draggable-tag.used { opacity: 0.3; pointer-events: none; }
+
+/* ドロップゾーン：カテゴリー直下 */
+.drop-zone-inline {
+  min-height: 44px; border: 2px dashed #ddd;
+  border-radius: 10px; padding: 8px;
+  display: flex; flex-wrap: wrap; gap: 6px;
+  transition: all 0.2s; align-items: center;
+  background: #fafafa;
 }
-.drop-zone h3 {
-  font-size: 12px;
-  color: #888;
-  text-transform: uppercase;
-  letter-spacing: 1px;
-  margin-bottom: 8px;
-}
-.dropped-tags {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 6px;
-  min-height: 36px;
-}
+.drop-zone-inline.drag-over { border-color: #764ba2; background: #f3eeff; }
+.drop-hint-inline { color: #ccc; font-size: 12px; }
+
 .dropped-tag {
-  padding: 7px 12px;
+  padding: 6px 12px;
   background: linear-gradient(135deg, #667eea, #764ba2);
-  color: white;
-  border-radius: 20px;
-  font-size: 13px;
-  cursor: pointer;
-  display: flex;
-  align-items: center;
-  gap: 6px;
+  color: white; border-radius: 20px; font-size: 13px;
+  cursor: pointer; display: flex; align-items: center; gap: 4px;
 }
 .dropped-tag:hover { opacity: 0.85; }
-.drop-hint {
-  color: #aaa;
-  font-size: 13px;
-  text-align: center;
-  padding: 10px 0;
-  width: 100%;
-}
+.dropped-tag.style-tag { background: linear-gradient(135deg, #ff9800, #ff5722); }
 
 /* ===== スワイプモード ===== */
-.swipe-container {
-  text-align: center;
+.swipe-cat-tabs {
+  display: flex; gap: 6px; overflow-x: auto;
+  padding-bottom: 5px; margin-bottom: 12px; scrollbar-width: none;
 }
-.card-stack {
-  position: relative;
-  height: 220px;
-  width: 280px;
-  margin: 0 auto 15px;
+.swipe-cat-tabs::-webkit-scrollbar { display: none; }
+.swipe-cat-tab {
+  padding: 6px 12px; border-radius: 20px;
+  border: 1.5px solid #ddd; background: white;
+  color: #666; font-size: 12px; cursor: pointer;
+  white-space: nowrap; flex-shrink: 0;
 }
+.swipe-cat-tab.active { background: linear-gradient(135deg, #667eea, #764ba2); color: white; border-color: transparent; }
+
+.swipe-container { text-align: center; }
+.card-stack { position: relative; height: 220px; width: 280px; margin: 0 auto 15px; }
 .swipe-card {
-  position: absolute;
-  width: 280px;
-  height: 200px;
-  background: white;
-  border-radius: 20px;
+  position: absolute; width: 280px; height: 200px;
+  background: white; border-radius: 20px;
   box-shadow: 0 8px 30px rgba(0,0,0,0.12);
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  cursor: grab;
-  user-select: none;
-  top: 0; left: 0;
+  display: flex; flex-direction: column;
+  align-items: center; justify-content: center;
+  cursor: grab; user-select: none; top: 0; left: 0;
 }
 .swipe-card.top { z-index: 2; }
 .swipe-card:nth-child(2) { transform: scale(0.95) translateY(8px); z-index: 1; }
@@ -245,167 +131,43 @@ header p { font-size: 12px; opacity: 0.85; }
 .card-sublabel { font-size: 12px; color: #aaa; margin-top: 4px; }
 .like-overlay {
   position: absolute; top: 20px; left: 20px;
-  background: #4CAF50; color: white;
-  font-size: 18px; font-weight: bold;
-  padding: 6px 14px; border-radius: 8px;
-  opacity: 0; transform: rotate(-15deg);
-  pointer-events: none;
+  background: #4CAF50; color: white; font-size: 18px; font-weight: bold;
+  padding: 6px 14px; border-radius: 8px; opacity: 0; transform: rotate(-15deg); pointer-events: none;
 }
 .nope-overlay {
   position: absolute; top: 20px; right: 20px;
-  background: #e44; color: white;
-  font-size: 18px; font-weight: bold;
-  padding: 6px 14px; border-radius: 8px;
-  opacity: 0; transform: rotate(15deg);
-  pointer-events: none;
+  background: #e44; color: white; font-size: 18px; font-weight: bold;
+  padding: 6px 14px; border-radius: 8px; opacity: 0; transform: rotate(15deg); pointer-events: none;
 }
-.swipe-hint {
-  display: flex;
-  justify-content: space-between;
-  padding: 0 30px;
-  margin-bottom: 12px;
-  font-size: 13px;
-  font-weight: bold;
-}
+.swipe-hint { display: flex; justify-content: space-between; padding: 0 30px; margin-bottom: 12px; font-size: 13px; font-weight: bold; }
 .hint-left { color: #e44; }
 .hint-right { color: #4CAF50; }
-.swipe-btns {
-  display: flex;
-  justify-content: center;
-  gap: 25px;
-  margin-bottom: 15px;
-}
-.btn-skip {
-  width: 58px; height: 58px;
-  border-radius: 50%;
-  border: 2px solid #e44;
-  background: white; color: #e44;
-  font-size: 22px; cursor: pointer;
-  box-shadow: 0 4px 12px rgba(0,0,0,0.1);
-}
-.btn-add {
-  width: 58px; height: 58px;
-  border-radius: 50%; border: none;
-  background: linear-gradient(135deg, #667eea, #764ba2);
-  color: white; font-size: 22px; cursor: pointer;
-  box-shadow: 0 4px 12px rgba(102,126,234,0.4);
-}
-.swipe-cat-tabs {
-  display: flex;
-  gap: 6px;
-  overflow-x: auto;
-  padding-bottom: 5px;
-  margin-bottom: 12px;
-  scrollbar-width: none;
-}
-.swipe-cat-tabs::-webkit-scrollbar { display: none; }
-.swipe-cat-tab {
-  padding: 6px 12px;
-  border-radius: 20px;
-  border: 1.5px solid #ddd;
-  background: white;
-  color: #666;
-  font-size: 12px;
-  cursor: pointer;
-  white-space: nowrap;
-  flex-shrink: 0;
-}
-.swipe-cat-tab.active {
-  background: linear-gradient(135deg, #667eea, #764ba2);
-  color: white;
-  border-color: transparent;
-}
+.swipe-btns { display: flex; justify-content: center; gap: 25px; margin-bottom: 15px; }
+.btn-skip { width: 58px; height: 58px; border-radius: 50%; border: 2px solid #e44; background: white; color: #e44; font-size: 22px; cursor: pointer; box-shadow: 0 4px 12px rgba(0,0,0,0.1); }
+.btn-add { width: 58px; height: 58px; border-radius: 50%; border: none; background: linear-gradient(135deg, #667eea, #764ba2); color: white; font-size: 22px; cursor: pointer; box-shadow: 0 4px 12px rgba(102,126,234,0.4); }
 
 /* 共通下部 */
-.bottom-section {
-  background: white;
-  border-radius: 12px;
-  padding: 15px;
-  margin-bottom: 12px;
-  box-shadow: 0 2px 8px rgba(0,0,0,0.08);
-}
-.bottom-section h3 {
-  font-size: 12px; color: #888;
-  text-transform: uppercase;
-  letter-spacing: 1px;
-  margin-bottom: 8px;
-}
+.bottom-section { background: white; border-radius: 12px; padding: 15px; margin-bottom: 12px; box-shadow: 0 2px 8px rgba(0,0,0,0.08); }
+.bottom-section h3 { font-size: 12px; color: #888; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 8px; }
 
-#countText {
-  text-align: center;
-  color: #764ba2;
-  font-weight: bold;
-  font-size: 14px;
-  margin-bottom: 10px;
-}
+#countText { text-align: center; color: #764ba2; font-weight: bold; font-size: 14px; margin-bottom: 10px; }
 
-.action-row {
-  display: flex;
-  gap: 8px;
-  margin-bottom: 10px;
-}
-#reset-btn {
-  flex: 1; padding: 13px;
-  background: #f0f2f5; color: #666;
-  border: none; border-radius: 10px;
-  font-size: 14px; cursor: pointer;
-}
-#random-btn {
-  flex: 1; padding: 13px;
-  background: #ff9800; color: white;
-  border: none; border-radius: 10px;
-  font-size: 14px; cursor: pointer;
-}
-#generate-btn {
-  flex: 2; padding: 13px;
-  background: linear-gradient(135deg, #667eea, #764ba2);
-  color: white; border: none;
-  border-radius: 10px;
-  font-size: 14px; font-weight: bold;
-  cursor: pointer;
-}
+.action-row { display: flex; gap: 8px; margin-bottom: 10px; }
+#reset-btn { flex: 1; padding: 13px; background: #f0f2f5; color: #666; border: none; border-radius: 10px; font-size: 14px; cursor: pointer; }
+#random-btn { flex: 1; padding: 13px; background: #ff9800; color: white; border: none; border-radius: 10px; font-size: 14px; cursor: pointer; }
+#generate-btn { flex: 2; padding: 13px; background: linear-gradient(135deg, #667eea, #764ba2); color: white; border: none; border-radius: 10px; font-size: 14px; font-weight: bold; cursor: pointer; }
 
-#loading {
-  display: none; text-align: center;
-  padding: 30px; color: #888; font-size: 15px;
-}
-.result-card {
-  display: none;
-  background: white;
-  border-radius: 12px;
-  padding: 20px;
-  text-align: center;
-  box-shadow: 0 2px 8px rgba(0,0,0,0.08);
-  margin-bottom: 15px;
-}
-#img {
-  width: 256px; height: 256px;
-  border-radius: 12px;
-  display: block;
-  margin: 0 auto 15px;
-}
-#save-btn {
-  display: none;
-  padding: 12px 30px;
-  background: #4CAF50; color: white;
-  border: none; border-radius: 10px;
-  font-size: 15px; cursor: pointer;
-  width: 100%;
-}
+#loading { display: none; text-align: center; padding: 30px; color: #888; font-size: 15px; }
+.result-card { display: none; background: white; border-radius: 12px; padding: 20px; text-align: center; box-shadow: 0 2px 8px rgba(0,0,0,0.08); margin-bottom: 15px; }
+#img { width: 256px; height: 256px; border-radius: 12px; display: block; margin: 0 auto 15px; }
+#save-btn { display: none; padding: 12px 30px; background: #4CAF50; color: white; border: none; border-radius: 10px; font-size: 15px; cursor: pointer; width: 100%; }
 
-/* ドラッグ中のゴースト */
 #drag-ghost {
-  position: fixed;
-  pointer-events: none;
-  z-index: 999;
-  padding: 8px 14px;
-  background: linear-gradient(135deg, #667eea, #764ba2);
-  color: white;
-  border-radius: 20px;
-  font-size: 13px;
-  opacity: 0.9;
-  display: none;
-  transform: translate(-50%, -50%);
+  position: fixed; pointer-events: none; z-index: 999;
+  padding: 8px 14px; background: linear-gradient(135deg, #667eea, #764ba2);
+  color: white; border-radius: 20px; font-size: 13px;
+  opacity: 0.9; display: none; transform: translate(-50%, -50%);
+  white-space: nowrap;
 }
 </style>
 </head>
@@ -434,12 +196,10 @@ header p { font-size: 12px; opacity: 0.85; }
   </div>
 </div>
 
-<!-- ドラッグ中のゴースト -->
 <div id="drag-ghost"></div>
 
 <div class="container">
 
-  <!-- モード切替 -->
   <div class="mode-tabs">
     <button class="mode-tab active" onclick="switchMode('drag')">🧩 ドラッグ&ドロップ</button>
     <button class="mode-tab" onclick="switchMode('swipe')">👆 スワイプ</button>
@@ -448,99 +208,115 @@ header p { font-size: 12px; opacity: 0.85; }
   <!-- ドラッグ&ドロップモード -->
   <div id="dragMode">
 
-    <div class="tag-section">
-      <h3>👤 性別</h3>
-      <div class="tag-source" id="src-gender">
-        <div class="draggable-tag" data-tag="boy">男性</div>
-        <div class="draggable-tag" data-tag="girl">女性</div>
-        <div class="draggable-tag" data-tag="neutral">中性</div>
+    <div class="tag-category">
+      <h3>👤 性別（1つだけ）</h3>
+      <div class="tag-source">
+        <div class="draggable-tag" data-tag="boy" data-cat="gender">男性</div>
+        <div class="draggable-tag" data-tag="girl" data-cat="gender">女性</div>
+        <div class="draggable-tag" data-tag="neutral" data-cat="gender">中性</div>
+      </div>
+      <div class="drop-zone-inline" data-cat="gender" id="drop-gender">
+        <span class="drop-hint-inline">↑ タグをここにドロップ</span>
       </div>
     </div>
 
-    <div class="tag-section">
-      <h3>💇 髪型</h3>
-      <div class="tag-source" id="src-hair">
-        <div class="draggable-tag" data-tag="short hair">ショート</div>
-        <div class="draggable-tag" data-tag="long hair">ロング</div>
-        <div class="draggable-tag" data-tag="twin tails">ツインテール</div>
-        <div class="draggable-tag" data-tag="ponytail">ポニーテール</div>
-        <div class="draggable-tag" data-tag="bob cut">ボブ</div>
-        <div class="draggable-tag" data-tag="wavy hair">ウェーブ</div>
+    <div class="tag-category">
+      <h3>💇 髪型（1つだけ）</h3>
+      <div class="tag-source">
+        <div class="draggable-tag" data-tag="short hair" data-cat="hair">ショート</div>
+        <div class="draggable-tag" data-tag="long hair" data-cat="hair">ロング</div>
+        <div class="draggable-tag" data-tag="twin tails" data-cat="hair">ツインテール</div>
+        <div class="draggable-tag" data-tag="ponytail" data-cat="hair">ポニーテール</div>
+        <div class="draggable-tag" data-tag="bob cut" data-cat="hair">ボブ</div>
+        <div class="draggable-tag" data-tag="wavy hair" data-cat="hair">ウェーブ</div>
+      </div>
+      <div class="drop-zone-inline" data-cat="hair" id="drop-hair">
+        <span class="drop-hint-inline">↑ タグをここにドロップ</span>
       </div>
     </div>
 
-    <div class="tag-section">
-      <h3>🎨 髪色</h3>
-      <div class="tag-source" id="src-color">
-        <div class="draggable-tag" data-tag="blonde hair">金髪</div>
-        <div class="draggable-tag" data-tag="black hair">黒髪</div>
-        <div class="draggable-tag" data-tag="brown hair">茶髪</div>
-        <div class="draggable-tag" data-tag="white hair">白髪</div>
-        <div class="draggable-tag" data-tag="pink hair">ピンク</div>
-        <div class="draggable-tag" data-tag="blue hair">ブルー</div>
+    <div class="tag-category">
+      <h3>🎨 髪色（1つだけ）</h3>
+      <div class="tag-source">
+        <div class="draggable-tag" data-tag="blonde hair" data-cat="color">金髪</div>
+        <div class="draggable-tag" data-tag="black hair" data-cat="color">黒髪</div>
+        <div class="draggable-tag" data-tag="brown hair" data-cat="color">茶髪</div>
+        <div class="draggable-tag" data-tag="white hair" data-cat="color">白髪</div>
+        <div class="draggable-tag" data-tag="pink hair" data-cat="color">ピンク</div>
+        <div class="draggable-tag" data-tag="blue hair" data-cat="color">ブルー</div>
+      </div>
+      <div class="drop-zone-inline" data-cat="color" id="drop-color">
+        <span class="drop-hint-inline">↑ タグをここにドロップ</span>
       </div>
     </div>
 
-    <div class="tag-section">
-      <h3>😊 表情</h3>
-      <div class="tag-source" id="src-face">
-        <div class="draggable-tag" data-tag="smile">笑顔</div>
-        <div class="draggable-tag" data-tag="serious">真剣</div>
-        <div class="draggable-tag" data-tag="wink">ウィンク</div>
-        <div class="draggable-tag" data-tag="surprised">驚き</div>
-        <div class="draggable-tag" data-tag="cool expression">クール</div>
+    <div class="tag-category">
+      <h3>😊 表情（1つだけ）</h3>
+      <div class="tag-source">
+        <div class="draggable-tag" data-tag="smile" data-cat="face">笑顔</div>
+        <div class="draggable-tag" data-tag="serious" data-cat="face">真剣</div>
+        <div class="draggable-tag" data-tag="wink" data-cat="face">ウィンク</div>
+        <div class="draggable-tag" data-tag="surprised" data-cat="face">驚き</div>
+        <div class="draggable-tag" data-tag="cool expression" data-cat="face">クール</div>
+      </div>
+      <div class="drop-zone-inline" data-cat="face" id="drop-face">
+        <span class="drop-hint-inline">↑ タグをここにドロップ</span>
       </div>
     </div>
 
-    <div class="tag-section">
-      <h3>✨ 属性</h3>
-      <div class="tag-source" id="src-attr">
-        <div class="draggable-tag" data-tag="cat ears">猫耳</div>
-        <div class="draggable-tag" data-tag="fox ears">狐耳</div>
-        <div class="draggable-tag" data-tag="angel wings">天使</div>
-        <div class="draggable-tag" data-tag="demon horns">悪魔</div>
-        <div class="draggable-tag" data-tag="elf ears">エルフ</div>
+    <div class="tag-category">
+      <h3>✨ 属性（1つだけ）</h3>
+      <div class="tag-source">
+        <div class="draggable-tag" data-tag="cat ears" data-cat="attr">猫耳</div>
+        <div class="draggable-tag" data-tag="fox ears" data-cat="attr">狐耳</div>
+        <div class="draggable-tag" data-tag="angel wings" data-cat="attr">天使</div>
+        <div class="draggable-tag" data-tag="demon horns" data-cat="attr">悪魔</div>
+        <div class="draggable-tag" data-tag="elf ears" data-cat="attr">エルフ</div>
+      </div>
+      <div class="drop-zone-inline" data-cat="attr" id="drop-attr">
+        <span class="drop-hint-inline">↑ タグをここにドロップ</span>
       </div>
     </div>
 
-    <div class="tag-section">
-      <h3>👗 服装</h3>
-      <div class="tag-source" id="src-outfit">
-        <div class="draggable-tag" data-tag="school uniform">制服</div>
-        <div class="draggable-tag" data-tag="casual clothes">カジュアル</div>
-        <div class="draggable-tag" data-tag="suit">スーツ</div>
-        <div class="draggable-tag" data-tag="kimono">着物</div>
-        <div class="draggable-tag" data-tag="hoodie">パーカー</div>
+    <div class="tag-category">
+      <h3>👗 服装（1つだけ）</h3>
+      <div class="tag-source">
+        <div class="draggable-tag" data-tag="school uniform" data-cat="outfit">制服</div>
+        <div class="draggable-tag" data-tag="casual clothes" data-cat="outfit">カジュアル</div>
+        <div class="draggable-tag" data-tag="suit" data-cat="outfit">スーツ</div>
+        <div class="draggable-tag" data-tag="kimono" data-cat="outfit">着物</div>
+        <div class="draggable-tag" data-tag="hoodie" data-cat="outfit">パーカー</div>
+      </div>
+      <div class="drop-zone-inline" data-cat="outfit" id="drop-outfit">
+        <span class="drop-hint-inline">↑ タグをここにドロップ</span>
       </div>
     </div>
 
-    <div class="tag-section">
-      <h3>👓 アクセサリー</h3>
-      <div class="tag-source" id="src-acc">
-        <div class="draggable-tag" data-tag="glasses">メガネ</div>
-        <div class="draggable-tag" data-tag="hat">帽子</div>
-        <div class="draggable-tag" data-tag="earrings">ピアス</div>
-        <div class="draggable-tag" data-tag="ribbon">リボン</div>
-        <div class="draggable-tag" data-tag="mask">マスク</div>
+    <div class="tag-category">
+      <h3>👓 アクセサリー（1つだけ）</h3>
+      <div class="tag-source">
+        <div class="draggable-tag" data-tag="glasses" data-cat="acc">メガネ</div>
+        <div class="draggable-tag" data-tag="hat" data-cat="acc">帽子</div>
+        <div class="draggable-tag" data-tag="earrings" data-cat="acc">ピアス</div>
+        <div class="draggable-tag" data-tag="ribbon" data-cat="acc">リボン</div>
+        <div class="draggable-tag" data-tag="mask" data-cat="acc">マスク</div>
+      </div>
+      <div class="drop-zone-inline" data-cat="acc" id="drop-acc">
+        <span class="drop-hint-inline">↑ タグをここにドロップ</span>
       </div>
     </div>
 
-    <div class="tag-section">
-      <h3>🎨 スタイル</h3>
-      <div class="tag-source" id="src-style">
-        <div class="draggable-tag" data-tag="cute icon" data-style="true">かわいい</div>
-        <div class="draggable-tag" data-tag="simple flat icon" data-style="true">シンプル</div>
-        <div class="draggable-tag" data-tag="anime style" data-style="true">アニメ</div>
-        <div class="draggable-tag" data-tag="business avatar" data-style="true">ビジネス</div>
-        <div class="draggable-tag" data-tag="pixel art" data-style="true">ドット絵</div>
+    <div class="tag-category">
+      <h3>🎨 スタイル（1つだけ）</h3>
+      <div class="tag-source">
+        <div class="draggable-tag" data-tag="cute icon" data-cat="style" data-style="true">かわいい</div>
+        <div class="draggable-tag" data-tag="simple flat icon" data-cat="style" data-style="true">シンプル</div>
+        <div class="draggable-tag" data-tag="anime style" data-cat="style" data-style="true">アニメ</div>
+        <div class="draggable-tag" data-tag="business avatar" data-cat="style" data-style="true">ビジネス</div>
+        <div class="draggable-tag" data-tag="pixel art" data-cat="style" data-style="true">ドット絵</div>
       </div>
-    </div>
-
-    <!-- ドロップゾーン -->
-    <div class="drop-zone" id="dropZone">
-      <h3>🎯 ここにタグをドロップ</h3>
-      <div class="dropped-tags" id="droppedTags">
-        <span class="drop-hint">タグをここにドラッグしてね</span>
+      <div class="drop-zone-inline" data-cat="style" id="drop-style">
+        <span class="drop-hint-inline">↑ タグをここにドロップ</span>
       </div>
     </div>
 
@@ -562,11 +338,10 @@ header p { font-size: 12px; opacity: 0.85; }
     </div>
   </div>
 
-  <!-- 選択済みタグ表示 -->
+  <!-- 選択済みタグ -->
   <div class="bottom-section">
     <h3>選択中タグ（タップで削除）</h3>
     <div id="tagList"><span style="color:#aaa;font-size:13px">タグを選んでください</span></div>
-    <p style="margin-top:6px;font-size:12px;color:#888" id="styleText">スタイル: 未選択</p>
   </div>
 
   <p id="countText">本日の残り回数：3回</p>
@@ -592,12 +367,14 @@ const SUPABASE_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZ
 const sb = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
 let currentUser = null;
-let tags = [];
+// カテゴリーごとに1つだけ選択
+let selected = {}; // { gender: "boy", hair: "short hair", ... }
 let selectedStyle = "";
 let dragTag = null;
+let dragCat = null;
 let dragEl = null;
+let dragIsStyle = false;
 
-// 全タグデータ
 const allTags = {
   gender: [{tag:"boy",label:"男性"},{tag:"girl",label:"女性"},{tag:"neutral",label:"中性"}],
   hair: [{tag:"short hair",label:"ショート"},{tag:"long hair",label:"ロング"},{tag:"twin tails",label:"ツインテール"},{tag:"ponytail",label:"ポニーテール"},{tag:"bob cut",label:"ボブ"},{tag:"wavy hair",label:"ウェーブ"}],
@@ -609,7 +386,7 @@ const allTags = {
   style: [{tag:"cute icon",label:"かわいい",isStyle:true},{tag:"simple flat icon",label:"シンプル",isStyle:true},{tag:"anime style",label:"アニメ",isStyle:true},{tag:"business avatar",label:"ビジネス",isStyle:true},{tag:"pixel art",label:"ドット絵",isStyle:true}]
 };
 
-const categoryLabels = {
+const catLabels = {
   gender:"👤 性別", hair:"💇 髪型", color:"🎨 髪色",
   face:"😊 表情", attr:"✨ 属性", outfit:"👗 服装",
   acc:"👓 アクセ", style:"🎨 スタイル"
@@ -620,7 +397,7 @@ function switchMode(mode) {
   document.getElementById("dragMode").style.display = mode === "drag" ? "block" : "none";
   document.getElementById("swipeMode").style.display = mode === "swipe" ? "block" : "none";
   document.querySelectorAll(".mode-tab").forEach((t, i) => {
-    t.classList.toggle("active", (mode === "drag" && i === 0) || (mode === "swipe" && i === 1));
+    t.classList.toggle("active", (mode==="drag"&&i===0)||(mode==="swipe"&&i===1));
   });
   if (mode === "swipe") initSwipe();
 }
@@ -628,47 +405,45 @@ function switchMode(mode) {
 // ===== ドラッグ&ドロップ =====
 function initDrag() {
   document.querySelectorAll(".draggable-tag").forEach(el => {
-    // マウス
     el.addEventListener("mousedown", e => startDrag(e, el));
-    // タッチ
     el.addEventListener("touchstart", e => startDragTouch(e, el), { passive: false });
   });
 
-  let dropZone = document.getElementById("dropZone");
-  dropZone.addEventListener("dragover", e => { e.preventDefault(); dropZone.classList.add("drag-over"); });
-  dropZone.addEventListener("dragleave", () => dropZone.classList.remove("drag-over"));
-  dropZone.addEventListener("drop", e => { e.preventDefault(); dropZone.classList.remove("drag-over"); if(dragTag) dropTag(); });
+  document.querySelectorAll(".drop-zone-inline").forEach(zone => {
+    zone.addEventListener("dragover", e => { e.preventDefault(); zone.classList.add("drag-over"); });
+    zone.addEventListener("dragleave", () => zone.classList.remove("drag-over"));
+    zone.addEventListener("drop", e => { e.preventDefault(); zone.classList.remove("drag-over"); dropTag(zone.dataset.cat); });
+  });
 }
 
 let ghostEl = null;
 
 function startDrag(e, el) {
   dragTag = el.dataset.tag;
+  dragCat = el.dataset.cat;
+  dragIsStyle = el.dataset.style === "true";
   dragEl = el;
   ghostEl = document.getElementById("drag-ghost");
   ghostEl.innerText = el.innerText;
   ghostEl.style.display = "block";
-  ghostEl.style.left = e.clientX + "px";
-  ghostEl.style.top = e.clientY + "px";
-
+  moveGhost(e.clientX, e.clientY);
   document.addEventListener("mousemove", onMouseMove);
   document.addEventListener("mouseup", onMouseUp);
 }
 
+function moveGhost(x, y) {
+  ghostEl.style.left = x + "px";
+  ghostEl.style.top = y + "px";
+}
+
 function onMouseMove(e) {
   if (!ghostEl) return;
-  ghostEl.style.left = e.clientX + "px";
-  ghostEl.style.top = e.clientY + "px";
-
-  // ドロップゾーンのハイライト
-  let dropZone = document.getElementById("dropZone");
-  let rect = dropZone.getBoundingClientRect();
-  if (e.clientX >= rect.left && e.clientX <= rect.right &&
-      e.clientY >= rect.top && e.clientY <= rect.bottom) {
-    dropZone.classList.add("drag-over");
-  } else {
-    dropZone.classList.remove("drag-over");
-  }
+  moveGhost(e.clientX, e.clientY);
+  document.querySelectorAll(".drop-zone-inline").forEach(zone => {
+    let rect = zone.getBoundingClientRect();
+    let over = e.clientX >= rect.left && e.clientX <= rect.right && e.clientY >= rect.top && e.clientY <= rect.bottom;
+    zone.classList.toggle("drag-over", over);
+  });
 }
 
 function onMouseUp(e) {
@@ -676,26 +451,25 @@ function onMouseUp(e) {
   ghostEl.style.display = "none";
   document.removeEventListener("mousemove", onMouseMove);
   document.removeEventListener("mouseup", onMouseUp);
-
-  let dropZone = document.getElementById("dropZone");
-  let rect = dropZone.getBoundingClientRect();
-  if (e.clientX >= rect.left && e.clientX <= rect.right &&
-      e.clientY >= rect.top && e.clientY <= rect.bottom) {
-    dropZone.classList.remove("drag-over");
-    dropTag();
-  }
-  dragTag = null;
-  dragEl = null;
+  document.querySelectorAll(".drop-zone-inline").forEach(zone => {
+    let rect = zone.getBoundingClientRect();
+    if (e.clientX >= rect.left && e.clientX <= rect.right && e.clientY >= rect.top && e.clientY <= rect.bottom) {
+      zone.classList.remove("drag-over");
+      dropTag(zone.dataset.cat);
+    }
+  });
+  dragTag = null; dragCat = null; dragEl = null;
 }
 
 function startDragTouch(e, el) {
   e.preventDefault();
   dragTag = el.dataset.tag;
+  dragCat = el.dataset.cat;
+  dragIsStyle = el.dataset.style === "true";
   dragEl = el;
   ghostEl = document.getElementById("drag-ghost");
   ghostEl.innerText = el.innerText;
   ghostEl.style.display = "block";
-
   document.addEventListener("touchmove", onTouchMove, { passive: false });
   document.addEventListener("touchend", onTouchEnd);
 }
@@ -703,91 +477,87 @@ function startDragTouch(e, el) {
 function onTouchMove(e) {
   e.preventDefault();
   let t = e.touches[0];
-  ghostEl.style.left = t.clientX + "px";
-  ghostEl.style.top = t.clientY + "px";
-
-  let dropZone = document.getElementById("dropZone");
-  let rect = dropZone.getBoundingClientRect();
-  if (t.clientX >= rect.left && t.clientX <= rect.right &&
-      t.clientY >= rect.top && t.clientY <= rect.bottom) {
-    dropZone.classList.add("drag-over");
-  } else {
-    dropZone.classList.remove("drag-over");
-  }
+  moveGhost(t.clientX, t.clientY);
+  document.querySelectorAll(".drop-zone-inline").forEach(zone => {
+    let rect = zone.getBoundingClientRect();
+    let over = t.clientX >= rect.left && t.clientX <= rect.right && t.clientY >= rect.top && t.clientY <= rect.bottom;
+    zone.classList.toggle("drag-over", over);
+  });
 }
 
 function onTouchEnd(e) {
   ghostEl.style.display = "none";
   document.removeEventListener("touchmove", onTouchMove);
   document.removeEventListener("touchend", onTouchEnd);
-
   let t = e.changedTouches[0];
-  let dropZone = document.getElementById("dropZone");
-  let rect = dropZone.getBoundingClientRect();
-  if (t.clientX >= rect.left && t.clientX <= rect.right &&
-      t.clientY >= rect.top && t.clientY <= rect.bottom) {
-    dropZone.classList.remove("drag-over");
-    dropTag();
-  }
-  dragTag = null;
-  dragEl = null;
+  document.querySelectorAll(".drop-zone-inline").forEach(zone => {
+    let rect = zone.getBoundingClientRect();
+    if (t.clientX >= rect.left && t.clientX <= rect.right && t.clientY >= rect.top && t.clientY <= rect.bottom) {
+      zone.classList.remove("drag-over");
+      dropTag(zone.dataset.cat);
+    }
+  });
+  dragTag = null; dragCat = null; dragEl = null;
 }
 
-function dropTag() {
-  if (!dragTag) return;
-  let isStyle = dragEl && dragEl.dataset.style === "true";
+function dropTag(zoneCat) {
+  if (!dragTag || !dragCat) return;
 
-  if (isStyle) {
+  // 同じカテゴリーにドロップしないとダメ
+  if (dragCat !== zoneCat) {
+    alert("このタグは「" + catLabels[zoneCat] + "」には使えません。同じカテゴリーのドロップゾーンに入れてください。");
+    return;
+  }
+
+  // 既存の選択を解除
+  if (dragIsStyle) {
+    if (selectedStyle) {
+      // 前のスタイルタグを戻す
+      document.querySelectorAll(".draggable-tag").forEach(el => {
+        if (el.dataset.tag === selectedStyle) el.classList.remove("used");
+      });
+    }
     selectedStyle = dragTag;
   } else {
-    if (!tags.includes(dragTag)) tags.push(dragTag);
+    if (selected[dragCat]) {
+      document.querySelectorAll(".draggable-tag").forEach(el => {
+        if (el.dataset.tag === selected[dragCat]) el.classList.remove("used");
+      });
+    }
+    selected[dragCat] = dragTag;
   }
 
   if (dragEl) dragEl.classList.add("used");
+  updateDropZone(dragCat);
   showTags();
-  showDropped();
 }
 
-function showDropped() {
-  let html = "";
-  tags.forEach((tag, i) => {
-    let label = getLabelByTag(tag);
-    html += `<span class="dropped-tag" onclick="removeDropped(${i}, '${tag}')">${label} ×</span>`;
-  });
-  if (selectedStyle) {
-    let label = getLabelByTag(selectedStyle);
-    html += `<span class="dropped-tag" style="background:linear-gradient(135deg,#ff9800,#ff5722)" onclick="removeStyle()">🎨 ${label} ×</span>`;
+function updateDropZone(cat) {
+  let zone = document.getElementById("drop-" + cat);
+  if (!zone) return;
+
+  let tag = cat === "style" ? selectedStyle : selected[cat];
+  if (!tag) {
+    zone.innerHTML = '<span class="drop-hint-inline">↑ タグをここにドロップ</span>';
+    return;
   }
-  document.getElementById("droppedTags").innerHTML =
-    html || '<span class="drop-hint">タグをここにドラッグしてね</span>';
+
+  let label = getLabelByTag(tag);
+  let isStyle = cat === "style";
+  zone.innerHTML = `<span class="dropped-tag ${isStyle ? 'style-tag' : ''}" onclick="removeFromZone('${cat}','${tag}')">${label} ×</span>`;
 }
 
-function removeDropped(i, tag) {
-  tags.splice(i, 1);
-  // タグを元に戻す
+function removeFromZone(cat, tag) {
   document.querySelectorAll(".draggable-tag").forEach(el => {
     if (el.dataset.tag === tag) el.classList.remove("used");
   });
-  showTags();
-  showDropped();
-}
-
-function removeStyle() {
-  let tag = selectedStyle;
-  selectedStyle = "";
-  document.querySelectorAll(".draggable-tag").forEach(el => {
-    if (el.dataset.tag === tag) el.classList.remove("used");
-  });
-  showTags();
-  showDropped();
-}
-
-function getLabelByTag(tag) {
-  for (let cat in allTags) {
-    let found = allTags[cat].find(t => t.tag === tag);
-    if (found) return found.label;
+  if (cat === "style") {
+    selectedStyle = "";
+  } else {
+    delete selected[cat];
   }
-  return tag;
+  updateDropZone(cat);
+  showTags();
 }
 
 // ===== スワイプモード =====
@@ -797,7 +567,7 @@ let swipeCardIndex = 0;
 
 function initSwipe() {
   let tabHtml = swipeCatKeys.map((key, i) =>
-    `<button class="swipe-cat-tab ${i===0?'active':''}" onclick="loadSwipeCat(${i})">${categoryLabels[key]}</button>`
+    `<button class="swipe-cat-tab ${i===0?'active':''}" onclick="loadSwipeCat(${i})">${catLabels[key]}</button>`
   ).join("");
   document.getElementById("swipeCatTabs").innerHTML = tabHtml;
   loadSwipeCat(0);
@@ -805,21 +575,31 @@ function initSwipe() {
 
 function loadSwipeCat(index) {
   swipeCatIndex = index;
+  // 既に選択済みのカードを除外したインデックスにする
   swipeCardIndex = 0;
   document.querySelectorAll(".swipe-cat-tab").forEach((t, i) => t.classList.toggle("active", i === index));
   renderSwipeCards();
 }
 
-function renderSwipeCards() {
-  let stack = document.getElementById("cardStack");
+function getUnselectedCards() {
   let catKey = swipeCatKeys[swipeCatIndex];
   let cards = allTags[catKey];
+  let alreadySelected = catKey === "style" ? selectedStyle : selected[catKey];
+  // 既に選択済みのものはスキップ
+  return cards.filter(c => c.tag !== alreadySelected);
+}
+
+function renderSwipeCards() {
+  let stack = document.getElementById("cardStack");
+  let cards = getUnselectedCards();
   let remaining = cards.slice(swipeCardIndex, swipeCardIndex + 3);
 
   stack.innerHTML = "";
 
   if (remaining.length === 0) {
-    stack.innerHTML = '<div style="text-align:center;padding:70px 0;color:#aaa;font-size:14px">✅ 完了！次のカテゴリーへ</div>';
+    let catKey = swipeCatKeys[swipeCatIndex];
+    let current = catKey === "style" ? selectedStyle : selected[catKey];
+    stack.innerHTML = `<div style="text-align:center;padding:60px 0;color:#aaa;font-size:14px">${current ? '✅ 選択済み：' + getLabelByTag(current) : '✅ このカテゴリー完了！'}<br>次のカテゴリーへ</div>`;
     return;
   }
 
@@ -854,41 +634,38 @@ function getEmoji(tag) {
 }
 
 function setupSwipeDrag(el, card) {
-  let startX = 0;
-  let isDragging = false;
-
-  function onStart(clientX) { startX = clientX; isDragging = true; }
-  function onMove(clientX) {
+  let startX = 0, isDragging = false;
+  function onStart(x) { startX = x; isDragging = true; }
+  function onMove(x) {
     if (!isDragging) return;
-    let diff = clientX - startX;
-    el.style.transform = `translateX(${diff}px) rotate(${diff * 0.05}deg)`;
-    el.querySelector(".like-overlay").style.opacity = diff > 30 ? Math.min(diff/100, 1) : 0;
-    el.querySelector(".nope-overlay").style.opacity = diff < -30 ? Math.min(-diff/100, 1) : 0;
+    let d = x - startX;
+    el.style.transform = `translateX(${d}px) rotate(${d*0.05}deg)`;
+    el.querySelector(".like-overlay").style.opacity = d > 30 ? Math.min(d/100,1) : 0;
+    el.querySelector(".nope-overlay").style.opacity = d < -30 ? Math.min(-d/100,1) : 0;
   }
-  function onEnd(clientX) {
+  function onEnd(x) {
     if (!isDragging) return;
     isDragging = false;
-    let diff = clientX - startX;
-    if (diff > 80) animateSwipe(el, true, card);
-    else if (diff < -80) animateSwipe(el, false, card);
+    let d = x - startX;
+    if (d > 80) animateSwipe(el, true, card);
+    else if (d < -80) animateSwipe(el, false, card);
     else {
       el.style.transform = "";
       el.querySelector(".like-overlay").style.opacity = 0;
       el.querySelector(".nope-overlay").style.opacity = 0;
     }
   }
-
   el.addEventListener("mousedown", e => onStart(e.clientX));
   document.addEventListener("mousemove", e => { if(isDragging) onMove(e.clientX); });
   document.addEventListener("mouseup", e => onEnd(e.clientX));
-  el.addEventListener("touchstart", e => onStart(e.touches[0].clientX), { passive: true });
-  el.addEventListener("touchmove", e => onMove(e.touches[0].clientX), { passive: true });
+  el.addEventListener("touchstart", e => onStart(e.touches[0].clientX), {passive:true});
+  el.addEventListener("touchmove", e => onMove(e.touches[0].clientX), {passive:true});
   el.addEventListener("touchend", e => onEnd(e.changedTouches[0].clientX));
 }
 
 function animateSwipe(el, isRight, card) {
   el.style.transition = "transform 0.3s ease";
-  el.style.transform = `translateX(${isRight ? 500 : -500}px) rotate(${isRight ? 20 : -20}deg)`;
+  el.style.transform = `translateX(${isRight?500:-500}px) rotate(${isRight?20:-20}deg)`;
   setTimeout(() => {
     if (isRight) addFromSwipe(card);
     swipeCardIndex++;
@@ -897,114 +674,119 @@ function animateSwipe(el, isRight, card) {
 }
 
 function swipeRight() {
-  let cards = allTags[swipeCatKeys[swipeCatIndex]];
+  let cards = getUnselectedCards();
   if (swipeCardIndex >= cards.length) return;
   let top = document.querySelector(".swipe-card.top");
   if (top) animateSwipe(top, true, cards[swipeCardIndex]);
 }
 
 function swipeLeft() {
-  let cards = allTags[swipeCatKeys[swipeCatIndex]];
+  let cards = getUnselectedCards();
   if (swipeCardIndex >= cards.length) return;
   let top = document.querySelector(".swipe-card.top");
   if (top) animateSwipe(top, false, cards[swipeCardIndex]);
 }
 
 function addFromSwipe(card) {
+  let catKey = swipeCatKeys[swipeCatIndex];
   if (card.isStyle) {
     selectedStyle = card.tag;
   } else {
-    if (!tags.includes(card.tag)) tags.push(card.tag);
+    // 同じカテゴリーの既存選択を上書き
+    selected[catKey] = card.tag;
   }
+  // ドラッグゾーンも更新
+  updateDropZone(catKey);
+  // ドラッグタグのused状態も更新
+  document.querySelectorAll(".draggable-tag").forEach(el => {
+    if (el.dataset.cat === catKey) {
+      el.classList.toggle("used", el.dataset.tag === card.tag);
+    }
+  });
   showTags();
-  showDropped();
 }
 
-// ===== 共通タグ表示 =====
+// ===== 共通 =====
+function getLabelByTag(tag) {
+  for (let cat in allTags) {
+    let found = allTags[cat].find(t => t.tag === tag);
+    if (found) return found.label;
+  }
+  return tag;
+}
+
 function showTags() {
-  let html = tags.map((tag, i) =>
-    `<span style="display:inline-block;background:#f0f2f5;color:#333;padding:6px 12px;margin:3px;border-radius:20px;font-size:13px;cursor:pointer" onclick="removeTag(${i})">${getLabelByTag(tag)} ×</span>`
-  ).join("");
+  let html = "";
+  for (let cat in selected) {
+    let tag = selected[cat];
+    html += `<span style="display:inline-block;background:#f0f2f5;color:#333;padding:6px 12px;margin:3px;border-radius:20px;font-size:13px;cursor:pointer" onclick="removeTagByCat('${cat}')">${getLabelByTag(tag)} ×</span>`;
+  }
   if (selectedStyle) {
-    html += `<span style="display:inline-block;background:#e8d5ff;color:#764ba2;padding:6px 12px;margin:3px;border-radius:20px;font-size:13px;cursor:pointer" onclick="removeStyleAll()">🎨 ${getLabelByTag(selectedStyle)} ×</span>`;
+    html += `<span style="display:inline-block;background:#e8d5ff;color:#764ba2;padding:6px 12px;margin:3px;border-radius:20px;font-size:13px;cursor:pointer" onclick="removeTagByCat('style')">🎨 ${getLabelByTag(selectedStyle)} ×</span>`;
   }
   document.getElementById("tagList").innerHTML =
     html || '<span style="color:#aaa;font-size:13px">タグを選んでください</span>';
-  document.getElementById("styleText").innerText =
-    selectedStyle ? "スタイル: " + getLabelByTag(selectedStyle) : "スタイル: 未選択";
 }
 
-function removeTag(i) {
-  let tag = tags[i];
-  tags.splice(i, 1);
+function removeTagByCat(cat) {
+  let tag = cat === "style" ? selectedStyle : selected[cat];
   document.querySelectorAll(".draggable-tag").forEach(el => {
     if (el.dataset.tag === tag) el.classList.remove("used");
   });
+  if (cat === "style") selectedStyle = "";
+  else delete selected[cat];
+  updateDropZone(cat);
   showTags();
-  showDropped();
 }
 
-function removeStyleAll() {
-  let tag = selectedStyle;
-  selectedStyle = "";
-  document.querySelectorAll(".draggable-tag").forEach(el => {
-    if (el.dataset.tag === tag) el.classList.remove("used");
-  });
-  showTags();
-  showDropped();
-}
-
-// ===== ランダム生成 =====
 function randomGenerate() {
-  tags = [];
-  selectedStyle = "";
+  // リセット
+  selected = {}; selectedStyle = "";
   document.querySelectorAll(".draggable-tag").forEach(el => el.classList.remove("used"));
 
   let pick = (arr) => arr[Math.floor(Math.random() * arr.length)];
-  let g = pick(allTags.gender); tags.push(g.tag);
-  let h = pick(allTags.hair); tags.push(h.tag);
-  let c = pick(allTags.color); tags.push(c.tag);
-  let f = pick(allTags.face); tags.push(f.tag);
-  if (Math.random() > 0.5) { let a = pick(allTags.attr); tags.push(a.tag); }
-  let s = pick(allTags.style); selectedStyle = s.tag;
+  let picks = {
+    gender: pick(allTags.gender),
+    hair: pick(allTags.hair),
+    color: pick(allTags.color),
+    face: pick(allTags.face),
+  };
+  if (Math.random() > 0.5) picks.attr = pick(allTags.attr);
+  let styleTag = pick(allTags.style);
 
-  // ドラッグゾーンにも反映
-  tags.forEach(tag => {
+  for (let cat in picks) {
+    selected[cat] = picks[cat].tag;
     document.querySelectorAll(".draggable-tag").forEach(el => {
-      if (el.dataset.tag === tag) el.classList.add("used");
+      if (el.dataset.tag === picks[cat].tag) el.classList.add("used");
     });
-  });
-  if (selectedStyle) {
-    document.querySelectorAll(".draggable-tag").forEach(el => {
-      if (el.dataset.tag === selectedStyle) el.classList.add("used");
-    });
+    updateDropZone(cat);
   }
-
+  selectedStyle = styleTag.tag;
+  document.querySelectorAll(".draggable-tag").forEach(el => {
+    if (el.dataset.tag === styleTag.tag) el.classList.add("used");
+  });
+  updateDropZone("style");
   showTags();
-  showDropped();
 }
 
-// ===== リセット =====
 function resetAll() {
-  tags = [];
-  selectedStyle = "";
+  selected = {}; selectedStyle = "";
   document.querySelectorAll(".draggable-tag").forEach(el => el.classList.remove("used"));
+  Object.keys(allTags).forEach(cat => updateDropZone(cat));
   showTags();
-  showDropped();
   document.getElementById("resultCard").style.display = "none";
   document.getElementById("loading").style.display = "none";
   document.getElementById("save-btn").style.display = "none";
 }
 
 // ===== 認証 =====
-sb.auth.getSession().then(({ data }) => {
+sb.auth.getSession().then(({data}) => {
   if (data.session) { currentUser = data.session.user; updateAuthUI(); }
 });
 sb.auth.onAuthStateChange((event, session) => {
   currentUser = session ? session.user : null;
   updateAuthUI();
 });
-
 function updateAuthUI() {
   if (currentUser) {
     document.getElementById("user-email").innerText = currentUser.email;
@@ -1016,74 +798,40 @@ function updateAuthUI() {
     document.getElementById("logout-btn").style.display = "none";
   }
 }
-
 function showModal() { document.getElementById("modal").classList.add("show"); }
-function hideModal() {
-  document.getElementById("modal").classList.remove("show");
-  document.getElementById("auth-msg").innerText = "";
-}
-
+function hideModal() { document.getElementById("modal").classList.remove("show"); document.getElementById("auth-msg").innerText = ""; }
 async function login() {
-  let email = document.getElementById("email-input").value;
-  let password = document.getElementById("password-input").value;
-  let { error } = await sb.auth.signInWithPassword({ email, password });
+  let {error} = await sb.auth.signInWithPassword({email: document.getElementById("email-input").value, password: document.getElementById("password-input").value});
   if (error) document.getElementById("auth-msg").innerText = "ログイン失敗: " + error.message;
   else hideModal();
 }
-
 async function signup() {
-  let email = document.getElementById("email-input").value;
-  let password = document.getElementById("password-input").value;
-  let { error } = await sb.auth.signUp({ email, password });
-  if (error) {
-    document.getElementById("auth-msg").innerText = "登録失敗: " + error.message;
-  } else {
-    document.getElementById("auth-msg").style.color = "#4CAF50";
-    document.getElementById("auth-msg").innerText = "登録完了！ログインしてください";
-  }
+  let {error} = await sb.auth.signUp({email: document.getElementById("email-input").value, password: document.getElementById("password-input").value});
+  if (error) document.getElementById("auth-msg").innerText = "登録失敗: " + error.message;
+  else { document.getElementById("auth-msg").style.color="#4CAF50"; document.getElementById("auth-msg").innerText = "登録完了！ログインしてください"; }
 }
-
 async function logout() { await sb.auth.signOut(); }
 
-// ===== 画像生成 =====
+// ===== 生成 =====
 async function generate() {
-  if (!currentUser) {
-    alert("生成するにはログインが必要です。");
-    showModal();
-    return;
-  }
+  if (!currentUser) { alert("生成するにはログインが必要です。"); showModal(); return; }
 
   let today = new Date().toISOString().split("T")[0];
-  let { data } = await sb.from("usage").select("count")
-    .eq("user_id", currentUser.id).eq("date", today).single();
-
+  let {data} = await sb.from("usage").select("count").eq("user_id", currentUser.id).eq("date", today).single();
   let count = data ? data.count : 0;
   let limit = 3;
 
-  if (count >= limit) {
-    alert("本日の無料生成回数（" + limit + "回）を超えました。");
-    return;
-  }
+  if (count >= limit) { alert("本日の無料生成回数（" + limit + "回）を超えました。"); return; }
+  if (Object.keys(selected).length === 0 && !selectedStyle) { alert("タグを選択してください"); return; }
 
-  if (tags.length === 0 && !selectedStyle) {
-    alert("タグを選択してください");
-    return;
-  }
+  if (data) await sb.from("usage").update({count: count+1}).eq("user_id", currentUser.id).eq("date", today);
+  else await sb.from("usage").insert({user_id: currentUser.id, date: today, count: 1});
 
-  if (data) {
-    await sb.from("usage").update({ count: count + 1 })
-      .eq("user_id", currentUser.id).eq("date", today);
-  } else {
-    await sb.from("usage").insert({ user_id: currentUser.id, date: today, count: 1 });
-  }
+  document.getElementById("countText").innerText = "本日の残り回数：" + (limit-count-1) + "回";
 
-  document.getElementById("countText").innerText = "本日の残り回数：" + (limit - count - 1) + "回";
-
-  let prompt = tags.join(", ");
+  let tags = Object.values(selected).join(", ");
   let style = selectedStyle || "anime style";
-
-  let url = "https://imagi-api.amekaze-shinogin.workers.dev/?prompt="
-    + encodeURIComponent(prompt) + "&style=" + encodeURIComponent(style);
+  let url = "https://imagi-api.amekaze-shinogin.workers.dev/?prompt=" + encodeURIComponent(tags) + "&style=" + encodeURIComponent(style);
 
   document.getElementById("loading").style.display = "block";
   document.getElementById("resultCard").style.display = "none";
@@ -1093,7 +841,7 @@ async function generate() {
     document.getElementById("loading").style.display = "none";
     document.getElementById("resultCard").style.display = "block";
     document.getElementById("save-btn").style.display = "block";
-    img.scrollIntoView({ behavior: "smooth" });
+    img.scrollIntoView({behavior:"smooth"});
   };
   img.onerror = function() {
     document.getElementById("loading").style.display = "none";
@@ -1103,16 +851,13 @@ async function generate() {
 }
 
 function saveImage() {
-  let img = document.getElementById("img");
   let a = document.createElement("a");
-  a.href = img.src;
-  a.download = "icon.jpg";
-  a.click();
+  a.href = document.getElementById("img").src;
+  a.download = "icon.jpg"; a.click();
 }
 
 // 初期化
 initDrag();
 </script>
-
 </body>
 </html>
