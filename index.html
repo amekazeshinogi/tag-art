@@ -2,121 +2,201 @@
 <html>
 <head>
 
-<title>アイコン生成AI</title>
+<title>🎨 アイコン生成AI</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
 
 <style>
 
-* { box-sizing: border-box; }
+* { box-sizing: border-box; margin: 0; padding: 0; }
 
 body {
-  font-family: sans-serif;
-  padding: 15px;
-  max-width: 600px;
-  margin: 0 auto;
-  background: #f9f9f9;
+  font-family: 'Helvetica Neue', sans-serif;
+  background: #f0f2f5;
   color: #333;
+  padding-bottom: 40px;
 }
 
-h2 { color: #333; }
-h3 { color: #555; margin-bottom: 5px; }
+header {
+  background: linear-gradient(135deg, #667eea, #764ba2);
+  color: white;
+  padding: 20px;
+  text-align: center;
+}
 
-.category { margin-top: 15px; }
+header h1 { font-size: 24px; margin-bottom: 5px; }
+header p { font-size: 13px; opacity: 0.85; }
+
+.container {
+  max-width: 620px;
+  margin: 20px auto;
+  padding: 0 15px;
+}
+
+.card {
+  background: white;
+  border-radius: 12px;
+  padding: 15px;
+  margin-bottom: 15px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+}
+
+.card h3 {
+  font-size: 14px;
+  color: #888;
+  margin-bottom: 10px;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+}
 
 .tag-btn {
   margin: 4px;
-  padding: 8px 12px;
-  border: 1px solid #ccc;
-  border-radius: 6px;
+  padding: 8px 14px;
+  border: 1.5px solid #ddd;
+  border-radius: 20px;
   background: white;
   color: #333;
   cursor: pointer;
+  font-size: 13px;
+  transition: all 0.2s;
 }
 
-.tag-btn:hover { background: #f0f0f0; }
+.tag-btn:hover {
+  border-color: #764ba2;
+  color: #764ba2;
+}
 
-.selected {
-  background: orange;
+.tag-btn.selected {
+  background: linear-gradient(135deg, #667eea, #764ba2);
   color: white;
-  border-color: orange;
+  border-color: transparent;
+}
+
+.selected-area {
+  background: white;
+  border-radius: 12px;
+  padding: 15px;
+  margin-bottom: 15px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+  min-height: 60px;
+}
+
+.selected-area h3 {
+  font-size: 14px;
+  color: #888;
+  margin-bottom: 10px;
+  text-transform: uppercase;
+  letter-spacing: 1px;
 }
 
 .tag {
-  background: #ddd;
-  color: #333;
   display: inline-block;
-  padding: 5px 10px;
+  background: #f0f2f5;
+  color: #333;
+  padding: 6px 12px;
   margin: 3px;
-  cursor: pointer;
   border-radius: 20px;
-  font-size: 14px;
+  font-size: 13px;
+  cursor: pointer;
+  transition: all 0.2s;
 }
 
-#tagList { min-height: 30px; margin-top: 5px; }
+.tag:hover { background: #fde8e8; color: #e44; }
 
-#countText { color: #e44; font-weight: bold; }
+#countText {
+  text-align: center;
+  color: #764ba2;
+  font-weight: bold;
+  font-size: 14px;
+  margin-bottom: 10px;
+}
+
+.btn-row {
+  display: flex;
+  gap: 10px;
+  margin-bottom: 10px;
+}
+
+#reset-btn {
+  flex: 1;
+  padding: 14px;
+  background: #f0f2f5;
+  color: #666;
+  border: none;
+  border-radius: 10px;
+  font-size: 15px;
+  cursor: pointer;
+}
 
 #generate-btn {
-  background: #ff5722;
+  flex: 2;
+  padding: 14px;
+  background: linear-gradient(135deg, #667eea, #764ba2);
   color: white;
   border: none;
-  padding: 12px 30px;
-  font-size: 16px;
-  border-radius: 8px;
+  border-radius: 10px;
+  font-size: 15px;
+  font-weight: bold;
   cursor: pointer;
-  margin-top: 10px;
+}
+
+#generate-btn:hover { opacity: 0.9; }
+
+#loading {
+  display: none;
+  text-align: center;
+  padding: 30px;
+  color: #888;
+  font-size: 15px;
+}
+
+.result-card {
+  display: none;
+  background: white;
+  border-radius: 12px;
+  padding: 20px;
+  text-align: center;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+}
+
+#img {
+  width: 256px;
+  height: 256px;
+  border-radius: 12px;
+  display: block;
+  margin: 0 auto 15px;
 }
 
 #save-btn {
   display: none;
-  margin-top: 10px;
-  padding: 10px 20px;
+  padding: 12px 30px;
   background: #4CAF50;
   color: white;
   border: none;
-  border-radius: 8px;
+  border-radius: 10px;
+  font-size: 15px;
   cursor: pointer;
-}
-
-#reset-btn {
-  margin-top: 10px;
-  padding: 10px 20px;
-  background: #999;
-  color: white;
-  border: none;
-  border-radius: 8px;
-  cursor: pointer;
-}
-
-img {
-  width: 256px;
-  height: 256px;
-  margin-top: 20px;
-  border-radius: 12px;
-  display: none;
-}
-
-#loading {
-  display: none;
-  margin-top: 20px;
-  color: #888;
-  font-size: 16px;
+  width: 100%;
 }
 
 </style>
-
 </head>
 <body>
 
-<h2>🎨 アイコン生成AI</h2>
+<header>
+  <h1>🎨 アイコン生成AI</h1>
+  <p>タグを選んでオリジナルアイコンを作ろう</p>
+</header>
 
-<div class="category">
+<div class="container">
+
+<div class="card">
 <h3>👤 性別</h3>
 <button class="tag-btn" onclick="addTag('boy')">男性</button>
 <button class="tag-btn" onclick="addTag('girl')">女性</button>
 <button class="tag-btn" onclick="addTag('neutral')">中性</button>
 </div>
 
-<div class="category">
+<div class="card">
 <h3>💇 髪型</h3>
 <button class="tag-btn" onclick="addTag('short hair')">ショート</button>
 <button class="tag-btn" onclick="addTag('long hair')">ロング</button>
@@ -127,7 +207,7 @@ img {
 <button class="tag-btn" onclick="addTag('curly hair')">くるくる</button>
 </div>
 
-<div class="category">
+<div class="card">
 <h3>🎨 髪色</h3>
 <button class="tag-btn" onclick="addTag('blonde hair')">金髪</button>
 <button class="tag-btn" onclick="addTag('black hair')">黒髪</button>
@@ -138,7 +218,7 @@ img {
 <button class="tag-btn" onclick="addTag('silver hair')">シルバー</button>
 </div>
 
-<div class="category">
+<div class="card">
 <h3>😊 表情</h3>
 <button class="tag-btn" onclick="addTag('smile')">笑顔</button>
 <button class="tag-btn" onclick="addTag('serious')">真剣</button>
@@ -148,7 +228,7 @@ img {
 <button class="tag-btn" onclick="addTag('happy')">嬉しい</button>
 </div>
 
-<div class="category">
+<div class="card">
 <h3>👁️ 目</h3>
 <button class="tag-btn" onclick="addTag('big eyes')">大きい目</button>
 <button class="tag-btn" onclick="addTag('blue eyes')">青い目</button>
@@ -157,7 +237,7 @@ img {
 <button class="tag-btn" onclick="addTag('heterochromia')">オッドアイ</button>
 </div>
 
-<div class="category">
+<div class="card">
 <h3>👗 服装</h3>
 <button class="tag-btn" onclick="addTag('school uniform')">制服</button>
 <button class="tag-btn" onclick="addTag('casual clothes')">カジュアル</button>
@@ -167,7 +247,7 @@ img {
 <button class="tag-btn" onclick="addTag('maid outfit')">メイド服</button>
 </div>
 
-<div class="category">
+<div class="card">
 <h3>✨ 属性</h3>
 <button class="tag-btn" onclick="addTag('cat ears')">猫耳</button>
 <button class="tag-btn" onclick="addTag('fox ears')">狐耳</button>
@@ -177,7 +257,7 @@ img {
 <button class="tag-btn" onclick="addTag('dragon')">ドラゴン</button>
 </div>
 
-<div class="category">
+<div class="card">
 <h3>👓 アクセサリー</h3>
 <button class="tag-btn" onclick="addTag('glasses')">メガネ</button>
 <button class="tag-btn" onclick="addTag('hat')">帽子</button>
@@ -187,7 +267,7 @@ img {
 <button class="tag-btn" onclick="addTag('mask')">マスク</button>
 </div>
 
-<div class="category">
+<div class="card">
 <h3>🌍 背景・世界観</h3>
 <button class="tag-btn" onclick="addTag('fantasy background')">ファンタジー</button>
 <button class="tag-btn" onclick="addTag('cyberpunk background')">サイバーパンク</button>
@@ -196,7 +276,7 @@ img {
 <button class="tag-btn" onclick="addTag('gradient background')">グラデーション</button>
 </div>
 
-<div class="category">
+<div class="card">
 <h3>🎨 スタイル</h3>
 <button class="tag-btn" onclick="setStyle(this,'cute icon')">かわいい</button>
 <button class="tag-btn" onclick="setStyle(this,'simple flat icon')">シンプル</button>
@@ -207,20 +287,27 @@ img {
 <button class="tag-btn" onclick="setStyle(this,'realistic')">リアル</button>
 </div>
 
+<div class="selected-area">
 <h3>選択中タグ（タップで削除）</h3>
-<div id="tagList"><span style="color:#aaa">未選択</span></div>
+<div id="tagList"><span style="color:#aaa;font-size:13px">タグを選んでください</span></div>
+<p style="margin-top:8px;font-size:13px;color:#888" id="styleText">スタイル: 未選択</p>
+</div>
 
-<p id="styleText">スタイル: 未選択</p>
 <p id="countText">本日の残り回数：3回</p>
 
+<div class="btn-row">
 <button id="reset-btn" onclick="resetTags()">🔄 リセット</button>
 <button id="generate-btn" onclick="generate()">✨ 生成する</button>
+</div>
 
 <div id="loading">⏳ 生成中...（20〜30秒かかります）</div>
 
+<div class="result-card" id="resultCard">
 <img id="img">
-<br>
 <button id="save-btn" onclick="saveImage()">💾 画像を保存する</button>
+</div>
+
+</div>
 
 <script>
 
@@ -244,7 +331,7 @@ function showTags(){
       + tags[i] + ' ×</span>';
   }
   document.getElementById("tagList").innerHTML =
-    html || '<span style="color:#aaa">未選択</span>';
+    html || '<span style="color:#aaa;font-size:13px">タグを選んでください</span>';
 }
 
 function resetTags(){
@@ -254,7 +341,7 @@ function resetTags(){
   document.getElementById("styleText").innerText="スタイル: 未選択";
   let btns = document.querySelectorAll(".tag-btn");
   btns.forEach(b => b.classList.remove("selected"));
-  document.getElementById("img").style.display="none";
+  document.getElementById("resultCard").style.display="none";
   document.getElementById("loading").style.display="none";
   document.getElementById("save-btn").style.display="none";
 }
@@ -312,14 +399,13 @@ function generate(){
     + encodeURIComponent(style);
 
   document.getElementById("loading").style.display="block";
-  document.getElementById("img").style.display="none";
-  document.getElementById("save-btn").style.display="none";
+  document.getElementById("resultCard").style.display="none";
 
   let img = document.getElementById("img");
   img.onload = function(){
     document.getElementById("loading").style.display="none";
-    img.style.display="block";
-    document.getElementById("save-btn").style.display="inline-block";
+    document.getElementById("resultCard").style.display="block";
+    document.getElementById("save-btn").style.display="block";
   };
   img.onerror = function(){
     document.getElementById("loading").style.display="none";
