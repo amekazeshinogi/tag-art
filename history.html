@@ -1,0 +1,323 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>履歴 | tag-art</title>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --primary: #667eea;
+      --primary-dark: #764ba2;
+      --bg: #f4f6fb;
+      --card: #ffffff;
+      --text: #333;
+      --text-muted: #999;
+      --border: #e0e4ed;
+      --shadow: 0 2px 12px rgba(102,126,234,0.10);
+      --radius: 14px;
+    }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Hiragino Sans', sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      min-height: 100vh;
+    }
+
+    /* ヘッダー */
+    .header {
+      background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+      color: white;
+      padding: 14px 16px;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      box-shadow: 0 2px 12px rgba(102,126,234,0.3);
+    }
+    .back-btn {
+      background: rgba(255,255,255,0.2);
+      border: none; color: white;
+      padding: 7px 14px; border-radius: 8px;
+      font-size: 13px; font-weight: 600; cursor: pointer;
+      transition: background 0.2s;
+    }
+    .back-btn:hover { background: rgba(255,255,255,0.35); }
+    .header h1 { font-size: 18px; font-weight: 800; }
+
+    /* メイン */
+    .main { max-width: 900px; margin: 0 auto; padding: 16px; }
+
+    /* 件数・削除ボタン行 */
+    .toolbar {
+      display: flex; align-items: center; justify-content: space-between;
+      margin-bottom: 14px;
+    }
+    .count-text { font-size: 13px; color: var(--text-muted); }
+    .delete-all-btn {
+      background: #fff0f0; border: 1.5px solid #ffcccc;
+      color: #e53935; border-radius: 8px;
+      padding: 7px 14px; font-size: 12px; font-weight: 600;
+      cursor: pointer; transition: all 0.15s;
+    }
+    .delete-all-btn:hover { background: #ffe0e0; }
+
+    /* グリッド */
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+      gap: 12px;
+    }
+
+    /* カード */
+    .card {
+      background: var(--card);
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+      overflow: hidden;
+      transition: transform 0.2s, box-shadow 0.2s;
+    }
+    .card:hover { transform: translateY(-2px); box-shadow: 0 6px 20px rgba(102,126,234,0.18); }
+
+    .card img {
+      width: 100%; aspect-ratio: 1;
+      object-fit: cover; display: block;
+      background: #f0f2f8;
+    }
+
+    .card-body { padding: 8px; }
+    .card-date {
+      font-size: 10px; color: var(--text-muted);
+      margin-bottom: 4px;
+    }
+    .card-style {
+      font-size: 11px; font-weight: 600;
+      color: var(--primary-dark); margin-bottom: 6px;
+    }
+    .card-tags {
+      display: flex; flex-wrap: wrap; gap: 3px;
+      margin-bottom: 8px;
+    }
+    .tag-chip {
+      font-size: 10px; padding: 2px 7px;
+      background: #f0f2f8; border-radius: 10px;
+      color: #555;
+    }
+
+    .card-btns { display: flex; gap: 6px; }
+    .dl-btn, .del-btn {
+      flex: 1; padding: 6px;
+      border-radius: 8px; border: none;
+      font-size: 12px; font-weight: 600;
+      cursor: pointer; transition: all 0.15s;
+    }
+    .dl-btn {
+      background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+      color: white;
+    }
+    .dl-btn:hover { opacity: 0.85; }
+    .del-btn {
+      background: #fff0f0; color: #e53935;
+      border: 1.5px solid #ffcccc;
+    }
+    .del-btn:hover { background: #ffe0e0; }
+
+    /* ローディング・空状態 */
+    .loading-text {
+      text-align: center; padding: 60px 0;
+      color: var(--text-muted); font-size: 14px;
+    }
+    .empty-state {
+      text-align: center; padding: 60px 16px;
+      color: var(--text-muted);
+    }
+    .empty-state .emoji { font-size: 48px; margin-bottom: 12px; }
+    .empty-state p { font-size: 14px; margin-bottom: 16px; }
+    .go-btn {
+      display: inline-block;
+      background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+      color: white; padding: 11px 24px; border-radius: 10px;
+      font-size: 14px; font-weight: 700; text-decoration: none;
+      transition: opacity 0.2s;
+    }
+    .go-btn:hover { opacity: 0.9; }
+
+    /* ページネーション */
+    .pagination {
+      display: flex; justify-content: center; gap: 8px;
+      margin-top: 20px;
+    }
+    .page-btn {
+      padding: 8px 16px; border-radius: 8px;
+      border: 1.5px solid var(--border); background: var(--card);
+      font-size: 13px; font-weight: 600; color: var(--text);
+      cursor: pointer; transition: all 0.15s;
+    }
+    .page-btn:hover { border-color: var(--primary); color: var(--primary-dark); }
+    .page-btn.active {
+      background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+      color: white; border-color: transparent;
+    }
+    .page-btn:disabled { opacity: 0.4; cursor: not-allowed; }
+  </style>
+</head>
+<body>
+
+<div class="header">
+  <button class="back-btn" onclick="location.href='index.html'">← 戻る</button>
+  <h1>📷 生成履歴</h1>
+</div>
+
+<div class="main">
+  <div class="toolbar">
+    <span class="count-text" id="countText">読み込み中...</span>
+    <button class="delete-all-btn" onclick="deleteAll()">🗑️ 全削除</button>
+  </div>
+
+  <div id="content">
+    <div class="loading-text">⏳ 読み込み中...</div>
+  </div>
+
+  <div class="pagination" id="pagination"></div>
+</div>
+
+<script>
+const SUPABASE_URL = "https://eoademoyfyopqfnljhyf.supabase.co";
+const SUPABASE_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImVvYWRlbW95ZnlvcHFmbmxqaHlmIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzM0OTIyODIsImV4cCI6MjA4OTA2ODI4Mn0.EXk-W1fcaZ8g_b2avAjMIzOJhszdAUWssbivZhCyPFs";
+const sb = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+
+let currentUser = null;
+let currentPage = 1;
+const PER_PAGE = 12;
+let totalCount = 0;
+
+// 日時フォーマット
+function formatDate(str) {
+  const d = new Date(str);
+  return d.toLocaleDateString("ja-JP", {month:"numeric", day:"numeric", hour:"2-digit", minute:"2-digit"});
+}
+
+// 履歴を読み込む
+async function loadHistory(page = 1) {
+  currentPage = page;
+  document.getElementById("content").innerHTML = '<div class="loading-text">⏳ 読み込み中...</div>';
+
+  const from = (page - 1) * PER_PAGE;
+  const to = from + PER_PAGE - 1;
+
+  const { data, error, count } = await sb
+    .from("history")
+    .select("*", { count: "exact" })
+    .eq("user_id", currentUser.id)
+    .order("created_at", { ascending: false })
+    .range(from, to);
+
+  if (error) {
+    document.getElementById("content").innerHTML = '<div class="loading-text">読み込みに失敗しました</div>';
+    return;
+  }
+
+  totalCount = count || 0;
+  document.getElementById("countText").textContent = `全 ${totalCount} 件`;
+
+  if (data.length === 0) {
+    document.getElementById("content").innerHTML = `
+      <div class="empty-state">
+        <div class="emoji">🎨</div>
+        <p>まだ画像がありません</p>
+        <a class="go-btn" href="index.html">画像を生成する</a>
+      </div>`;
+    document.getElementById("pagination").innerHTML = "";
+    return;
+  }
+
+  // グリッド描画
+  const grid = document.createElement("div");
+  grid.className = "grid";
+
+  data.forEach(item => {
+    const tags = item.tags ? Object.values(item.tags) : [];
+    const tagChips = tags.map(t => `<span class="tag-chip">${t}</span>`).join("");
+
+    const card = document.createElement("div");
+    card.className = "card";
+    card.innerHTML = `
+      <img src="${item.image_url}" alt="生成画像" loading="lazy" onerror="this.style.background='#f0f2f8'">
+      <div class="card-body">
+        <div class="card-date">${formatDate(item.created_at)}</div>
+        <div class="card-style">${item.style || ""}</div>
+        <div class="card-tags">${tagChips}</div>
+        <div class="card-btns">
+          <button class="dl-btn" onclick="downloadImg('${item.image_url}', '${item.id}')">💾</button>
+          <button class="del-btn" onclick="deleteOne('${item.id}')">🗑️</button>
+        </div>
+      </div>
+    `;
+    grid.appendChild(card);
+  });
+
+  document.getElementById("content").innerHTML = "";
+  document.getElementById("content").appendChild(grid);
+
+  // ページネーション
+  renderPagination();
+}
+
+// ページネーション描画
+function renderPagination() {
+  const total = Math.ceil(totalCount / PER_PAGE);
+  if (total <= 1) { document.getElementById("pagination").innerHTML = ""; return; }
+
+  let html = `<button class="page-btn" onclick="loadHistory(${currentPage-1})" ${currentPage===1?"disabled":""}>← 前へ</button>`;
+  for (let i = 1; i <= total; i++) {
+    html += `<button class="page-btn ${i===currentPage?"active":""}" onclick="loadHistory(${i})">${i}</button>`;
+  }
+  html += `<button class="page-btn" onclick="loadHistory(${currentPage+1})" ${currentPage===total?"disabled":""}>次へ →</button>`;
+  document.getElementById("pagination").innerHTML = html;
+}
+
+// ダウンロード
+function downloadImg(url, id) {
+  const a = document.createElement("a");
+  a.href = url;
+  a.download = "tag-art-" + id + ".jpg";
+  a.click();
+}
+
+// 1件削除
+async function deleteOne(id) {
+  if (!confirm("この画像を削除しますか？")) return;
+  await sb.from("history").delete().eq("id", id).eq("user_id", currentUser.id);
+  loadHistory(currentPage);
+}
+
+// 全削除
+async function deleteAll() {
+  if (!confirm("履歴をすべて削除しますか？")) return;
+  await sb.from("history").delete().eq("user_id", currentUser.id);
+  loadHistory(1);
+}
+
+// 認証チェック
+sb.auth.getSession().then(({ data }) => {
+  if (data.session) {
+    currentUser = data.session.user;
+    loadHistory(1);
+  } else {
+    document.getElementById("content").innerHTML = `
+      <div class="empty-state">
+        <div class="emoji">🔒</div>
+        <p>ログインが必要です</p>
+        <a class="go-btn" href="index.html">ログインページへ</a>
+      </div>`;
+    document.getElementById("countText").textContent = "";
+  }
+});
+</script>
+</body>
+</html>
