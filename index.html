@@ -921,7 +921,7 @@ async function generate() {
   const today = new Date().toISOString().split("T")[0];
   const { data } = await sb.from("usage").select("count").eq("user_id", currentUser.id).eq("date", today).single();
   const count = data ? data.count : 0;
-  const limit = 3;
+  const limit = currentUser.email === "amekaze.shinogin@gmail.com" ? 9999 : 3;
 
   if (count >= limit) { alert("本日の無料生成回数（" + limit + "回）を超えました。"); return; }
   if (Object.keys(selected).length === 0 && !selectedStyle) { alert("タグを選択してください"); return; }
