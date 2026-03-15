@@ -899,13 +899,6 @@ async function generate() {
   if (count >= limit) { alert("本日の無料生成回数（" + limit + "回）を超えました。"); return; }
   if (Object.keys(selected).length === 0 && !selectedStyle) { alert("タグを選択してください"); return; }
 
-  if (data) await sb.from("usage").update({count: count+1}).eq("user_id", currentUser.id).eq("date", today);
-  else await sb.from("usage").insert({user_id: currentUser.id, date: today, count: 1});
-
-  const remaining = limit - count - 1;
-  document.getElementById("countText").innerText = "本日の残り回数：" + remaining + "回";
-  document.getElementById("countTextSwipe").innerText = "本日の残り回数：" + remaining + "回";
-
   const tags = Object.values(selected).join(", ");
   const style = selectedStyle || "anime style";
   const workerUrl = "https://imagi-api.amekaze-shinogin.workers.dev/?prompt=" + encodeURIComponent(tags) + "&style=" + encodeURIComponent(style);
@@ -920,6 +913,14 @@ async function generate() {
     const storageUrl = json.url;
 
     if (!storageUrl) throw new Error("URLが取得できませんでした");
+
+    // 生成成功後に回数をカウント
+    if (data) await sb.from("usage").update({count: count+1}).eq("user_id", currentUser.id).eq("date", today);
+    else await sb.from("usage").insert({user_id: currentUser.id, date: today, count: 1});
+
+    const remaining = limit - count - 1;
+    document.getElementById("countText").innerText = "本日の残り回数：" + remaining + "回";
+    document.getElementById("countTextSwipe").innerText = "本日の残り回数：" + remaining + "回";
 
     const img = document.getElementById("img");
     img.onload = async () => {
@@ -938,13 +939,13 @@ async function generate() {
     };
     img.onerror = () => {
       document.getElementById("loading").style.display = "none";
-      alert("生成に失敗しました。もう一度お試しください。");
+      alert("画像の表示に失敗しました。もう一度お試しください。");
     };
     img.src = storageUrl;
 
   } catch(e) {
     document.getElementById("loading").style.display = "none";
-    alert("生成に失敗しました。もう一度お試しください。");
+    alert("生成に失敗しました。もう一度お試しください。\n詳細: " + e.message);
   }
 }
 
