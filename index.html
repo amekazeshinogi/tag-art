@@ -95,13 +95,28 @@
     }
 
     /* カテゴリタブ（横スクロール） */
+    .cat-tabs-wrapper {
+      position: relative;
+      background: #f8f9ff;
+      border-bottom: 1px solid var(--border);
+    }
+    .cat-tabs-wrapper::after {
+      content: "›";
+      position: absolute; right: 0; top: 0; bottom: 0;
+      width: 36px;
+      background: linear-gradient(to right, transparent, #f8f9ff 60%);
+      display: flex; align-items: center; justify-content: flex-end;
+      padding-right: 6px;
+      font-size: 18px; color: var(--primary);
+      pointer-events: none;
+      transition: opacity 0.2s;
+    }
+    .cat-tabs-wrapper.scrolled-end::after { opacity: 0; }
     .cat-tabs {
       display: flex;
       overflow-x: auto;
       scrollbar-width: none;
-      background: #f8f9ff;
-      border-bottom: 1px solid var(--border);
-      padding: 6px 6px 0;
+      padding: 6px 36px 0 6px;
       gap: 4px;
     }
     .cat-tabs::-webkit-scrollbar { display: none; }
@@ -402,7 +417,9 @@
 
       <!-- 左：カテゴリタブ＋タグ一覧 -->
       <div class="left-panel">
-        <div class="cat-tabs" id="catTabs"></div>
+        <div class="cat-tabs-wrapper" id="catTabsWrapper">
+          <div class="cat-tabs" id="catTabs"></div>
+        </div>
         <div class="tag-list-area" id="tagListArea"></div>
       </div>
 
@@ -515,6 +532,16 @@ function init() {
   renderTagList("gender");
   initDragDrop();
   initSwipe();
+
+  // タブのスクロール末尾検知（矢印フェードアウト）
+  const tabs = document.getElementById("catTabs");
+  const wrapper = document.getElementById("catTabsWrapper");
+  if (tabs && wrapper) {
+    tabs.addEventListener("scroll", () => {
+      const atEnd = tabs.scrollLeft + tabs.clientWidth >= tabs.scrollWidth - 4;
+      wrapper.classList.toggle("scrolled-end", atEnd);
+    });
+  }
 }
 
 // ===== カテゴリタブ構築 =====
