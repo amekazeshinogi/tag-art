@@ -383,7 +383,7 @@
         grid-template-columns: 1fr;
       }
       .right-panel {
-        order: -1; /* スマホでは右パネルを上に */
+        order: -1;
       }
       .selected-drop-zone { min-height: 80px; }
       .cat-tab { font-size: 11px; padding: 6px 10px; }
@@ -516,254 +516,307 @@ let selectedStyle = ""; // style は別管理
 
 const allTags = {
   gender: [
-    {tag:"boy",label:"👦 男性"},{tag:"girl",label:"👧 女性"},{tag:"neutral",label:"🧑 中性"}
+    {tag:"boy",label:"👦 男性"},
+    {tag:"girl",label:"👧 女性"},
+    {tag:"neutral",label:"🧑 中性"}
   ],
   age: [
+    // 若い系
     {tag:"child appearance, innocent, small",label:"🌱 ちびっ子"},
     {tag:"youthful, teenage appearance",label:"🎒 思春期"},
     {tag:"young adult appearance, fresh",label:"🌟 青年"},
+    {tag:"baby face, innocent appearance",label:"🍬 幼顔"},
+    {tag:"youthful energy, lively",label:"⚡ 若々しい"},
+    // 大人系
     {tag:"adult appearance, mature",label:"🍂 大人"},
     {tag:"middle-aged appearance, experienced",label:"🌿 中年"},
     {tag:"elderly appearance, wise, aged",label:"🏔️ 老年"},
+    {tag:"mature face, dignified, experienced look",label:"👑 貫禄顔"},
+    // 特殊系
     {tag:"ancient being, immortal look, ageless, mystical aura",label:"🌀 仙人・不老"},
     {tag:"ancient soul, childlike appearance but wise eyes, timeless",label:"🌿 老いなき幼子"},
-    {tag:"baby face, innocent appearance",label:"🍬 幼顔"},
-    {tag:"mature face, dignified, experienced look",label:"👑 貫禄顔"},
-    {tag:"androgynous, ageless appearance",label:"🌙 中性的な年齢感"},
-    {tag:"youthful energy, lively",label:"⚡ 若々しい雰囲気"}
+    {tag:"androgynous, ageless appearance",label:"🌙 中性的な年齢感"}
   ],
   body: [
-    {tag:"tall, long legs",label:"📏 高身長"},
-    {tag:"short, petite",label:"🌱 低身長"},
-    {tag:"slim, slender body",label:"🌿 細身"},
-    {tag:"athletic, muscular build",label:"💪 筋肉質"},
-    {tag:"curvy, voluptuous",label:"🌸 グラマー"},
-    {tag:"small, chibi proportions",label:"🧸 ちびキャラ"},
-    {tag:"average build",label:"👤 普通体型"},
-    {tag:"chubby, round body",label:"🍩 ぽっちゃり"},
-    {tag:"lanky, thin and tall",label:"🦒 ひょろ長い"},
-    {tag:"well-built, broad shoulders",label:"🏋️ がっしり"},
+    // 小柄系
+    {tag:"short, petite",label:"🌱 低身長・小柄"},
+    {tag:"slim, slender body",label:"🌿 細身・スリム"},
     {tag:"delicate, fragile appearance",label:"🕊️ 華奢"},
-    {tag:"tiny, very small",label:"🐾 超小柄"}
+    {tag:"small, chibi proportions",label:"🧸 ちびキャラ体型"},
+    {tag:"tiny, very small",label:"🐾 超小柄"},
+    // 標準系
+    {tag:"average build",label:"👤 普通体型"},
+    {tag:"athletic, muscular build",label:"💪 筋肉質"},
+    {tag:"well-built, broad shoulders",label:"🏋️ がっしり"},
+    // 大柄系
+    {tag:"tall, long legs",label:"📏 高身長"},
+    {tag:"curvy, voluptuous",label:"🌸 グラマー"},
+    {tag:"chubby, round body",label:"🍩 ぽっちゃり"},
+    {tag:"lanky, thin and tall",label:"🦒 ひょろ長い"}
   ],
   hair: [
+    // 短め系
     {tag:"short hair",label:"✂️ ショート"},
-    {tag:"long hair",label:"💁 ロング"},
-    {tag:"twin tails",label:"🎀 ツインテ"},
-    {tag:"ponytail",label:"🐴 ポニーテ"},
     {tag:"bob cut",label:"💆 ボブ"},
-    {tag:"wavy hair",label:"🌊 ウェーブ"},
-    {tag:"messy hair",label:"💫 ボサボサ"},
-    {tag:"braid hair",label:"🌾 三つ編み"},
-    {tag:"side ponytail",label:"🎵 サイドポニー"},
+    {tag:"undercut hair style",label:"🔪 刈り上げ"},
     {tag:"spiky hair",label:"⚡ トゲトゲ"},
-    {tag:"ahoge, single strand hair",label:"🌀 アホ毛"},
-    {tag:"half up half down hair",label:"🌸 ハーフアップ"},
+    // 長め系
+    {tag:"long hair",label:"💁 ロング"},
+    {tag:"wavy hair",label:"🌊 ウェーブ"},
     {tag:"curly hair",label:"🌀 くるくる"},
     {tag:"straight sleek hair",label:"✨ サラサラ直毛"},
     {tag:"very long hair, floor length",label:"🌊 超ロング"},
-    {tag:"undercut hair style",label:"🔪 刈り上げ"},
+    // まとめ髪系
+    {tag:"ponytail",label:"🐴 ポニーテ"},
+    {tag:"twin tails",label:"🎀 ツインテ"},
+    {tag:"braid hair",label:"🌾 三つ編み"},
+    {tag:"single bun hair",label:"🍡 お団子"},
     {tag:"double bun hair",label:"🐭 お団子ふたつ"},
-    {tag:"single bun hair",label:"🍡 お団子ひとつ"}
+    {tag:"side ponytail",label:"🎵 サイドポニー"},
+    {tag:"half up half down hair",label:"🌸 ハーフアップ"},
+    // 特徴系
+    {tag:"ahoge, single strand hair",label:"🌀 アホ毛"},
+    {tag:"messy hair",label:"💫 ボサボサ"}
   ],
   color: [
-    {tag:"blonde hair",label:"💛 金髪"},
+    // ナチュラル系
     {tag:"black hair",label:"🖤 黒髪"},
     {tag:"brown hair",label:"🤎 茶髪"},
+    {tag:"blonde hair",label:"💛 金髪"},
+    {tag:"auburn hair",label:"🍂 赤茶"},
+    {tag:"ash grey hair",label:"🌫️ アッシュグレー"},
+    // ビビッド系
     {tag:"white hair",label:"🤍 白髪"},
+    {tag:"silver hair",label:"🩶 銀髪"},
     {tag:"pink hair",label:"🌸 ピンク"},
     {tag:"blue hair",label:"💙 ブルー"},
     {tag:"red hair",label:"❤️ 赤髪"},
     {tag:"purple hair",label:"💜 紫髪"},
     {tag:"green hair",label:"💚 緑髪"},
-    {tag:"silver hair",label:"🩶 銀髪"},
     {tag:"orange hair",label:"🧡 オレンジ"},
-    {tag:"rainbow hair",label:"🌈 レインボー"},
     {tag:"teal hair",label:"🩵 青緑"},
-    {tag:"ash grey hair",label:"🌫️ アッシュグレー"},
     {tag:"dark navy hair",label:"🌊 ダークネイビー"},
+    // 特殊系
+    {tag:"rainbow hair",label:"🌈 レインボー"},
     {tag:"gradient hair, ombre",label:"🎨 グラデーション"},
     {tag:"streaked hair, highlights",label:"✨ メッシュ"}
   ],
-  face: [
-    {tag:"smile",label:"😊 笑顔"},
-    {tag:"serious",label:"😐 真剣"},
-    {tag:"wink",label:"😉 ウィンク"},
-    {tag:"surprised",label:"😮 驚き"},
-    {tag:"cool expression",label:"😎 クール"},
-    {tag:"shy, blushing",label:"😳 照れ顔"},
-    {tag:"crying, tears",label:"😢 泣き顔"},
-    {tag:"laughing, happy",label:"😄 大笑い"},
-    {tag:"sleepy, tired expression",label:"😴 眠そう"},
-    {tag:"angry expression",label:"😠 怒り顔"},
-    {tag:"smirk, confident",label:"😏 ニヤリ"},
-    {tag:"gentle smile, soft expression",label:"🌸 穏やか"},
-    {tag:"mischievous grin",label:"😈 いたずら顔"},
-    {tag:"nervous, anxious expression",label:"😰 不安顔"},
-    {tag:"determined, fierce expression",label:"🔥 闘志"},
-    {tag:"daydreaming, distant look",label:"💭 ぼんやり"},
-    {tag:"embarrassed expression",label:"🙈 恥ずかし顔"}
-  ],
   eyes: [
+    // カラー系
     {tag:"blue eyes",label:"💙 青い瞳"},
     {tag:"red eyes",label:"❤️ 赤い瞳"},
     {tag:"green eyes",label:"💚 緑の瞳"},
     {tag:"golden eyes",label:"💛 金の瞳"},
+    {tag:"purple eyes",label:"💜 紫の瞳"},
+    {tag:"silver eyes",label:"🩶 銀の瞳"},
+    {tag:"black eyes",label:"🖤 黒い瞳"},
+    {tag:"teal eyes",label:"🩵 青緑の瞳"},
+    // 特殊系
     {tag:"heterochromia, different eye colors",label:"👁️ オッドアイ"},
     {tag:"large sparkling eyes",label:"✨ キラキラ瞳"},
     {tag:"sharp eyes",label:"🔪 鋭い瞳"},
     {tag:"gentle eyes",label:"🌸 優しい瞳"},
-    {tag:"purple eyes",label:"💜 紫の瞳"},
-    {tag:"silver eyes",label:"🩶 銀の瞳"},
-    {tag:"black eyes",label:"🖤 黒い瞳"},
     {tag:"glowing eyes",label:"🌟 光る瞳"},
     {tag:"sleepy half closed eyes",label:"😴 眠たげな瞳"},
     {tag:"cat eyes, slit pupils",label:"🐱 猫目"},
     {tag:"heart shaped pupils",label:"💖 ハート瞳"},
     {tag:"star shaped pupils",label:"⭐ 星瞳"}
   ],
+  face: [
+    // ポジティブ系
+    {tag:"smile",label:"😊 笑顔"},
+    {tag:"wink",label:"😉 ウィンク"},
+    {tag:"laughing, happy",label:"😄 大笑い"},
+    {tag:"gentle smile, soft expression",label:"🌸 穏やか"},
+    {tag:"mischievous grin",label:"😈 いたずら顔"},
+    {tag:"smirk, confident",label:"😏 ニヤリ"},
+    // クール系
+    {tag:"serious",label:"😐 真剣"},
+    {tag:"cool expression",label:"😎 クール"},
+    {tag:"determined, fierce expression",label:"🔥 闘志"},
+    {tag:"daydreaming, distant look",label:"💭 ぼんやり"},
+    // ネガティブ系
+    {tag:"surprised",label:"😮 驚き"},
+    {tag:"shy, blushing",label:"😳 照れ顔"},
+    {tag:"crying, tears",label:"😢 泣き顔"},
+    {tag:"sleepy, tired expression",label:"😴 眠そう"},
+    {tag:"angry expression",label:"😠 怒り顔"},
+    {tag:"nervous, anxious expression",label:"😰 不安顔"},
+    {tag:"embarrassed expression",label:"🙈 恥ずかし顔"}
+  ],
   attr: [
+    // 動物系
     {tag:"cat ears",label:"🐱 猫耳"},
     {tag:"fox ears",label:"🦊 狐耳"},
+    {tag:"bunny ears",label:"🐰 うさ耳"},
+    {tag:"wolf ears and tail",label:"🐺 狼耳"},
+    {tag:"bear ears",label:"🐻 熊耳"},
+    {tag:"sheep horns",label:"🐑 羊角"},
+    // 神話・魔法系
     {tag:"angel wings",label:"😇 天使"},
     {tag:"demon horns",label:"😈 悪魔"},
     {tag:"elf ears",label:"🧝 エルフ"},
     {tag:"dragon wings",label:"🐉 ドラゴン"},
-    {tag:"bunny ears",label:"🐰 うさ耳"},
-    {tag:"wolf ears and tail",label:"🐺 狼耳"},
-    {tag:"witch hat",label:"🧙 魔女"},
     {tag:"halo",label:"👼 光輪"},
-    {tag:"mermaid tail",label:"🧜 人魚"},
-    {tag:"bear ears",label:"🐻 熊耳"},
-    {tag:"sheep horns",label:"🐑 羊角"},
-    {tag:"oni horns, japanese demon",label:"👹 鬼"},
+    {tag:"witch hat",label:"🧙 魔女"},
     {tag:"fairy wings",label:"🧚 妖精"},
-    {tag:"vampire fangs",label:"🧛 吸血鬼"},
     {tag:"nine tails, kitsune",label:"🦊 九尾"},
+    {tag:"oni horns, japanese demon",label:"👹 鬼"},
+    {tag:"mermaid tail",label:"🧜 人魚"},
+    {tag:"vampire fangs",label:"🧛 吸血鬼"},
+    // 特殊系
     {tag:"robot parts, cyborg",label:"🤖 サイボーグ"},
     {tag:"plant, flower growing from head",label:"🌺 花人間"}
   ],
   outfit: [
+    // 学校・日常系
     {tag:"school uniform",label:"🎓 制服"},
     {tag:"casual clothes",label:"👕 カジュアル"},
-    {tag:"suit",label:"💼 スーツ"},
-    {tag:"kimono",label:"👘 着物"},
     {tag:"hoodie",label:"🧥 パーカー"},
-    {tag:"dress",label:"👗 ドレス"},
-    {tag:"maid outfit",label:"🫧 メイド服"},
     {tag:"sportswear",label:"🏃 スポーツ"},
-    {tag:"gothic lolita fashion",label:"🖤 ゴスロリ"},
-    {tag:"yukata",label:"🎆 浴衣"},
-    {tag:"sailor uniform",label:"⚓ セーラー服"},
-    {tag:"fantasy armor",label:"⚔️ 鎧"},
-    {tag:"idol costume",label:"🌟 アイドル衣装"},
     {tag:"pajamas",label:"😴 パジャマ"},
+    {tag:"swimsuit",label:"🏊 水着"},
+    // 和装系
+    {tag:"kimono",label:"👘 着物"},
+    {tag:"yukata",label:"🎆 浴衣"},
     {tag:"shrine maiden outfit, miko",label:"⛩️ 巫女"},
+    {tag:"hakama",label:"🎌 袴"},
     {tag:"ninja outfit",label:"🥷 忍者"},
+    // ファンタジー系
+    {tag:"fantasy armor",label:"⚔️ 鎧"},
     {tag:"wizard robe",label:"🧙 魔法使いローブ"},
+    {tag:"maid outfit",label:"🫧 メイド服"},
+    {tag:"gothic lolita fashion",label:"🖤 ゴスロリ"},
+    {tag:"idol costume",label:"🌟 アイドル衣装"},
+    {tag:"dress",label:"👗 ドレス"},
+    {tag:"wedding dress",label:"💒 ウェディング"},
+    // フォーマル系
+    {tag:"suit",label:"💼 スーツ"},
+    {tag:"sailor uniform",label:"⚓ セーラー服"},
     {tag:"military uniform",label:"🎖️ 軍服"},
     {tag:"detective coat, trench coat",label:"🔍 探偵コート"},
-    {tag:"swimsuit",label:"🏊 水着"},
-    {tag:"winter coat, fur coat",label:"❄️ 冬コート"},
-    {tag:"wedding dress",label:"💒 ウェディング"},
-    {tag:"hakama",label:"🎌 袴"}
+    {tag:"winter coat, fur coat",label:"❄️ 冬コート"}
   ],
   acc: [
+    // 顔・頭系
     {tag:"glasses",label:"👓 メガネ"},
-    {tag:"hat",label:"🎩 帽子"},
-    {tag:"earrings",label:"💎 ピアス"},
-    {tag:"ribbon",label:"🎀 リボン"},
-    {tag:"mask",label:"😷 マスク"},
-    {tag:"headphones",label:"🎧 ヘッドフォン"},
-    {tag:"scarf",label:"🧣 マフラー"},
-    {tag:"crown",label:"👑 王冠"},
-    {tag:"flower in hair",label:"🌸 花飾り"},
     {tag:"sunglasses",label:"🕶️ サングラス"},
-    {tag:"choker",label:"🖤 チョーカー"},
-    {tag:"bow tie",label:"🎀 蝶ネクタイ"},
+    {tag:"monocle",label:"🧐 片眼鏡"},
+    {tag:"eye patch",label:"🏴‍☠️ 眼帯"},
+    {tag:"hat",label:"🎩 帽子"},
+    {tag:"beret",label:"🎨 ベレー帽"},
+    {tag:"ribbon",label:"🎀 リボン"},
     {tag:"hair clip, hairpin",label:"📎 ヘアピン"},
     {tag:"cat ear headband",label:"🐱 猫耳カチューシャ"},
-    {tag:"monocle",label:"🧐 片眼鏡"},
-    {tag:"beret",label:"🎨 ベレー帽"},
-    {tag:"hood up",label:"🧥 フード"},
+    {tag:"flower in hair",label:"🌸 花飾り"},
     {tag:"feather accessory",label:"🪶 羽飾り"},
+    {tag:"crown",label:"👑 王冠"},
+    {tag:"hood up",label:"🧥 フード"},
+    {tag:"headphones",label:"🎧 ヘッドフォン"},
+    {tag:"mask",label:"😷 マスク"},
+    // 首・体系
+    {tag:"earrings",label:"💎 ピアス"},
     {tag:"necklace, pendant",label:"📿 ネックレス"},
+    {tag:"choker",label:"🖤 チョーカー"},
+    {tag:"bow tie",label:"🎀 蝶ネクタイ"},
+    {tag:"scarf",label:"🧣 マフラー"},
+    // 手系
     {tag:"bracelet, wristband",label:"⌚ ブレスレット"},
-    {tag:"gloves",label:"🧤 手袋"},
-    {tag:"eye patch",label:"🏴‍☠️ 眼帯"}
+    {tag:"gloves",label:"🧤 手袋"}
   ],
   pose: [
+    // 立ちポーズ系
     {tag:"front facing, looking at viewer",label:"👀 正面"},
     {tag:"side profile view",label:"➡️ 横顔"},
     {tag:"looking back, turned around",label:"🔄 振り向き"},
-    {tag:"waving hand, greeting",label:"👋 手を振る"},
+    {tag:"back view, seen from behind",label:"🔙 後ろ姿"},
     {tag:"arms crossed",label:"💪 腕組み"},
-    {tag:"peace sign, v sign",label:"✌️ ピース"},
-    {tag:"sitting pose",label:"🪑 座り"},
-    {tag:"jumping pose",label:"🦘 ジャンプ"},
-    {tag:"thinking pose, hand on chin",label:"🤔 考え中"},
-    {tag:"pointing finger",label:"👉 指差し"},
     {tag:"hands on hips",label:"🫵 腰に手"},
-    {tag:"lying down, resting pose",label:"🛌 寝転び"},
-    {tag:"running pose",label:"🏃 走り"},
-    {tag:"fighting stance, battle ready",label:"⚔️ 戦闘ポーズ"},
-    {tag:"dancing pose",label:"💃 ダンス"},
-    {tag:"kneeling pose",label:"🧎 ひざまずき"},
     {tag:"leaning against wall",label:"🧱 壁もたれ"},
     {tag:"hand raised up high",label:"🙋 手を挙げる"},
-    {tag:"reading a book",label:"📖 読書中"},
-    {tag:"back view, seen from behind",label:"🔙 後ろ姿"},
-    {tag:"curled up, hugging knees",label:"🤗 体育座り"}
+    {tag:"pointing finger",label:"👉 指差し"},
+    // 動きポーズ系
+    {tag:"waving hand, greeting",label:"👋 手を振る"},
+    {tag:"peace sign, v sign",label:"✌️ ピース"},
+    {tag:"jumping pose",label:"🦘 ジャンプ"},
+    {tag:"running pose",label:"🏃 走り"},
+    {tag:"dancing pose",label:"💃 ダンス"},
+    {tag:"fighting stance, battle ready",label:"⚔️ 戦闘ポーズ"},
+    // 座り・寝系
+    {tag:"sitting pose",label:"🪑 座り"},
+    {tag:"kneeling pose",label:"🧎 ひざまずき"},
+    {tag:"lying down, resting pose",label:"🛌 寝転び"},
+    {tag:"curled up, hugging knees",label:"🤗 体育座り"},
+    // その他
+    {tag:"thinking pose, hand on chin",label:"🤔 考え中"},
+    {tag:"reading a book",label:"📖 読書中"}
   ],
   bg: [
+    // シンプル系
     {tag:"white background",label:"⬜ 白背景"},
     {tag:"transparent background",label:"🔲 透過"},
+    {tag:"gradient background, colorful",label:"🌈 グラデ背景"},
+    // 自然系
     {tag:"nature background, forest",label:"🌲 自然・森"},
-    {tag:"city background, urban",label:"🏙️ 都市"},
-    {tag:"school background",label:"🏫 学校"},
-    {tag:"fantasy background",label:"🌌 ファンタジー"},
     {tag:"cherry blossom background",label:"🌸 桜"},
-    {tag:"night sky background, stars",label:"🌙 夜空"},
-    {tag:"cafe background",label:"☕ カフェ"},
     {tag:"beach background, ocean",label:"🏖️ 海辺"},
     {tag:"snowy winter background",label:"❄️ 雪景色"},
     {tag:"sunset background, golden hour",label:"🌅 夕焼け"},
-    {tag:"library background, books",label:"📚 図書館"},
-    {tag:"japanese temple background",label:"⛩️ 神社"},
-    {tag:"rainy background, rain",label:"🌧️ 雨"},
-    {tag:"space background, galaxy",label:"🚀 宇宙"},
     {tag:"meadow background, flowers",label:"🌼 花畑"},
-    {tag:"dark dungeon background",label:"🏰 ダンジョン"},
+    {tag:"rainy background, rain",label:"🌧️ 雨"},
+    // 都市・建物系
+    {tag:"city background, urban",label:"🏙️ 都市"},
+    {tag:"school background",label:"🏫 学校"},
+    {tag:"cafe background",label:"☕ カフェ"},
+    {tag:"library background, books",label:"📚 図書館"},
     {tag:"rooftop background",label:"🏙️ 屋上"},
-    {tag:"festival background, fireworks",label:"🎆 お祭り"}
+    {tag:"japanese temple background",label:"⛩️ 神社"},
+    {tag:"festival background, fireworks",label:"🎆 お祭り"},
+    // ファンタジー系
+    {tag:"fantasy background, magical",label:"🌌 ファンタジー"},
+    {tag:"night sky background, stars",label:"🌙 夜空"},
+    {tag:"space background, galaxy",label:"🚀 宇宙"},
+    {tag:"dark dungeon background",label:"🏰 ダンジョン"}
   ],
   style: [
-    {tag:"anime style",label:"🎌 アニメ"},
-    {tag:"pastel anime style",label:"🌸 パステルアニメ"},
-    {tag:"chibi super deformed style",label:"🧸 デフォルメキャラ"},
-    {tag:"3d render style",label:"🎮 3Dゲーム風"},
-    {tag:"business avatar",label:"💼 ビジネス"},
-    {tag:"watercolor illustration style",label:"🎨 水彩画"},
-    {tag:"digital painting style",label:"🖼️ デジタルペイント"},
-    {tag:"vintage style photography",label:"📸 ヴィンテージ"},
-    {tag:"high quality general",label:"✨ 高品質汎用"},
-    {tag:"cute characters style",label:"🎪 かわいいキャラ"},
-    {tag:"rpg character style",label:"🗡️ RPGキャラ"},
-    {tag:"kemono furry animal style",label:"🐾 ケモノ・動物"},
-    {tag:"retro anime style",label:"📺 レトロアニメ"}
+    // アニメ系
+    {tag:"anime style",label:"🎌 アニメ",isStyle:true},
+    {tag:"pastel anime style",label:"🌸 パステルアニメ",isStyle:true},
+    {tag:"chibi super deformed style",label:"🧸 デフォルメキャラ",isStyle:true},
+    {tag:"retro anime style",label:"📺 レトロアニメ",isStyle:true},
+    {tag:"cute characters style",label:"🎪 かわいいキャラ",isStyle:true},
+    // アート系
+    {tag:"watercolor illustration style",label:"🎨 水彩画",isStyle:true},
+    {tag:"digital painting style",label:"🖼️ デジタルペイント",isStyle:true},
+    {tag:"vintage style photography",label:"📸 ヴィンテージ",isStyle:true},
+    {tag:"sketch style",label:"✏️ スケッチ",isStyle:true},
+    // 特殊系
+    {tag:"3d render style",label:"🎮 3Dゲーム風",isStyle:true},
+    {tag:"pixel art",label:"🕹️ ドット絵",isStyle:true},
+    {tag:"rpg character style",label:"🗡️ RPGキャラ",isStyle:true},
+    {tag:"kemono furry animal style",label:"🐾 ケモノ",isStyle:true},
+    {tag:"business avatar",label:"💼 ビジネス",isStyle:true},
+    {tag:"high quality general",label:"✨ 高品質汎用",isStyle:true}
   ]
 };
 
-
 const catLabels = {
-  gender:"👤 性別", age:"🎂 年齢感", body:"💪 体型",
-  hair:"💇 髪型", color:"🎨 髪色", face:"😊 表情",
-  eyes:"👁️ 瞳", attr:"✨ 属性", outfit:"👗 服装",
-  acc:"👓 アクセ", pose:"🤸 ポーズ", bg:"🖼️ 背景",
-  style:"🎨 スタイル"
+  gender: "👤 性別",
+  age:    "🎂 年齢感",
+  body:   "💪 体型",
+  hair:   "💇 髪型",
+  color:  "🎨 髪色",
+  eyes:   "👁️ 瞳",
+  face:   "😊 表情",
+  attr:   "✨ 属性",
+  outfit: "👗 服装",
+  acc:    "👓 アクセ",
+  pose:   "🤸 ポーズ",
+  bg:     "🖼️ 背景",
+  style:  "🎨 スタイル"
 };
 
-let currentCat = "gender"; // 左パネルで現在表示中のカテゴリ
+let currentCat = "gender";
 
 // ===== 初期化 =====
 function init() {
@@ -772,7 +825,6 @@ function init() {
   initDragDrop();
   initSwipe();
 
-  // タブの左右ボタン制御
   const tabs = document.getElementById("catTabs");
   if (tabs) {
     tabs.addEventListener("scroll", updateScrollBtns);
@@ -833,7 +885,7 @@ function renderTagList(cat) {
           data-tag="${t.tag}"
           data-cat="${cat}"
           data-isstyle="${isStyle}"
-          onclick="tapSelect('${cat}','${t.tag}',${isStyle})"
+          onclick="tapSelect('${cat}','${t.tag.replace(/'/g,"\\'")}',${isStyle})"
           draggable="false"
         >${t.label}</button>`;
       }).join("")}
@@ -841,7 +893,6 @@ function renderTagList(cat) {
   `;
   area.innerHTML = html;
 
-  // ドラッグイベント再設定
   area.querySelectorAll(".tag-btn").forEach(btn => {
     btn.addEventListener("mousedown", onDragStart);
     btn.addEventListener("touchstart", onTouchStart, {passive: false});
@@ -874,7 +925,7 @@ function renderSelectedZone() {
     for (let cat in selected) {
       const tag = selected[cat];
       const label = getLabelByTag(tag);
-      chips.push(`<div class="selected-tag-chip" onclick="removeSelected('${cat}','${tag}',false)">
+      chips.push(`<div class="selected-tag-chip" onclick="removeSelected('${cat}','${tag.replace(/'/g,"\\'")}',false)">
         <span class="cat-badge">${catLabels[cat].split(" ")[0]}</span>
         ${label}
         <span class="remove-x">×</span>
@@ -882,7 +933,7 @@ function renderSelectedZone() {
     }
     if (selectedStyle) {
       const label = getLabelByTag(selectedStyle);
-      chips.push(`<div class="selected-tag-chip style-chip" onclick="removeSelected('style','${selectedStyle}',true)">
+      chips.push(`<div class="selected-tag-chip style-chip" onclick="removeSelected('style','${selectedStyle.replace(/'/g,"\\'")}',true)">
         <span class="cat-badge">🎨</span>
         ${label}
         <span class="remove-x">×</span>
@@ -1081,7 +1132,6 @@ function renderSwipeCards() {
 }
 
 function getEmoji(tag) {
-  // タグのlabelからemojiを取得
   for (let cat in allTags) {
     const found = allTags[cat].find(t => t.tag === tag);
     if (found) {
@@ -1123,7 +1173,6 @@ function setupSwipeDrag(el, card) {
 function doSwipeLeft() {
   swipeCardIndex++;
   const cards = getUnselectedCards();
-  // スキップでカード全部なくなったら次のカテゴリへ
   if (swipeCardIndex >= cards.length) {
     autoNextCat();
   } else {
@@ -1137,17 +1186,14 @@ function doSwipeRight(card) {
   else selected[catKey] = card.tag;
   swipeCardIndex++;
   renderSelectedZone();
-  // 選択した瞬間に次のカテゴリへ自動移動
   autoNextCat();
 }
 
 function autoNextCat() {
   const nextIndex = swipeCatIndex + 1;
   if (nextIndex < swipeCatKeys.length) {
-    // カードがアニメで消えるのを少し待ってから移動
     setTimeout(() => loadSwipeCat(nextIndex), 300);
   } else {
-    // 全カテゴリ完了
     renderSwipeCards();
   }
 }
@@ -1169,17 +1215,24 @@ function switchMode(mode) {
   );
 }
 
-// ===== ランダム・リセット =====
+// ===== ランダム =====
 function randomGenerate() {
   selected = {}; selectedStyle = "";
   const pick = arr => arr[Math.floor(Math.random() * arr.length)];
-  ["gender","hair","color","face"].forEach(cat => { selected[cat] = pick(allTags[cat]).tag; });
-  if (Math.random() > 0.5) selected.attr = pick(allTags.attr).tag;
+  // 必須カテゴリ
+  ["gender", "hair", "color", "face"].forEach(cat => {
+    selected[cat] = pick(allTags[cat]).tag;
+  });
+  // 任意カテゴリ（50%で選択）
+  ["age", "body", "eyes", "attr", "outfit", "acc", "pose", "bg"].forEach(cat => {
+    if (Math.random() > 0.5) selected[cat] = pick(allTags[cat]).tag;
+  });
   selectedStyle = pick(allTags.style).tag;
   renderTagList(currentCat);
   renderSelectedZone();
 }
 
+// ===== リセット =====
 function resetAll() {
   selected = {}; selectedStyle = "";
   renderTagList(currentCat);
@@ -1208,14 +1261,12 @@ async function generate() {
   document.getElementById("resultCard").style.display = "none";
 
   try {
-    // WorkerからJSONでStorageURLを受け取る
     const res = await fetch(workerUrl);
     const json = await res.json();
     const storageUrl = json.url;
 
     if (!storageUrl) throw new Error("URLが取得できませんでした");
 
-    // 生成成功後に回数をカウント
     if (data) await sb.from("usage").update({count: count+1}).eq("user_id", currentUser.id).eq("date", today);
     else await sb.from("usage").insert({user_id: currentUser.id, date: today, count: 1});
 
@@ -1230,7 +1281,6 @@ async function generate() {
       document.getElementById("save-btn").style.display = "inline-block";
       img.scrollIntoView({behavior:"smooth"});
 
-      // 自動保存（Storage URLをhistoryテーブルへ）
       await sb.from("history").insert({
         user_id: currentUser.id,
         image_url: storageUrl,
