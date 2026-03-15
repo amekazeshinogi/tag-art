@@ -7,7 +7,6 @@
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <style>
     * { box-sizing: border-box; margin: 0; padding: 0; }
-
     :root {
       --primary: #667eea;
       --primary-dark: #764ba2;
@@ -20,371 +19,249 @@
       --shadow: 0 2px 12px rgba(102,126,234,0.10);
       --radius: 14px;
     }
-
     body {
       font-family: -apple-system, BlinkMacSystemFont, 'Hiragino Sans', sans-serif;
-      background: var(--bg);
-      color: var(--text);
-      min-height: 100vh;
+      background: var(--bg); color: var(--text); min-height: 100vh;
     }
 
     /* ===== ヘッダー ===== */
     .header {
       background: linear-gradient(135deg, var(--primary), var(--primary-dark));
-      color: white;
-      padding: 14px 16px;
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      position: sticky;
-      top: 0;
-      z-index: 100;
+      color: white; padding: 14px 16px;
+      display: flex; align-items: center; justify-content: space-between;
+      position: sticky; top: 0; z-index: 100;
       box-shadow: 0 2px 12px rgba(102,126,234,0.3);
     }
     .header h1 { font-size: 20px; font-weight: 800; letter-spacing: -0.5px; }
     .header h1 span { opacity: 0.7; font-weight: 400; font-size: 13px; margin-left: 6px; }
-
     .auth-area { display: flex; align-items: center; gap: 8px; }
     .auth-area input {
       padding: 6px 10px; border-radius: 8px; border: none;
-      font-size: 12px; background: rgba(255,255,255,0.2); color: white;
-      width: 110px;
+      font-size: 12px; background: rgba(255,255,255,0.2); color: white; width: 110px;
     }
     .auth-area input::placeholder { color: rgba(255,255,255,0.6); }
     .auth-area button {
       padding: 6px 12px; border-radius: 8px; border: none;
       font-size: 12px; font-weight: 600; cursor: pointer;
-      background: rgba(255,255,255,0.25); color: white;
-      transition: background 0.2s;
+      background: rgba(255,255,255,0.25); color: white; transition: background 0.2s;
     }
     .auth-area button:hover { background: rgba(255,255,255,0.4); }
     #userInfo { font-size: 12px; opacity: 0.85; }
 
-    /* ===== メインコンテナ ===== */
     .main-container { max-width: 900px; margin: 0 auto; padding: 16px; }
 
-    /* ===== モード切替 ===== */
-    .mode-tabs {
-      display: flex; gap: 8px; margin-bottom: 14px;
-    }
+    .mode-tabs { display: flex; gap: 8px; margin-bottom: 14px; }
     .mode-tab {
       flex: 1; padding: 10px; border-radius: 10px; border: none;
       background: var(--card); color: var(--text-muted);
       font-size: 14px; font-weight: 600; cursor: pointer;
       box-shadow: var(--shadow); transition: all 0.2s;
     }
-    .mode-tab.active {
-      background: linear-gradient(135deg, var(--primary), var(--primary-dark));
-      color: white;
-    }
+    .mode-tab.active { background: linear-gradient(135deg, var(--primary), var(--primary-dark)); color: white; }
 
-    /* ===== 2カラムレイアウト ===== */
-    .two-col {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 12px;
-      align-items: start;
-    }
+    .two-col { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; align-items: start; }
 
-    /* 左パネル */
-    .left-panel {
-      background: var(--card);
-      border-radius: var(--radius);
-      box-shadow: var(--shadow);
-      overflow: hidden;
-    }
+    .left-panel { background: var(--card); border-radius: var(--radius); box-shadow: var(--shadow); overflow: hidden; }
 
-    /* カテゴリタブ（横スクロール） */
+    /* カテゴリタブ */
     .cat-tabs-wrapper {
-      position: relative;
-      background: #f8f9ff;
-      border-bottom: 1px solid var(--border);
-      display: flex;
-      align-items: flex-end;
+      position: relative; background: #f8f9ff;
+      border-bottom: 1px solid var(--border); display: flex; align-items: flex-end;
     }
     .cat-scroll-btn {
-      flex-shrink: 0;
-      width: 28px; height: 36px;
-      border: none; background: transparent;
-      color: var(--primary); font-size: 16px; font-weight: 700;
-      cursor: pointer; display: flex; align-items: center; justify-content: center;
-      transition: all 0.15s; border-radius: 6px;
-      padding-bottom: 4px;
+      flex-shrink: 0; width: 28px; height: 36px; border: none; background: transparent;
+      color: var(--primary); font-size: 16px; font-weight: 700; cursor: pointer;
+      display: flex; align-items: center; justify-content: center;
+      transition: all 0.15s; border-radius: 6px; padding-bottom: 4px;
     }
     .cat-scroll-btn:hover { background: #ede9ff; }
     .cat-scroll-btn:disabled { opacity: 0.25; cursor: default; background: transparent; }
     .cat-tabs {
-      display: flex;
-      overflow-x: auto;
-      flex: 1;
-      padding: 6px 0 0;
-      gap: 4px;
-      scrollbar-width: thin;
-      scrollbar-color: #c7b8f5 #f0f2f8;
+      display: flex; overflow-x: auto; flex: 1; padding: 6px 0 0; gap: 4px;
+      scrollbar-width: thin; scrollbar-color: #c7b8f5 #f0f2f8;
     }
     .cat-tabs::-webkit-scrollbar { height: 4px; }
     .cat-tabs::-webkit-scrollbar-track { background: #f0f2f8; border-radius: 2px; }
     .cat-tabs::-webkit-scrollbar-thumb { background: #c7b8f5; border-radius: 2px; }
     .cat-tab {
-      padding: 7px 12px; border-radius: 8px 8px 0 0;
-      border: none; background: transparent;
-      font-size: 12px; font-weight: 600; color: var(--text-muted);
+      padding: 7px 12px; border-radius: 8px 8px 0 0; border: none;
+      background: transparent; font-size: 12px; font-weight: 600; color: var(--text-muted);
       cursor: pointer; white-space: nowrap; flex-shrink: 0;
       transition: all 0.15s; border-bottom: 2px solid transparent;
+      position: relative;
     }
-    .cat-tab.active {
-      color: var(--primary-dark);
-      background: white;
-      border-bottom: 2px solid var(--primary);
+    .cat-tab.active { color: var(--primary-dark); background: white; border-bottom: 2px solid var(--primary); }
+    .cat-tab .sel-dot {
+      position: absolute; top: 4px; right: 4px;
+      width: 6px; height: 6px; border-radius: 50%;
+      background: #4caf50; display: none;
     }
+    .cat-tab.has-selection .sel-dot { display: block; }
 
-    /* タグ一覧エリア */
-    .tag-list-area {
-      padding: 14px;
-      min-height: 200px;
+    /* サブタブ */
+    .sub-tabs-wrapper {
+      background: #f0f2f8; border-bottom: 1px solid var(--border);
+      padding: 6px 12px; display: flex; gap: 6px; overflow-x: auto; scrollbar-width: none;
     }
-    .cat-label {
-      font-size: 11px; color: var(--text-muted);
-      text-transform: uppercase; letter-spacing: 0.8px;
-      margin-bottom: 10px; font-weight: 600;
+    .sub-tabs-wrapper::-webkit-scrollbar { display: none; }
+    .sub-tab {
+      padding: 5px 12px; border-radius: 14px; border: 1.5px solid var(--border);
+      background: white; font-size: 11px; font-weight: 600; color: var(--text-muted);
+      cursor: pointer; white-space: nowrap; flex-shrink: 0; transition: all 0.15s;
     }
-    .tag-grid {
-      display: flex; flex-wrap: wrap; gap: 8px;
-    }
-
-    .tag-btn {
-      padding: 9px 15px;
-      background: #f0f2f8;
-      border: 1.5px solid var(--border);
-      border-radius: 20px;
-      font-size: 13px; color: var(--text);
-      cursor: pointer;
-      transition: all 0.18s;
-      user-select: none;
-      touch-action: none;
-    }
-    .tag-btn:hover {
-      border-color: var(--primary);
-      color: var(--primary-dark);
-      background: #f0eeff;
-    }
-    .tag-btn.selected {
-      background: linear-gradient(135deg, var(--primary), var(--primary-dark));
-      color: white;
-      border-color: transparent;
-      box-shadow: 0 2px 8px rgba(102,126,234,0.35);
-    }
-    .tag-btn.style-selected {
-      background: linear-gradient(135deg, #ff9800, #ff5722);
-      color: white;
-      border-color: transparent;
-      box-shadow: 0 2px 8px rgba(255,152,0,0.35);
-    }
-
-    /* 右パネル */
-    .right-panel {
-      display: flex;
-      flex-direction: column;
-      gap: 10px;
-    }
-
-    /* 選択済みエリア */
-    .selected-panel {
-      background: var(--card);
-      border-radius: var(--radius);
-      box-shadow: var(--shadow);
-      padding: 14px;
-    }
-    .selected-panel h3 {
-      font-size: 12px; color: var(--text-muted);
-      text-transform: uppercase; letter-spacing: 0.8px;
-      margin-bottom: 12px; font-weight: 600;
-    }
-
-    .selected-drop-zone {
-      min-height: 120px;
-      border: 2px dashed var(--border);
-      border-radius: 10px;
-      padding: 10px;
-      display: flex;
-      flex-wrap: wrap;
-      gap: 8px;
-      align-content: flex-start;
-      transition: all 0.2s;
-      background: #fafbff;
-    }
-    .selected-drop-zone.drag-over {
-      border-color: var(--primary);
-      background: #f0eeff;
-    }
-    .selected-drop-zone.empty-hint {
-      align-items: center;
-      justify-content: center;
-    }
-    .drop-hint-text {
-      color: #ccc; font-size: 12px; text-align: center;
-      line-height: 1.7;
-    }
-
-    .selected-tag-chip {
-      display: flex; align-items: center; gap: 5px;
-      padding: 7px 12px;
-      background: linear-gradient(135deg, var(--primary), var(--primary-dark));
-      color: white; border-radius: 20px; font-size: 12px;
-      cursor: pointer; transition: opacity 0.2s;
-      animation: popIn 0.18s ease;
-    }
-    .selected-tag-chip.style-chip {
-      background: linear-gradient(135deg, #ff9800, #ff5722);
-    }
-    .selected-tag-chip:hover { opacity: 0.8; }
-    .selected-tag-chip .cat-badge {
-      font-size: 10px; opacity: 0.75; font-weight: 400;
-    }
-    .selected-tag-chip .remove-x { font-size: 14px; opacity: 0.8; }
-
-    @keyframes popIn {
-      from { transform: scale(0.8); opacity: 0; }
-      to { transform: scale(1); opacity: 1; }
-    }
-
-    /* アクションパネル */
-    .action-panel {
-      background: var(--card);
-      border-radius: var(--radius);
-      box-shadow: var(--shadow);
-      padding: 14px;
-    }
-    #countText {
-      font-size: 12px; color: var(--text-muted);
-      text-align: center; margin-bottom: 10px;
-    }
-    .action-btns {
-      display: flex; flex-direction: column; gap: 8px;
-    }
-    .btn-generate {
-      padding: 13px;
-      background: linear-gradient(135deg, var(--primary), var(--primary-dark));
-      color: white; border: none; border-radius: 12px;
-      font-size: 15px; font-weight: 700; cursor: pointer;
-      transition: all 0.2s; letter-spacing: 0.3px;
-    }
-    .btn-generate:hover { opacity: 0.9; transform: translateY(-1px); box-shadow: 0 4px 14px rgba(102,126,234,0.4); }
-    .btn-generate:active { transform: translateY(0); }
-
-    .btn-row { display: flex; gap: 8px; }
-    .btn-sub {
-      flex: 1; padding: 10px;
-      background: #f0f2f8; border: 1.5px solid var(--border);
-      border-radius: 10px; font-size: 13px; font-weight: 600;
-      color: var(--text); cursor: pointer; transition: all 0.15s;
-    }
-    .btn-sub:hover { background: #e8eaf6; border-color: var(--primary); color: var(--primary-dark); }
-
-    /* ===== 結果エリア ===== */
-    .result-section { margin-top: 16px; }
-    #loading {
-      display: none; text-align: center; padding: 24px;
-      color: var(--primary); font-size: 14px; font-weight: 600;
-    }
-    .result-card {
-      display: none;
-      background: var(--card);
-      border-radius: var(--radius);
-      box-shadow: var(--shadow);
-      padding: 16px; text-align: center;
-    }
-    .result-card img {
-      width: 100%; max-width: 320px;
-      border-radius: 12px;
-      box-shadow: 0 4px 20px rgba(0,0,0,0.12);
-    }
-    #save-btn {
-      display: none; margin-top: 14px;
-      padding: 11px 28px;
-      background: linear-gradient(135deg, #43e97b, #38f9d7);
-      color: white; border: none; border-radius: 10px;
-      font-size: 14px; font-weight: 700; cursor: pointer;
-      transition: all 0.2s;
-    }
-    #save-btn:hover { opacity: 0.9; transform: translateY(-1px); }
-
-    /* ===== スワイプモード ===== */
-    #swipeMode { display: none; }
-    .swipe-cat-tabs {
-      display: flex; gap: 6px; overflow-x: auto;
-      padding-bottom: 5px; margin-bottom: 12px; scrollbar-width: none;
-    }
-    .swipe-cat-tabs::-webkit-scrollbar { display: none; }
-    .swipe-cat-tab {
-      padding: 7px 14px; border-radius: 20px;
-      border: 1.5px solid var(--border); background: var(--card);
-      color: #666; font-size: 12px; font-weight: 600; cursor: pointer;
-      white-space: nowrap; flex-shrink: 0; transition: all 0.15s;
-    }
-    .swipe-cat-tab.active {
+    .sub-tab.active {
       background: linear-gradient(135deg, var(--primary), var(--primary-dark));
       color: white; border-color: transparent;
     }
+
+    .tag-list-area { padding: 14px; min-height: 200px; }
+    .cat-label {
+      font-size: 11px; color: var(--text-muted); text-transform: uppercase;
+      letter-spacing: 0.8px; margin-bottom: 10px; font-weight: 600;
+    }
+    .tag-grid { display: flex; flex-wrap: wrap; gap: 8px; }
+
+    .tag-btn {
+      padding: 9px 15px; background: #f0f2f8; border: 1.5px solid var(--border);
+      border-radius: 20px; font-size: 13px; color: var(--text);
+      cursor: pointer; transition: all 0.18s; user-select: none; touch-action: none;
+    }
+    .tag-btn:hover { border-color: var(--primary); color: var(--primary-dark); background: #f0eeff; }
+    .tag-btn.selected {
+      background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+      color: white; border-color: transparent; box-shadow: 0 2px 8px rgba(102,126,234,0.35);
+    }
+    .tag-btn.style-selected {
+      background: linear-gradient(135deg, #ff9800, #ff5722);
+      color: white; border-color: transparent; box-shadow: 0 2px 8px rgba(255,152,0,0.35);
+    }
+
+    /* 段階選択パネル */
+    .substep-panel {
+      background: #fff8f0; border: 1.5px solid #ffe0b2;
+      border-radius: 10px; padding: 12px; margin-top: 12px;
+      animation: fadeIn 0.2s ease;
+    }
+    .substep-title {
+      font-size: 11px; font-weight: 700; color: #e65100;
+      margin-bottom: 10px; letter-spacing: 0.5px;
+    }
+    .substep-label {
+      font-size: 11px; color: var(--text-muted); font-weight: 600;
+      margin-bottom: 5px; margin-top: 8px;
+    }
+    .substep-label:first-of-type { margin-top: 0; }
+    .substep-row { display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 4px; }
+    @keyframes fadeIn { from { opacity:0; transform:translateY(-6px); } to { opacity:1; transform:translateY(0); } }
+
+    /* 右パネル */
+    .right-panel { display: flex; flex-direction: column; gap: 10px; }
+    .selected-panel { background: var(--card); border-radius: var(--radius); box-shadow: var(--shadow); padding: 14px; }
+    .selected-panel h3 {
+      font-size: 12px; color: var(--text-muted); text-transform: uppercase;
+      letter-spacing: 0.8px; margin-bottom: 12px; font-weight: 600;
+    }
+    .selected-drop-zone {
+      min-height: 120px; border: 2px dashed var(--border); border-radius: 10px;
+      padding: 10px; display: flex; flex-wrap: wrap; gap: 8px;
+      align-content: flex-start; transition: all 0.2s; background: #fafbff;
+    }
+    .selected-drop-zone.drag-over { border-color: var(--primary); background: #f0eeff; }
+    .selected-drop-zone.empty-hint { align-items: center; justify-content: center; }
+    .drop-hint-text { color: #ccc; font-size: 12px; text-align: center; line-height: 1.7; }
+
+    .selected-tag-chip {
+      display: flex; align-items: center; gap: 5px; padding: 7px 12px;
+      background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+      color: white; border-radius: 20px; font-size: 12px;
+      cursor: pointer; transition: opacity 0.2s; animation: popIn 0.18s ease;
+    }
+    .selected-tag-chip.style-chip { background: linear-gradient(135deg, #ff9800, #ff5722); }
+    .selected-tag-chip:hover { opacity: 0.8; }
+    .selected-tag-chip .cat-badge { font-size: 10px; opacity: 0.75; font-weight: 400; }
+    .selected-tag-chip .remove-x { font-size: 14px; opacity: 0.8; }
+    @keyframes popIn { from { transform: scale(0.8); opacity: 0; } to { transform: scale(1); opacity: 1; } }
+
+    .action-panel { background: var(--card); border-radius: var(--radius); box-shadow: var(--shadow); padding: 14px; }
+    #countText { font-size: 12px; color: var(--text-muted); text-align: center; margin-bottom: 10px; }
+    .action-btns { display: flex; flex-direction: column; gap: 8px; }
+    .btn-generate {
+      padding: 13px; background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+      color: white; border: none; border-radius: 12px;
+      font-size: 15px; font-weight: 700; cursor: pointer; transition: all 0.2s;
+    }
+    .btn-generate:hover { opacity: 0.9; transform: translateY(-1px); box-shadow: 0 4px 14px rgba(102,126,234,0.4); }
+    .btn-row { display: flex; gap: 8px; }
+    .btn-sub {
+      flex: 1; padding: 10px; background: #f0f2f8; border: 1.5px solid var(--border);
+      border-radius: 10px; font-size: 13px; font-weight: 600; color: var(--text);
+      cursor: pointer; transition: all 0.15s;
+    }
+    .btn-sub:hover { background: #e8eaf6; border-color: var(--primary); color: var(--primary-dark); }
+
+    .result-section { margin-top: 16px; }
+    #loading { display: none; text-align: center; padding: 24px; color: var(--primary); font-size: 14px; font-weight: 600; }
+    .result-card {
+      display: none; background: var(--card); border-radius: var(--radius);
+      box-shadow: var(--shadow); padding: 16px; text-align: center;
+    }
+    .result-card img { width: 100%; max-width: 320px; border-radius: 12px; box-shadow: 0 4px 20px rgba(0,0,0,0.12); }
+    #save-btn {
+      display: none; margin-top: 14px; padding: 11px 28px;
+      background: linear-gradient(135deg, #43e97b, #38f9d7);
+      color: white; border: none; border-radius: 10px;
+      font-size: 14px; font-weight: 700; cursor: pointer; transition: all 0.2s;
+    }
+    #save-btn:hover { opacity: 0.9; transform: translateY(-1px); }
+
+    #swipeMode { display: none; }
+    .swipe-cat-tabs { display: flex; gap: 6px; overflow-x: auto; padding-bottom: 5px; margin-bottom: 12px; scrollbar-width: none; }
+    .swipe-cat-tabs::-webkit-scrollbar { display: none; }
+    .swipe-cat-tab {
+      padding: 7px 14px; border-radius: 20px; border: 1.5px solid var(--border);
+      background: var(--card); color: #666; font-size: 12px; font-weight: 600;
+      cursor: pointer; white-space: nowrap; flex-shrink: 0; transition: all 0.15s;
+    }
+    .swipe-cat-tab.active { background: linear-gradient(135deg, var(--primary), var(--primary-dark)); color: white; border-color: transparent; }
     .swipe-container { text-align: center; }
     .card-stack { position: relative; height: 220px; margin: 0 auto 16px; width: 200px; }
     .swipe-card {
-      position: absolute; inset: 0;
-      background: white; border-radius: 16px;
-      box-shadow: 0 4px 20px rgba(0,0,0,0.12);
-      display: flex; flex-direction: column;
-      align-items: center; justify-content: center;
-      cursor: grab; transition: box-shadow 0.2s;
-      user-select: none;
+      position: absolute; inset: 0; background: white; border-radius: 16px;
+      box-shadow: 0 4px 20px rgba(0,0,0,0.12); display: flex; flex-direction: column;
+      align-items: center; justify-content: center; cursor: grab; user-select: none;
     }
     .swipe-card.top { z-index: 3; }
     .like-overlay, .nope-overlay {
-      position: absolute; top: 16px;
-      font-size: 13px; font-weight: 800;
-      padding: 4px 12px; border-radius: 8px;
-      opacity: 0; pointer-events: none;
+      position: absolute; top: 16px; font-size: 13px; font-weight: 800;
+      padding: 4px 12px; border-radius: 8px; opacity: 0; pointer-events: none;
     }
     .like-overlay { right: 16px; background: #4caf50; color: white; }
     .nope-overlay { left: 16px; background: #f44336; color: white; }
     .card-emoji { font-size: 56px; margin-bottom: 10px; }
     .card-label { font-size: 18px; font-weight: 700; color: var(--text); }
     .card-sublabel { font-size: 11px; color: var(--text-muted); margin-top: 4px; }
-    .swipe-hint {
-      display: flex; justify-content: space-between;
-      padding: 0 20px; margin-bottom: 12px;
-    }
+    .swipe-hint { display: flex; justify-content: space-between; padding: 0 20px; margin-bottom: 12px; }
     .hint-left { color: #f44336; font-size: 13px; font-weight: 600; }
     .hint-right { color: #4caf50; font-size: 13px; font-weight: 600; }
     .swipe-btns { display: flex; justify-content: center; gap: 24px; }
     .btn-skip, .btn-add {
-      width: 56px; height: 56px; border-radius: 50%;
-      border: none; font-size: 22px; cursor: pointer;
-      box-shadow: 0 4px 14px rgba(0,0,0,0.15);
-      transition: all 0.15s;
+      width: 56px; height: 56px; border-radius: 50%; border: none; font-size: 22px;
+      cursor: pointer; box-shadow: 0 4px 14px rgba(0,0,0,0.15); transition: all 0.15s;
     }
     .btn-skip { background: white; color: #f44336; }
     .btn-add { background: linear-gradient(135deg, #4caf50, #43e97b); color: white; }
-    .btn-skip:hover { transform: scale(1.08); }
-    .btn-add:hover { transform: scale(1.08); }
+    .btn-skip:hover, .btn-add:hover { transform: scale(1.08); }
 
-    /* ===== ドラッグゴースト ===== */
     #dragGhost {
       position: fixed; pointer-events: none; z-index: 9999;
       background: linear-gradient(135deg, var(--primary), var(--primary-dark));
-      color: white; padding: 8px 14px; border-radius: 20px;
-      font-size: 13px; font-weight: 600;
-      box-shadow: 0 4px 14px rgba(102,126,234,0.4);
-      display: none; transform: translate(-50%, -50%);
+      color: white; padding: 8px 14px; border-radius: 20px; font-size: 13px; font-weight: 600;
+      box-shadow: 0 4px 14px rgba(102,126,234,0.4); display: none; transform: translate(-50%, -50%);
     }
 
-    /* ===== レスポンシブ（スマホ） ===== */
     @media (max-width: 600px) {
-      .two-col {
-        grid-template-columns: 1fr;
-      }
-      .right-panel {
-        order: -1;
-      }
+      .two-col { grid-template-columns: 1fr; }
+      .right-panel { order: -1; }
       .selected-drop-zone { min-height: 80px; }
       .cat-tab { font-size: 11px; padding: 6px 10px; }
     }
@@ -392,7 +269,6 @@
 </head>
 <body>
 
-<!-- ヘッダー -->
 <div class="header">
   <h1>tag-art <span>アイコン生成</span></h1>
   <div class="auth-area" id="authArea">
@@ -409,37 +285,30 @@
 </div>
 
 <div class="main-container">
-
-  <!-- モード切替 -->
   <div class="mode-tabs">
     <button class="mode-tab active" onclick="switchMode('drag')">🏷️ タグ選択</button>
     <button class="mode-tab" onclick="switchMode('swipe')">👆 スワイプ</button>
   </div>
 
-  <!-- ===== タグ選択モード（2カラム） ===== -->
   <div id="dragMode">
     <div class="two-col">
-
-      <!-- 左：カテゴリタブ＋タグ一覧 -->
       <div class="left-panel">
-        <div class="cat-tabs-wrapper" id="catTabsWrapper">
+        <div class="cat-tabs-wrapper">
           <button class="cat-scroll-btn" id="catScrollLeft" onclick="scrollTabs(-1)" disabled>‹</button>
           <div class="cat-tabs" id="catTabs"></div>
           <button class="cat-scroll-btn" id="catScrollRight" onclick="scrollTabs(1)">›</button>
         </div>
+        <div class="sub-tabs-wrapper" id="subTabsWrapper" style="display:none;"></div>
         <div class="tag-list-area" id="tagListArea"></div>
       </div>
 
-      <!-- 右：選択済み＋アクション -->
       <div class="right-panel">
-
         <div class="selected-panel">
           <h3>✅ 選択中のタグ</h3>
           <div class="selected-drop-zone empty-hint" id="selectedDropZone">
             <div class="drop-hint-text">タグをここにドロップ<br>またはタップで選択</div>
           </div>
         </div>
-
         <div class="action-panel">
           <p id="countText">本日の残り回数：3回</p>
           <div class="action-btns">
@@ -450,12 +319,10 @@
             </div>
           </div>
         </div>
-
       </div>
     </div>
   </div>
 
-  <!-- ===== スワイプモード ===== -->
   <div id="swipeMode">
     <div class="swipe-cat-tabs" id="swipeCatTabs"></div>
     <div class="swipe-container">
@@ -469,15 +336,12 @@
         <button class="btn-add" onclick="swipeRight()">♥</button>
       </div>
     </div>
-
-    <!-- スワイプモードでも選択済みを表示 -->
     <div class="selected-panel" style="margin-top:12px;">
       <h3>✅ 選択中のタグ</h3>
       <div class="selected-drop-zone empty-hint" id="selectedDropZoneSwipe">
         <div class="drop-hint-text">タグを選んでください</div>
       </div>
     </div>
-
     <div class="action-panel" style="margin-top:10px;">
       <p id="countTextSwipe">本日の残り回数：3回</p>
       <div class="action-btns">
@@ -490,19 +354,15 @@
     </div>
   </div>
 
-  <!-- 生成結果 -->
   <div class="result-section">
     <div id="loading">⏳ 生成中...（20〜30秒かかります）</div>
     <div class="result-card" id="resultCard">
-      <img id="img">
-      <br>
+      <img id="img"><br>
       <button id="save-btn" onclick="saveImage()">💾 画像を保存する</button>
     </div>
   </div>
-
 </div>
 
-<!-- ドラッグゴースト -->
 <div id="dragGhost"></div>
 
 <script>
@@ -511,320 +371,396 @@ const SUPABASE_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZ
 const sb = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
 let currentUser = null;
-let selected = {};      // { gender: "boy", hair: "short hair", ... }
-let selectedStyle = ""; // style は別管理
+let selected = {};
+let selectedStyle = "";
 
-const allTags = {
-  gender: [
-    {tag:"boy",label:"👦 男性"},
-    {tag:"girl",label:"👧 女性"},
-    {tag:"neutral",label:"🧑 中性"}
+// 段階選択の状態
+let eyesState  = { mode: "normal", left: "", right: "" };
+let colorState = { mode: "normal", col1: "", col2: "" };
+let attrState  = { base: "", detail: "" };
+
+// ===== タグ定義（サブグループ付き） =====
+const allTagGroups = {
+  gender: { groups: [
+    { label: "すべて", tags: [
+      {tag:"boy",label:"👦 男性"},
+      {tag:"girl",label:"👧 女性"},
+      {tag:"neutral",label:"🧑 中性"}
+    ]}
+  ]},
+  age: { groups: [
+    { label: "若い系", tags: [
+      {tag:"child appearance, innocent, small",label:"🌱 ちびっ子"},
+      {tag:"youthful, teenage appearance",label:"🎒 思春期"},
+      {tag:"young adult appearance, fresh",label:"🌟 青年"},
+      {tag:"baby face, innocent appearance",label:"🍬 幼顔"},
+      {tag:"youthful energy, lively",label:"⚡ 若々しい"}
+    ]},
+    { label: "大人系", tags: [
+      {tag:"adult appearance, mature",label:"🍂 大人"},
+      {tag:"middle-aged appearance, experienced",label:"🌿 中年"},
+      {tag:"elderly appearance, wise, aged",label:"🏔️ 老年"},
+      {tag:"mature face, dignified, experienced look",label:"👑 貫禄顔"}
+    ]},
+    { label: "特殊系", tags: [
+      {tag:"ancient being, immortal look, ageless, mystical aura",label:"🌀 仙人・不老"},
+      {tag:"ancient soul, childlike appearance but wise eyes, timeless",label:"🌿 老いなき幼子"},
+      {tag:"androgynous, ageless appearance",label:"🌙 中性的な年齢感"}
+    ]}
+  ]},
+  body: { groups: [
+    { label: "小柄系", tags: [
+      {tag:"short, petite",label:"🌱 低身長・小柄"},
+      {tag:"slim, slender body",label:"🌿 細身・スリム"},
+      {tag:"delicate, fragile appearance",label:"🕊️ 華奢"},
+      {tag:"small, chibi proportions",label:"🧸 ちびキャラ体型"},
+      {tag:"tiny, very small",label:"🐾 超小柄"}
+    ]},
+    { label: "標準系", tags: [
+      {tag:"average build",label:"👤 普通体型"},
+      {tag:"athletic, muscular build",label:"💪 筋肉質"},
+      {tag:"well-built, broad shoulders",label:"🏋️ がっしり"}
+    ]},
+    { label: "大柄系", tags: [
+      {tag:"tall, long legs",label:"📏 高身長"},
+      {tag:"curvy, voluptuous",label:"🌸 グラマー"},
+      {tag:"chubby, round body",label:"🍩 ぽっちゃり"},
+      {tag:"lanky, thin and tall",label:"🦒 ひょろ長い"}
+    ]}
+  ]},
+  hair: { groups: [
+    { label: "短め系", tags: [
+      {tag:"short hair",label:"✂️ ショート"},
+      {tag:"bob cut",label:"💆 ボブ"},
+      {tag:"undercut hair style",label:"🔪 刈り上げ"},
+      {tag:"spiky hair",label:"⚡ トゲトゲ"}
+    ]},
+    { label: "長め系", tags: [
+      {tag:"long hair",label:"💁 ロング"},
+      {tag:"wavy hair",label:"🌊 ウェーブ"},
+      {tag:"curly hair",label:"🌀 くるくる"},
+      {tag:"straight sleek hair",label:"✨ サラサラ直毛"},
+      {tag:"very long hair, floor length",label:"💫 超ロング"}
+    ]},
+    { label: "まとめ髪系", tags: [
+      {tag:"ponytail",label:"🐴 ポニーテ"},
+      {tag:"twin tails",label:"🎀 ツインテ"},
+      {tag:"braid hair",label:"🌾 三つ編み"},
+      {tag:"single bun hair",label:"🍡 お団子"},
+      {tag:"double bun hair",label:"🐭 お団子ふたつ"},
+      {tag:"side ponytail",label:"🎵 サイドポニー"},
+      {tag:"half up half down hair",label:"🌸 ハーフアップ"}
+    ]},
+    { label: "特徴系", tags: [
+      {tag:"ahoge, single strand hair",label:"🌀 アホ毛"},
+      {tag:"messy hair",label:"💫 ボサボサ"}
+    ]}
+  ]},
+  color: { groups: [
+    { label: "ナチュラル系", tags: [
+      {tag:"black hair",label:"🖤 黒髪"},
+      {tag:"brown hair",label:"🤎 茶髪"},
+      {tag:"blonde hair",label:"💛 金髪"},
+      {tag:"auburn hair",label:"🍂 赤茶"},
+      {tag:"ash grey hair",label:"🌫️ アッシュグレー"}
+    ]},
+    { label: "ビビッド系", tags: [
+      {tag:"white hair",label:"🤍 白髪"},
+      {tag:"silver hair",label:"🩶 銀髪"},
+      {tag:"pink hair",label:"🌸 ピンク"},
+      {tag:"blue hair",label:"💙 ブルー"},
+      {tag:"red hair",label:"❤️ 赤髪"},
+      {tag:"purple hair",label:"💜 紫髪"},
+      {tag:"green hair",label:"💚 緑髪"},
+      {tag:"orange hair",label:"🧡 オレンジ"},
+      {tag:"teal hair",label:"🩵 青緑"},
+      {tag:"dark navy hair",label:"🌊 ダークネイビー"}
+    ]},
+    { label: "特殊系", tags: [
+      {tag:"rainbow hair",label:"🌈 レインボー"},
+      {tag:"gradient hair",label:"🎨 グラデーション", isGradient: true},
+      {tag:"streaked hair, highlights",label:"✨ メッシュ"}
+    ]}
+  ]},
+  eyes: { groups: [
+    { label: "カラー系", tags: [
+      {tag:"blue eyes",label:"💙 青い瞳"},
+      {tag:"red eyes",label:"❤️ 赤い瞳"},
+      {tag:"green eyes",label:"💚 緑の瞳"},
+      {tag:"golden eyes",label:"💛 金の瞳"},
+      {tag:"purple eyes",label:"💜 紫の瞳"},
+      {tag:"silver eyes",label:"🩶 銀の瞳"},
+      {tag:"black eyes",label:"🖤 黒い瞳"},
+      {tag:"teal eyes",label:"🩵 青緑の瞳"}
+    ]},
+    { label: "特殊系", tags: [
+      {tag:"heterochromia",label:"👁️ オッドアイ", isOddai: true},
+      {tag:"large sparkling eyes",label:"✨ キラキラ瞳"},
+      {tag:"sharp eyes",label:"🔪 鋭い瞳"},
+      {tag:"gentle eyes",label:"🌸 優しい瞳"},
+      {tag:"glowing eyes",label:"🌟 光る瞳"},
+      {tag:"sleepy half closed eyes",label:"😴 眠たげな瞳"},
+      {tag:"cat eyes, slit pupils",label:"🐱 猫目"},
+      {tag:"heart shaped pupils",label:"💖 ハート瞳"},
+      {tag:"star shaped pupils",label:"⭐ 星瞳"}
+    ]}
+  ]},
+  face: { groups: [
+    { label: "ポジティブ系", tags: [
+      {tag:"smile",label:"😊 笑顔"},
+      {tag:"wink",label:"😉 ウィンク"},
+      {tag:"laughing, happy",label:"😄 大笑い"},
+      {tag:"gentle smile, soft expression",label:"🌸 穏やか"},
+      {tag:"mischievous grin",label:"😈 いたずら顔"},
+      {tag:"smirk, confident",label:"😏 ニヤリ"}
+    ]},
+    { label: "クール系", tags: [
+      {tag:"serious",label:"😐 真剣"},
+      {tag:"cool expression",label:"😎 クール"},
+      {tag:"determined, fierce expression",label:"🔥 闘志"},
+      {tag:"daydreaming, distant look",label:"💭 ぼんやり"}
+    ]},
+    { label: "ネガティブ系", tags: [
+      {tag:"surprised",label:"😮 驚き"},
+      {tag:"shy, blushing",label:"😳 照れ顔"},
+      {tag:"crying, tears",label:"😢 泣き顔"},
+      {tag:"sleepy, tired expression",label:"😴 眠そう"},
+      {tag:"angry expression",label:"😠 怒り顔"},
+      {tag:"nervous, anxious expression",label:"😰 不安顔"},
+      {tag:"embarrassed expression",label:"🙈 恥ずかし顔"}
+    ]}
+  ]},
+  attr: { groups: [
+    { label: "動物系", tags: [
+      {tag:"cat ears",label:"🐱 猫耳"},
+      {tag:"fox ears",label:"🦊 狐耳"},
+      {tag:"bunny ears",label:"🐰 うさ耳"},
+      {tag:"wolf ears and tail",label:"🐺 狼耳"},
+      {tag:"bear ears",label:"🐻 熊耳"},
+      {tag:"sheep horns",label:"🐑 羊角"}
+    ]},
+    { label: "神話・魔法系", tags: [
+      {tag:"angel wings",label:"😇 天使"},
+      {tag:"demon horns",label:"😈 悪魔"},
+      {tag:"elf ears",label:"🧝 エルフ"},
+      {tag:"dragon wings",label:"🐉 ドラゴン", hasDetail: true, detailKey: "dragon"},
+      {tag:"halo",label:"👼 光輪"},
+      {tag:"witch hat",label:"🧙 魔女"},
+      {tag:"fairy wings",label:"🧚 妖精"},
+      {tag:"nine tails, kitsune",label:"🦊 九尾", hasDetail: true, detailKey: "ninetails"},
+      {tag:"oni horns, japanese demon",label:"👹 鬼"},
+      {tag:"mermaid tail",label:"🧜 人魚"}
+    ]},
+    { label: "特殊系", tags: [
+      {tag:"vampire fangs",label:"🧛 吸血鬼"},
+      {tag:"robot parts, cyborg",label:"🤖 サイボーグ"},
+      {tag:"plant, flower growing from head",label:"🌺 花人間"}
+    ]}
+  ]},
+  outfit: { groups: [
+    { label: "学校・日常系", tags: [
+      {tag:"school uniform",label:"🎓 制服"},
+      {tag:"casual clothes",label:"👕 カジュアル"},
+      {tag:"hoodie",label:"🧥 パーカー"},
+      {tag:"sportswear",label:"🏃 スポーツ"},
+      {tag:"pajamas",label:"😴 パジャマ"},
+      {tag:"swimsuit",label:"🏊 水着"}
+    ]},
+    { label: "和装系", tags: [
+      {tag:"kimono",label:"👘 着物"},
+      {tag:"yukata",label:"🎆 浴衣"},
+      {tag:"shrine maiden outfit, miko",label:"⛩️ 巫女"},
+      {tag:"hakama",label:"🎌 袴"},
+      {tag:"ninja outfit",label:"🥷 忍者"}
+    ]},
+    { label: "ファンタジー系", tags: [
+      {tag:"fantasy armor",label:"⚔️ 鎧"},
+      {tag:"wizard robe",label:"🧙 魔法使いローブ"},
+      {tag:"maid outfit",label:"🫧 メイド服"},
+      {tag:"gothic lolita fashion",label:"🖤 ゴスロリ"},
+      {tag:"idol costume",label:"🌟 アイドル衣装"},
+      {tag:"dress",label:"👗 ドレス"},
+      {tag:"wedding dress",label:"💒 ウェディング"}
+    ]},
+    { label: "フォーマル系", tags: [
+      {tag:"suit",label:"💼 スーツ"},
+      {tag:"sailor uniform",label:"⚓ セーラー服"},
+      {tag:"military uniform",label:"🎖️ 軍服"},
+      {tag:"detective coat, trench coat",label:"🔍 探偵コート"},
+      {tag:"winter coat, fur coat",label:"❄️ 冬コート"}
+    ]}
+  ]},
+  acc: { groups: [
+    { label: "顔・頭系", tags: [
+      {tag:"glasses",label:"👓 メガネ"},
+      {tag:"sunglasses",label:"🕶️ サングラス"},
+      {tag:"monocle",label:"🧐 片眼鏡"},
+      {tag:"eye patch",label:"🏴‍☠️ 眼帯"},
+      {tag:"hat",label:"🎩 帽子"},
+      {tag:"beret",label:"🎨 ベレー帽"},
+      {tag:"ribbon",label:"🎀 リボン"},
+      {tag:"hair clip, hairpin",label:"📎 ヘアピン"},
+      {tag:"cat ear headband",label:"🐱 猫耳カチューシャ"},
+      {tag:"flower in hair",label:"🌸 花飾り"},
+      {tag:"feather accessory",label:"🪶 羽飾り"},
+      {tag:"crown",label:"👑 王冠"},
+      {tag:"hood up",label:"🧥 フード"},
+      {tag:"headphones",label:"🎧 ヘッドフォン"},
+      {tag:"mask",label:"😷 マスク"}
+    ]},
+    { label: "首・体系", tags: [
+      {tag:"earrings",label:"💎 ピアス"},
+      {tag:"necklace, pendant",label:"📿 ネックレス"},
+      {tag:"choker",label:"🖤 チョーカー"},
+      {tag:"bow tie",label:"🎀 蝶ネクタイ"},
+      {tag:"scarf",label:"🧣 マフラー"}
+    ]},
+    { label: "手系", tags: [
+      {tag:"bracelet, wristband",label:"⌚ ブレスレット"},
+      {tag:"gloves",label:"🧤 手袋"}
+    ]}
+  ]},
+  pose: { groups: [
+    { label: "立ちポーズ系", tags: [
+      {tag:"front facing, looking at viewer",label:"👀 正面"},
+      {tag:"side profile view",label:"➡️ 横顔"},
+      {tag:"looking back, turned around",label:"🔄 振り向き"},
+      {tag:"back view, seen from behind",label:"🔙 後ろ姿"},
+      {tag:"arms crossed",label:"💪 腕組み"},
+      {tag:"hands on hips",label:"🫵 腰に手"},
+      {tag:"leaning against wall",label:"🧱 壁もたれ"},
+      {tag:"hand raised up high",label:"🙋 手を挙げる"},
+      {tag:"pointing finger",label:"👉 指差し"}
+    ]},
+    { label: "動きポーズ系", tags: [
+      {tag:"waving hand, greeting",label:"👋 手を振る"},
+      {tag:"peace sign, v sign",label:"✌️ ピース"},
+      {tag:"jumping pose",label:"🦘 ジャンプ"},
+      {tag:"running pose",label:"🏃 走り"},
+      {tag:"dancing pose",label:"💃 ダンス"},
+      {tag:"fighting stance, battle ready",label:"⚔️ 戦闘ポーズ"}
+    ]},
+    { label: "座り・寝系", tags: [
+      {tag:"sitting pose",label:"🪑 座り"},
+      {tag:"kneeling pose",label:"🧎 ひざまずき"},
+      {tag:"lying down, resting pose",label:"🛌 寝転び"},
+      {tag:"curled up, hugging knees",label:"🤗 体育座り"},
+      {tag:"thinking pose, hand on chin",label:"🤔 考え中"},
+      {tag:"reading a book",label:"📖 読書中"}
+    ]}
+  ]},
+  bg: { groups: [
+    { label: "シンプル系", tags: [
+      {tag:"white background",label:"⬜ 白背景"},
+      {tag:"transparent background",label:"🔲 透過"},
+      {tag:"gradient background, colorful",label:"🌈 グラデ背景"}
+    ]},
+    { label: "自然系", tags: [
+      {tag:"nature background, forest",label:"🌲 自然・森"},
+      {tag:"cherry blossom background",label:"🌸 桜"},
+      {tag:"beach background, ocean",label:"🏖️ 海辺"},
+      {tag:"snowy winter background",label:"❄️ 雪景色"},
+      {tag:"sunset background, golden hour",label:"🌅 夕焼け"},
+      {tag:"meadow background, flowers",label:"🌼 花畑"},
+      {tag:"rainy background, rain",label:"🌧️ 雨"}
+    ]},
+    { label: "都市・建物系", tags: [
+      {tag:"city background, urban",label:"🏙️ 都市"},
+      {tag:"school background",label:"🏫 学校"},
+      {tag:"cafe background",label:"☕ カフェ"},
+      {tag:"library background, books",label:"📚 図書館"},
+      {tag:"rooftop background",label:"🏙️ 屋上"},
+      {tag:"japanese temple background",label:"⛩️ 神社"},
+      {tag:"festival background, fireworks",label:"🎆 お祭り"}
+    ]},
+    { label: "ファンタジー系", tags: [
+      {tag:"fantasy background, magical",label:"🌌 ファンタジー"},
+      {tag:"night sky background, stars",label:"🌙 夜空"},
+      {tag:"space background, galaxy",label:"🚀 宇宙"},
+      {tag:"dark dungeon background",label:"🏰 ダンジョン"}
+    ]}
+  ]},
+  style: { groups: [
+    { label: "アニメ系", tags: [
+      {tag:"anime style",label:"🎌 アニメ",isStyle:true},
+      {tag:"pastel anime style",label:"🌸 パステルアニメ",isStyle:true},
+      {tag:"chibi super deformed style",label:"🧸 デフォルメキャラ",isStyle:true},
+      {tag:"retro anime style",label:"📺 レトロアニメ",isStyle:true},
+      {tag:"cute characters style",label:"🎪 かわいいキャラ",isStyle:true}
+    ]},
+    { label: "アート系", tags: [
+      {tag:"watercolor illustration style",label:"🎨 水彩画",isStyle:true},
+      {tag:"digital painting style",label:"🖼️ デジタルペイント",isStyle:true},
+      {tag:"vintage style photography",label:"📸 ヴィンテージ",isStyle:true},
+      {tag:"sketch style",label:"✏️ スケッチ",isStyle:true}
+    ]},
+    { label: "特殊系", tags: [
+      {tag:"3d render style",label:"🎮 3Dゲーム風",isStyle:true},
+      {tag:"pixel art",label:"🕹️ ドット絵",isStyle:true},
+      {tag:"rpg character style",label:"🗡️ RPGキャラ",isStyle:true},
+      {tag:"kemono furry animal style",label:"🐾 ケモノ",isStyle:true},
+      {tag:"business avatar",label:"💼 ビジネス",isStyle:true},
+      {tag:"high quality general",label:"✨ 高品質汎用",isStyle:true}
+    ]}
+  ]}
+};
+
+// 段階選択：瞳の色
+const eyeColors = [
+  {tag:"blue",label:"💙 青"},{tag:"red",label:"❤️ 赤"},{tag:"green",label:"💚 緑"},
+  {tag:"golden",label:"💛 金"},{tag:"purple",label:"💜 紫"},{tag:"silver",label:"🩶 銀"},
+  {tag:"black",label:"🖤 黒"},{tag:"teal",label:"🩵 青緑"},{tag:"pink",label:"🩷 ピンク"},
+  {tag:"orange",label:"🧡 オレンジ"}
+];
+
+// 段階選択：髪色グラデーション用
+const hairColorsSub = [
+  {tag:"black",label:"🖤 黒"},{tag:"brown",label:"🤎 茶"},{tag:"blonde",label:"💛 金"},
+  {tag:"white",label:"🤍 白"},{tag:"silver",label:"🩶 銀"},{tag:"pink",label:"🌸 ピンク"},
+  {tag:"blue",label:"💙 ブルー"},{tag:"red",label:"❤️ 赤"},{tag:"purple",label:"💜 紫"},
+  {tag:"green",label:"💚 緑"},{tag:"orange",label:"🧡 オレンジ"},{tag:"teal",label:"🩵 青緑"}
+];
+
+// 段階選択：属性の詳細
+const attrDetails = {
+  dragon: [
+    {tag:"red dragon wings",label:"🔴 赤竜"},
+    {tag:"blue dragon wings",label:"💙 青竜"},
+    {tag:"black dragon wings",label:"🖤 黒竜"},
+    {tag:"white dragon wings",label:"🤍 白竜"},
+    {tag:"golden dragon wings",label:"💛 金竜"},
+    {tag:"shadow dragon wings",label:"🌑 影竜"}
   ],
-  age: [
-    // 若い系
-    {tag:"child appearance, innocent, small",label:"🌱 ちびっ子"},
-    {tag:"youthful, teenage appearance",label:"🎒 思春期"},
-    {tag:"young adult appearance, fresh",label:"🌟 青年"},
-    {tag:"baby face, innocent appearance",label:"🍬 幼顔"},
-    {tag:"youthful energy, lively",label:"⚡ 若々しい"},
-    // 大人系
-    {tag:"adult appearance, mature",label:"🍂 大人"},
-    {tag:"middle-aged appearance, experienced",label:"🌿 中年"},
-    {tag:"elderly appearance, wise, aged",label:"🏔️ 老年"},
-    {tag:"mature face, dignified, experienced look",label:"👑 貫禄顔"},
-    // 特殊系
-    {tag:"ancient being, immortal look, ageless, mystical aura",label:"🌀 仙人・不老"},
-    {tag:"ancient soul, childlike appearance but wise eyes, timeless",label:"🌿 老いなき幼子"},
-    {tag:"androgynous, ageless appearance",label:"🌙 中性的な年齢感"}
-  ],
-  body: [
-    // 小柄系
-    {tag:"short, petite",label:"🌱 低身長・小柄"},
-    {tag:"slim, slender body",label:"🌿 細身・スリム"},
-    {tag:"delicate, fragile appearance",label:"🕊️ 華奢"},
-    {tag:"small, chibi proportions",label:"🧸 ちびキャラ体型"},
-    {tag:"tiny, very small",label:"🐾 超小柄"},
-    // 標準系
-    {tag:"average build",label:"👤 普通体型"},
-    {tag:"athletic, muscular build",label:"💪 筋肉質"},
-    {tag:"well-built, broad shoulders",label:"🏋️ がっしり"},
-    // 大柄系
-    {tag:"tall, long legs",label:"📏 高身長"},
-    {tag:"curvy, voluptuous",label:"🌸 グラマー"},
-    {tag:"chubby, round body",label:"🍩 ぽっちゃり"},
-    {tag:"lanky, thin and tall",label:"🦒 ひょろ長い"}
-  ],
-  hair: [
-    // 短め系
-    {tag:"short hair",label:"✂️ ショート"},
-    {tag:"bob cut",label:"💆 ボブ"},
-    {tag:"undercut hair style",label:"🔪 刈り上げ"},
-    {tag:"spiky hair",label:"⚡ トゲトゲ"},
-    // 長め系
-    {tag:"long hair",label:"💁 ロング"},
-    {tag:"wavy hair",label:"🌊 ウェーブ"},
-    {tag:"curly hair",label:"🌀 くるくる"},
-    {tag:"straight sleek hair",label:"✨ サラサラ直毛"},
-    {tag:"very long hair, floor length",label:"🌊 超ロング"},
-    // まとめ髪系
-    {tag:"ponytail",label:"🐴 ポニーテ"},
-    {tag:"twin tails",label:"🎀 ツインテ"},
-    {tag:"braid hair",label:"🌾 三つ編み"},
-    {tag:"single bun hair",label:"🍡 お団子"},
-    {tag:"double bun hair",label:"🐭 お団子ふたつ"},
-    {tag:"side ponytail",label:"🎵 サイドポニー"},
-    {tag:"half up half down hair",label:"🌸 ハーフアップ"},
-    // 特徴系
-    {tag:"ahoge, single strand hair",label:"🌀 アホ毛"},
-    {tag:"messy hair",label:"💫 ボサボサ"}
-  ],
-  color: [
-    // ナチュラル系
-    {tag:"black hair",label:"🖤 黒髪"},
-    {tag:"brown hair",label:"🤎 茶髪"},
-    {tag:"blonde hair",label:"💛 金髪"},
-    {tag:"auburn hair",label:"🍂 赤茶"},
-    {tag:"ash grey hair",label:"🌫️ アッシュグレー"},
-    // ビビッド系
-    {tag:"white hair",label:"🤍 白髪"},
-    {tag:"silver hair",label:"🩶 銀髪"},
-    {tag:"pink hair",label:"🌸 ピンク"},
-    {tag:"blue hair",label:"💙 ブルー"},
-    {tag:"red hair",label:"❤️ 赤髪"},
-    {tag:"purple hair",label:"💜 紫髪"},
-    {tag:"green hair",label:"💚 緑髪"},
-    {tag:"orange hair",label:"🧡 オレンジ"},
-    {tag:"teal hair",label:"🩵 青緑"},
-    {tag:"dark navy hair",label:"🌊 ダークネイビー"},
-    // 特殊系
-    {tag:"rainbow hair",label:"🌈 レインボー"},
-    {tag:"gradient hair, ombre",label:"🎨 グラデーション"},
-    {tag:"streaked hair, highlights",label:"✨ メッシュ"}
-  ],
-  eyes: [
-    // カラー系
-    {tag:"blue eyes",label:"💙 青い瞳"},
-    {tag:"red eyes",label:"❤️ 赤い瞳"},
-    {tag:"green eyes",label:"💚 緑の瞳"},
-    {tag:"golden eyes",label:"💛 金の瞳"},
-    {tag:"purple eyes",label:"💜 紫の瞳"},
-    {tag:"silver eyes",label:"🩶 銀の瞳"},
-    {tag:"black eyes",label:"🖤 黒い瞳"},
-    {tag:"teal eyes",label:"🩵 青緑の瞳"},
-    // 特殊系
-    {tag:"heterochromia, different eye colors",label:"👁️ オッドアイ"},
-    {tag:"large sparkling eyes",label:"✨ キラキラ瞳"},
-    {tag:"sharp eyes",label:"🔪 鋭い瞳"},
-    {tag:"gentle eyes",label:"🌸 優しい瞳"},
-    {tag:"glowing eyes",label:"🌟 光る瞳"},
-    {tag:"sleepy half closed eyes",label:"😴 眠たげな瞳"},
-    {tag:"cat eyes, slit pupils",label:"🐱 猫目"},
-    {tag:"heart shaped pupils",label:"💖 ハート瞳"},
-    {tag:"star shaped pupils",label:"⭐ 星瞳"}
-  ],
-  face: [
-    // ポジティブ系
-    {tag:"smile",label:"😊 笑顔"},
-    {tag:"wink",label:"😉 ウィンク"},
-    {tag:"laughing, happy",label:"😄 大笑い"},
-    {tag:"gentle smile, soft expression",label:"🌸 穏やか"},
-    {tag:"mischievous grin",label:"😈 いたずら顔"},
-    {tag:"smirk, confident",label:"😏 ニヤリ"},
-    // クール系
-    {tag:"serious",label:"😐 真剣"},
-    {tag:"cool expression",label:"😎 クール"},
-    {tag:"determined, fierce expression",label:"🔥 闘志"},
-    {tag:"daydreaming, distant look",label:"💭 ぼんやり"},
-    // ネガティブ系
-    {tag:"surprised",label:"😮 驚き"},
-    {tag:"shy, blushing",label:"😳 照れ顔"},
-    {tag:"crying, tears",label:"😢 泣き顔"},
-    {tag:"sleepy, tired expression",label:"😴 眠そう"},
-    {tag:"angry expression",label:"😠 怒り顔"},
-    {tag:"nervous, anxious expression",label:"😰 不安顔"},
-    {tag:"embarrassed expression",label:"🙈 恥ずかし顔"}
-  ],
-  attr: [
-    // 動物系
-    {tag:"cat ears",label:"🐱 猫耳"},
-    {tag:"fox ears",label:"🦊 狐耳"},
-    {tag:"bunny ears",label:"🐰 うさ耳"},
-    {tag:"wolf ears and tail",label:"🐺 狼耳"},
-    {tag:"bear ears",label:"🐻 熊耳"},
-    {tag:"sheep horns",label:"🐑 羊角"},
-    // 神話・魔法系
-    {tag:"angel wings",label:"😇 天使"},
-    {tag:"demon horns",label:"😈 悪魔"},
-    {tag:"elf ears",label:"🧝 エルフ"},
-    {tag:"dragon wings",label:"🐉 ドラゴン"},
-    {tag:"halo",label:"👼 光輪"},
-    {tag:"witch hat",label:"🧙 魔女"},
-    {tag:"fairy wings",label:"🧚 妖精"},
-    {tag:"nine tails, kitsune",label:"🦊 九尾"},
-    {tag:"oni horns, japanese demon",label:"👹 鬼"},
-    {tag:"mermaid tail",label:"🧜 人魚"},
-    {tag:"vampire fangs",label:"🧛 吸血鬼"},
-    // 特殊系
-    {tag:"robot parts, cyborg",label:"🤖 サイボーグ"},
-    {tag:"plant, flower growing from head",label:"🌺 花人間"}
-  ],
-  outfit: [
-    // 学校・日常系
-    {tag:"school uniform",label:"🎓 制服"},
-    {tag:"casual clothes",label:"👕 カジュアル"},
-    {tag:"hoodie",label:"🧥 パーカー"},
-    {tag:"sportswear",label:"🏃 スポーツ"},
-    {tag:"pajamas",label:"😴 パジャマ"},
-    {tag:"swimsuit",label:"🏊 水着"},
-    // 和装系
-    {tag:"kimono",label:"👘 着物"},
-    {tag:"yukata",label:"🎆 浴衣"},
-    {tag:"shrine maiden outfit, miko",label:"⛩️ 巫女"},
-    {tag:"hakama",label:"🎌 袴"},
-    {tag:"ninja outfit",label:"🥷 忍者"},
-    // ファンタジー系
-    {tag:"fantasy armor",label:"⚔️ 鎧"},
-    {tag:"wizard robe",label:"🧙 魔法使いローブ"},
-    {tag:"maid outfit",label:"🫧 メイド服"},
-    {tag:"gothic lolita fashion",label:"🖤 ゴスロリ"},
-    {tag:"idol costume",label:"🌟 アイドル衣装"},
-    {tag:"dress",label:"👗 ドレス"},
-    {tag:"wedding dress",label:"💒 ウェディング"},
-    // フォーマル系
-    {tag:"suit",label:"💼 スーツ"},
-    {tag:"sailor uniform",label:"⚓ セーラー服"},
-    {tag:"military uniform",label:"🎖️ 軍服"},
-    {tag:"detective coat, trench coat",label:"🔍 探偵コート"},
-    {tag:"winter coat, fur coat",label:"❄️ 冬コート"}
-  ],
-  acc: [
-    // 顔・頭系
-    {tag:"glasses",label:"👓 メガネ"},
-    {tag:"sunglasses",label:"🕶️ サングラス"},
-    {tag:"monocle",label:"🧐 片眼鏡"},
-    {tag:"eye patch",label:"🏴‍☠️ 眼帯"},
-    {tag:"hat",label:"🎩 帽子"},
-    {tag:"beret",label:"🎨 ベレー帽"},
-    {tag:"ribbon",label:"🎀 リボン"},
-    {tag:"hair clip, hairpin",label:"📎 ヘアピン"},
-    {tag:"cat ear headband",label:"🐱 猫耳カチューシャ"},
-    {tag:"flower in hair",label:"🌸 花飾り"},
-    {tag:"feather accessory",label:"🪶 羽飾り"},
-    {tag:"crown",label:"👑 王冠"},
-    {tag:"hood up",label:"🧥 フード"},
-    {tag:"headphones",label:"🎧 ヘッドフォン"},
-    {tag:"mask",label:"😷 マスク"},
-    // 首・体系
-    {tag:"earrings",label:"💎 ピアス"},
-    {tag:"necklace, pendant",label:"📿 ネックレス"},
-    {tag:"choker",label:"🖤 チョーカー"},
-    {tag:"bow tie",label:"🎀 蝶ネクタイ"},
-    {tag:"scarf",label:"🧣 マフラー"},
-    // 手系
-    {tag:"bracelet, wristband",label:"⌚ ブレスレット"},
-    {tag:"gloves",label:"🧤 手袋"}
-  ],
-  pose: [
-    // 立ちポーズ系
-    {tag:"front facing, looking at viewer",label:"👀 正面"},
-    {tag:"side profile view",label:"➡️ 横顔"},
-    {tag:"looking back, turned around",label:"🔄 振り向き"},
-    {tag:"back view, seen from behind",label:"🔙 後ろ姿"},
-    {tag:"arms crossed",label:"💪 腕組み"},
-    {tag:"hands on hips",label:"🫵 腰に手"},
-    {tag:"leaning against wall",label:"🧱 壁もたれ"},
-    {tag:"hand raised up high",label:"🙋 手を挙げる"},
-    {tag:"pointing finger",label:"👉 指差し"},
-    // 動きポーズ系
-    {tag:"waving hand, greeting",label:"👋 手を振る"},
-    {tag:"peace sign, v sign",label:"✌️ ピース"},
-    {tag:"jumping pose",label:"🦘 ジャンプ"},
-    {tag:"running pose",label:"🏃 走り"},
-    {tag:"dancing pose",label:"💃 ダンス"},
-    {tag:"fighting stance, battle ready",label:"⚔️ 戦闘ポーズ"},
-    // 座り・寝系
-    {tag:"sitting pose",label:"🪑 座り"},
-    {tag:"kneeling pose",label:"🧎 ひざまずき"},
-    {tag:"lying down, resting pose",label:"🛌 寝転び"},
-    {tag:"curled up, hugging knees",label:"🤗 体育座り"},
-    // その他
-    {tag:"thinking pose, hand on chin",label:"🤔 考え中"},
-    {tag:"reading a book",label:"📖 読書中"}
-  ],
-  bg: [
-    // シンプル系
-    {tag:"white background",label:"⬜ 白背景"},
-    {tag:"transparent background",label:"🔲 透過"},
-    {tag:"gradient background, colorful",label:"🌈 グラデ背景"},
-    // 自然系
-    {tag:"nature background, forest",label:"🌲 自然・森"},
-    {tag:"cherry blossom background",label:"🌸 桜"},
-    {tag:"beach background, ocean",label:"🏖️ 海辺"},
-    {tag:"snowy winter background",label:"❄️ 雪景色"},
-    {tag:"sunset background, golden hour",label:"🌅 夕焼け"},
-    {tag:"meadow background, flowers",label:"🌼 花畑"},
-    {tag:"rainy background, rain",label:"🌧️ 雨"},
-    // 都市・建物系
-    {tag:"city background, urban",label:"🏙️ 都市"},
-    {tag:"school background",label:"🏫 学校"},
-    {tag:"cafe background",label:"☕ カフェ"},
-    {tag:"library background, books",label:"📚 図書館"},
-    {tag:"rooftop background",label:"🏙️ 屋上"},
-    {tag:"japanese temple background",label:"⛩️ 神社"},
-    {tag:"festival background, fireworks",label:"🎆 お祭り"},
-    // ファンタジー系
-    {tag:"fantasy background, magical",label:"🌌 ファンタジー"},
-    {tag:"night sky background, stars",label:"🌙 夜空"},
-    {tag:"space background, galaxy",label:"🚀 宇宙"},
-    {tag:"dark dungeon background",label:"🏰 ダンジョン"}
-  ],
-  style: [
-    // アニメ系
-    {tag:"anime style",label:"🎌 アニメ",isStyle:true},
-    {tag:"pastel anime style",label:"🌸 パステルアニメ",isStyle:true},
-    {tag:"chibi super deformed style",label:"🧸 デフォルメキャラ",isStyle:true},
-    {tag:"retro anime style",label:"📺 レトロアニメ",isStyle:true},
-    {tag:"cute characters style",label:"🎪 かわいいキャラ",isStyle:true},
-    // アート系
-    {tag:"watercolor illustration style",label:"🎨 水彩画",isStyle:true},
-    {tag:"digital painting style",label:"🖼️ デジタルペイント",isStyle:true},
-    {tag:"vintage style photography",label:"📸 ヴィンテージ",isStyle:true},
-    {tag:"sketch style",label:"✏️ スケッチ",isStyle:true},
-    // 特殊系
-    {tag:"3d render style",label:"🎮 3Dゲーム風",isStyle:true},
-    {tag:"pixel art",label:"🕹️ ドット絵",isStyle:true},
-    {tag:"rpg character style",label:"🗡️ RPGキャラ",isStyle:true},
-    {tag:"kemono furry animal style",label:"🐾 ケモノ",isStyle:true},
-    {tag:"business avatar",label:"💼 ビジネス",isStyle:true},
-    {tag:"high quality general",label:"✨ 高品質汎用",isStyle:true}
+  ninetails: [
+    {tag:"white nine tails kitsune",label:"🤍 白九尾"},
+    {tag:"golden nine tails kitsune",label:"💛 金九尾"},
+    {tag:"black nine tails kitsune",label:"🖤 黒九尾"},
+    {tag:"blue nine tails kitsune",label:"💙 青九尾"},
+    {tag:"red nine tails kitsune",label:"❤️ 赤九尾"}
   ]
 };
 
 const catLabels = {
-  gender: "👤 性別",
-  age:    "🎂 年齢感",
-  body:   "💪 体型",
-  hair:   "💇 髪型",
-  color:  "🎨 髪色",
-  eyes:   "👁️ 瞳",
-  face:   "😊 表情",
-  attr:   "✨ 属性",
-  outfit: "👗 服装",
-  acc:    "👓 アクセ",
-  pose:   "🤸 ポーズ",
-  bg:     "🖼️ 背景",
-  style:  "🎨 スタイル"
+  gender:"👤 性別", age:"🎂 年齢感", body:"💪 体型",
+  hair:"💇 髪型", color:"🎨 髪色", eyes:"👁️ 瞳",
+  face:"😊 表情", attr:"✨ 属性", outfit:"👗 服装",
+  acc:"👓 アクセ", pose:"🤸 ポーズ", bg:"🖼️ 背景",
+  style:"🎨 スタイル"
 };
 
 let currentCat = "gender";
+let currentSubGroup = 0;
+
+function getFlatTags(cat) {
+  return allTagGroups[cat].groups.flatMap(g => g.tags);
+}
 
 // ===== 初期化 =====
 function init() {
   buildCatTabs();
-  renderTagList("gender");
+  switchCat("gender");
   initDragDrop();
   initSwipe();
-
   const tabs = document.getElementById("catTabs");
   if (tabs) {
     tabs.addEventListener("scroll", updateScrollBtns);
@@ -832,114 +768,245 @@ function init() {
   }
 }
 
-// ===== タブ左右スクロール =====
 function scrollTabs(dir) {
   const tabs = document.getElementById("catTabs");
-  if (tabs) {
-    tabs.scrollBy({ left: dir * 120, behavior: "smooth" });
-    setTimeout(updateScrollBtns, 320);
-  }
+  if (tabs) { tabs.scrollBy({ left: dir * 120, behavior: "smooth" }); setTimeout(updateScrollBtns, 320); }
 }
-
 function updateScrollBtns() {
   const tabs = document.getElementById("catTabs");
   const btnL = document.getElementById("catScrollLeft");
   const btnR = document.getElementById("catScrollRight");
-  if (!tabs || !btnL || !btnR) return;
+  if (!tabs||!btnL||!btnR) return;
   btnL.disabled = tabs.scrollLeft <= 0;
   btnR.disabled = tabs.scrollLeft + tabs.clientWidth >= tabs.scrollWidth - 4;
 }
 
-// ===== カテゴリタブ構築 =====
+// ===== カテゴリタブ =====
 function buildCatTabs() {
   const tabs = document.getElementById("catTabs");
-  tabs.innerHTML = Object.keys(allTags).map((key, i) =>
-    `<button class="cat-tab ${i===0?'active':''}" onclick="switchCat('${key}')">${catLabels[key]}</button>`
+  tabs.innerHTML = Object.keys(allTagGroups).map((key, i) =>
+    `<button class="cat-tab ${i===0?'active':''}" id="cattab-${key}" onclick="switchCat('${key}')">
+      ${catLabels[key]}<span class="sel-dot"></span>
+    </button>`
   ).join("");
 }
 
 function switchCat(cat) {
   currentCat = cat;
-  document.querySelectorAll(".cat-tab").forEach((t, i) =>
-    t.classList.toggle("active", Object.keys(allTags)[i] === cat)
+  currentSubGroup = 0;
+  document.querySelectorAll(".cat-tab").forEach(t =>
+    t.classList.toggle("active", t.id === `cattab-${cat}`)
   );
-  renderTagList(cat);
+  buildSubTabs(cat);
+  renderTagList(cat, 0);
+}
+
+// ===== サブタブ =====
+function buildSubTabs(cat) {
+  const wrapper = document.getElementById("subTabsWrapper");
+  const groups = allTagGroups[cat].groups;
+  if (groups.length <= 1) { wrapper.style.display = "none"; return; }
+  wrapper.style.display = "flex";
+  wrapper.innerHTML = groups.map((g, i) =>
+    `<button class="sub-tab ${i===0?'active':''}" onclick="switchSubGroup(${i})">${g.label}</button>`
+  ).join("");
+}
+
+function switchSubGroup(idx) {
+  currentSubGroup = idx;
+  document.querySelectorAll(".sub-tab").forEach((t, i) => t.classList.toggle("active", i === idx));
+  renderTagList(currentCat, idx);
 }
 
 // ===== タグ一覧レンダリング =====
-function renderTagList(cat) {
+function renderTagList(cat, groupIdx) {
   const area = document.getElementById("tagListArea");
-  const tags = allTags[cat];
   const isStyle = cat === "style";
+  const group = allTagGroups[cat].groups[groupIdx];
 
-  const html = `
-    <div class="cat-label">${catLabels[cat]}</div>
-    <div class="tag-grid" id="tagGrid">
-      ${tags.map(t => {
-        const isSelected = isStyle
-          ? selectedStyle === t.tag
-          : selected[cat] === t.tag;
-        const cls = isSelected ? (isStyle ? "tag-btn style-selected" : "tag-btn selected") : "tag-btn";
-        return `<button
-          class="${cls}"
-          data-tag="${t.tag}"
-          data-cat="${cat}"
-          data-isstyle="${isStyle}"
-          onclick="tapSelect('${cat}','${t.tag.replace(/'/g,"\\'")}',${isStyle})"
-          draggable="false"
-        >${t.label}</button>`;
-      }).join("")}
-    </div>
-  `;
+  let html = `<div class="cat-label">${catLabels[cat]} — ${group.label}</div><div class="tag-grid">`;
+  group.tags.forEach(t => {
+    const isSelected = isStyle ? selectedStyle === t.tag : selected[cat] === t.tag;
+    // 属性の詳細選択中は detailKey のベースタグも selected 表示
+    const isAttrBase = cat === "attr" && attrState.base === t.detailKey;
+    const cls = (isSelected || isAttrBase)
+      ? (isStyle ? "tag-btn style-selected" : "tag-btn selected")
+      : "tag-btn";
+    const esc = t.tag.replace(/\\/g,"\\\\").replace(/'/g,"\\'");
+    html += `<button class="${cls}" data-tag="${t.tag}" data-cat="${cat}" data-isstyle="${isStyle}"
+      onclick="tapSelect('${cat}','${esc}',${isStyle},${!!t.isGradient},${!!t.isOddai},${!!t.hasDetail},'${t.detailKey||''}')"
+      draggable="false">${t.label}</button>`;
+  });
+  html += `</div>`;
+
+  // 段階選択パネルをタグリストの下に追加
+  if (cat === "eyes" && eyesState.mode === "oddai") html += buildOddaiPanel();
+  if (cat === "color" && colorState.mode === "gradient") html += buildGradientPanel();
+  if (cat === "attr" && attrState.base && attrDetails[attrState.base]) html += buildAttrDetailPanel(attrState.base);
+
   area.innerHTML = html;
-
   area.querySelectorAll(".tag-btn").forEach(btn => {
     btn.addEventListener("mousedown", onDragStart);
     btn.addEventListener("touchstart", onTouchStart, {passive: false});
   });
 }
 
-// ===== タップ選択 =====
-function tapSelect(cat, tag, isStyle) {
-  if (isStyle) {
-    selectedStyle = selectedStyle === tag ? "" : tag;
-  } else {
-    if (selected[cat] === tag) {
-      delete selected[cat];
-    } else {
-      selected[cat] = tag;
-    }
-  }
-  renderTagList(cat);
+// ===== 段階選択パネル HTML =====
+function buildOddaiPanel() {
+  const l = eyesState.left, r = eyesState.right;
+  let html = `<div class="substep-panel">
+    <div class="substep-title">👁️ オッドアイ — 左右の色を選んでください</div>
+    <div class="substep-label">左目</div><div class="substep-row">`;
+  eyeColors.forEach(c => {
+    html += `<button class="tag-btn ${l===c.tag?'selected':''}" style="font-size:12px;padding:6px 10px"
+      onclick="setOddaiColor('left','${c.tag}')">${c.label}</button>`;
+  });
+  html += `</div><div class="substep-label">右目</div><div class="substep-row">`;
+  eyeColors.forEach(c => {
+    html += `<button class="tag-btn ${r===c.tag?'selected':''}" style="font-size:12px;padding:6px 10px"
+      onclick="setOddaiColor('right','${c.tag}')">${c.label}</button>`;
+  });
+  html += `</div></div>`;
+  return html;
+}
+
+function buildGradientPanel() {
+  const c1 = colorState.col1, c2 = colorState.col2;
+  let html = `<div class="substep-panel">
+    <div class="substep-title">🎨 グラデーション — 2色を選んでください</div>
+    <div class="substep-label">メインカラー</div><div class="substep-row">`;
+  hairColorsSub.forEach(c => {
+    html += `<button class="tag-btn ${c1===c.tag?'selected':''}" style="font-size:12px;padding:6px 10px"
+      onclick="setGradientColor(1,'${c.tag}')">${c.label}</button>`;
+  });
+  html += `</div><div class="substep-label">サブカラー</div><div class="substep-row">`;
+  hairColorsSub.forEach(c => {
+    html += `<button class="tag-btn ${c2===c.tag?'selected':''}" style="font-size:12px;padding:6px 10px"
+      onclick="setGradientColor(2,'${c.tag}')">${c.label}</button>`;
+  });
+  html += `</div></div>`;
+  return html;
+}
+
+function buildAttrDetailPanel(detailKey) {
+  const details = attrDetails[detailKey];
+  const titleMap = { dragon: "🐉 ドラゴンの種類を選んでください", ninetails: "🦊 九尾の種類を選んでください" };
+  let html = `<div class="substep-panel">
+    <div class="substep-title">${titleMap[detailKey] || "詳細を選んでください"}</div>
+    <div class="substep-row">`;
+  details.forEach(d => {
+    const esc = d.tag.replace(/'/g,"\\'");
+    html += `<button class="tag-btn ${attrState.detail===d.tag?'selected':''}" style="font-size:12px;padding:6px 10px"
+      onclick="setAttrDetail('${detailKey}','${esc}')">${d.label}</button>`;
+  });
+  html += `</div></div>`;
+  return html;
+}
+
+// ===== 段階選択セッター =====
+function setOddaiColor(side, colorTag) {
+  if (side === "left") eyesState.left = colorTag;
+  else eyesState.right = colorTag;
+  selected["eyes"] = eyesState.left && eyesState.right
+    ? `heterochromia, left eye ${eyesState.left}, right eye ${eyesState.right}`
+    : "heterochromia";
+  updateCatTabBadge("eyes");
+  renderTagList(currentCat, currentSubGroup);
   renderSelectedZone();
 }
 
-// ===== 選択済みゾーン描画 =====
+function setGradientColor(num, colorTag) {
+  if (num === 1) colorState.col1 = colorTag;
+  else colorState.col2 = colorTag;
+  selected["color"] = colorState.col1 && colorState.col2
+    ? `gradient hair, ${colorState.col1} to ${colorState.col2} ombre`
+    : `gradient hair, ${colorState.col1||colorState.col2} ombre`;
+  updateCatTabBadge("color");
+  renderTagList(currentCat, currentSubGroup);
+  renderSelectedZone();
+}
+
+function setAttrDetail(detailKey, detailTag) {
+  attrState.detail = detailTag;
+  selected["attr"] = detailTag;
+  updateCatTabBadge("attr");
+  renderTagList(currentCat, currentSubGroup);
+  renderSelectedZone();
+}
+
+// ===== タップ選択 =====
+function tapSelect(cat, tag, isStyle, isGradient, isOddai, hasDetail, detailKey) {
+  if (isStyle) {
+    selectedStyle = selectedStyle === tag ? "" : tag;
+  } else if (isOddai) {
+    if (eyesState.mode === "oddai") {
+      eyesState = { mode: "normal", left: "", right: "" };
+      delete selected[cat];
+    } else {
+      eyesState = { mode: "oddai", left: "", right: "" };
+      selected[cat] = "heterochromia";
+    }
+  } else if (isGradient) {
+    if (colorState.mode === "gradient") {
+      colorState = { mode: "normal", col1: "", col2: "" };
+      delete selected[cat];
+    } else {
+      colorState = { mode: "gradient", col1: "", col2: "" };
+      selected[cat] = "gradient hair";
+    }
+  } else if (hasDetail) {
+    if (attrState.base === detailKey) {
+      attrState = { base: "", detail: "" };
+      delete selected[cat];
+    } else {
+      attrState = { base: detailKey, detail: "" };
+      selected[cat] = tag;
+    }
+  } else {
+    // 通常選択：カテゴリの特殊状態もリセット
+    if (cat === "eyes") eyesState = { mode: "normal", left: "", right: "" };
+    if (cat === "color") colorState = { mode: "normal", col1: "", col2: "" };
+    if (cat === "attr") attrState = { base: "", detail: "" };
+    if (selected[cat] === tag) delete selected[cat];
+    else selected[cat] = tag;
+  }
+  updateCatTabBadge(cat);
+  renderTagList(cat, currentSubGroup);
+  renderSelectedZone();
+}
+
+// ===== バッジ更新 =====
+function updateCatTabBadge(cat) {
+  const tab = document.getElementById(`cattab-${cat}`);
+  if (!tab) return;
+  const hasVal = cat === "style" ? !!selectedStyle : !!selected[cat];
+  tab.classList.toggle("has-selection", hasVal);
+}
+function updateAllBadges() {
+  Object.keys(allTagGroups).forEach(cat => updateCatTabBadge(cat));
+}
+
+// ===== 選択済みゾーン =====
 function renderSelectedZone() {
-  const zones = ["selectedDropZone", "selectedDropZoneSwipe"];
-  zones.forEach(zoneId => {
+  updateAllBadges();
+  ["selectedDropZone", "selectedDropZoneSwipe"].forEach(zoneId => {
     const zone = document.getElementById(zoneId);
     if (!zone) return;
-
     let chips = [];
     for (let cat in selected) {
       const tag = selected[cat];
-      const label = getLabelByTag(tag);
-      chips.push(`<div class="selected-tag-chip" onclick="removeSelected('${cat}','${tag.replace(/'/g,"\\'")}',false)">
+      const label = getLabelForSelected(cat, tag);
+      chips.push(`<div class="selected-tag-chip" onclick="removeSelected('${cat}',false)">
         <span class="cat-badge">${catLabels[cat].split(" ")[0]}</span>
-        ${label}
-        <span class="remove-x">×</span>
+        ${label}<span class="remove-x">×</span>
       </div>`);
     }
     if (selectedStyle) {
-      const label = getLabelByTag(selectedStyle);
-      chips.push(`<div class="selected-tag-chip style-chip" onclick="removeSelected('style','${selectedStyle.replace(/'/g,"\\'")}',true)">
-        <span class="cat-badge">🎨</span>
-        ${label}
-        <span class="remove-x">×</span>
+      const label = getLabelByTag(selectedStyle, "style");
+      chips.push(`<div class="selected-tag-chip style-chip" onclick="removeSelected('style',true)">
+        <span class="cat-badge">🎨</span>${label}<span class="remove-x">×</span>
       </div>`);
     }
-
     if (chips.length === 0) {
       zone.classList.add("empty-hint");
       zone.innerHTML = '<div class="drop-hint-text">タグをここにドロップ<br>またはタップで選択</div>';
@@ -950,19 +1017,51 @@ function renderSelectedZone() {
   });
 }
 
-function removeSelected(cat, tag, isStyle) {
-  if (isStyle) selectedStyle = "";
-  else delete selected[cat];
-  renderTagList(currentCat);
-  renderSelectedZone();
+function getLabelForSelected(cat, tag) {
+  if (cat === "eyes" && tag.startsWith("heterochromia")) {
+    if (eyesState.left && eyesState.right) {
+      const lL = eyeColors.find(c=>c.tag===eyesState.left)?.label || eyesState.left;
+      const rL = eyeColors.find(c=>c.tag===eyesState.right)?.label || eyesState.right;
+      return `👁️ オッドアイ（左:${lL} 右:${rL}）`;
+    }
+    return "👁️ オッドアイ（色未選択）";
+  }
+  if (cat === "color" && tag.startsWith("gradient hair")) {
+    if (colorState.col1 && colorState.col2) {
+      const c1 = hairColorsSub.find(c=>c.tag===colorState.col1)?.label || colorState.col1;
+      const c2 = hairColorsSub.find(c=>c.tag===colorState.col2)?.label || colorState.col2;
+      return `🎨 グラデ（${c1}→${c2}）`;
+    }
+    return "🎨 グラデーション（色未選択）";
+  }
+  if (cat === "attr" && attrState.detail) {
+    const allDetails = Object.values(attrDetails).flat();
+    const found = allDetails.find(d => d.tag === tag);
+    return found ? found.label : getLabelByTag(tag, cat);
+  }
+  return getLabelByTag(tag, cat);
 }
 
-function getLabelByTag(tag) {
-  for (let cat in allTags) {
-    const found = allTags[cat].find(t => t.tag === tag);
+function getLabelByTag(tag, catHint) {
+  const cats = catHint ? [catHint] : Object.keys(allTagGroups);
+  for (const cat of cats) {
+    const found = getFlatTags(cat).find(t => t.tag === tag);
     if (found) return found.label;
   }
   return tag;
+}
+
+function removeSelected(cat, isStyle) {
+  if (isStyle) { selectedStyle = ""; }
+  else {
+    if (cat === "eyes") eyesState = { mode: "normal", left: "", right: "" };
+    if (cat === "color") colorState = { mode: "normal", col1: "", col2: "" };
+    if (cat === "attr") attrState = { base: "", detail: "" };
+    delete selected[cat];
+  }
+  if (cat === currentCat) renderTagList(currentCat, currentSubGroup);
+  updateCatTabBadge(cat);
+  renderSelectedZone();
 }
 
 // ===== ドラッグ&ドロップ =====
@@ -971,188 +1070,130 @@ let ghostEl;
 
 function initDragDrop() {
   ghostEl = document.getElementById("dragGhost");
-
-  const dropZone = document.getElementById("selectedDropZone");
-  dropZone.addEventListener("dragover", e => { e.preventDefault(); dropZone.classList.add("drag-over"); });
-  dropZone.addEventListener("dragleave", () => dropZone.classList.remove("drag-over"));
-  dropZone.addEventListener("drop", e => { e.preventDefault(); dropZone.classList.remove("drag-over"); commitDrop(); });
+  const zone = document.getElementById("selectedDropZone");
+  zone.addEventListener("dragover", e => { e.preventDefault(); zone.classList.add("drag-over"); });
+  zone.addEventListener("dragleave", () => zone.classList.remove("drag-over"));
+  zone.addEventListener("drop", e => { e.preventDefault(); zone.classList.remove("drag-over"); commitDrop(); });
 }
-
 function onDragStart(e) {
   const btn = e.currentTarget;
-  dragTag = btn.dataset.tag;
-  dragCat = btn.dataset.cat;
-  dragIsStyle = btn.dataset.isstyle === "true";
-
-  ghostEl.textContent = btn.textContent.trim();
-  ghostEl.style.display = "block";
-
+  dragTag = btn.dataset.tag; dragCat = btn.dataset.cat; dragIsStyle = btn.dataset.isstyle === "true";
+  ghostEl.textContent = btn.textContent.trim(); ghostEl.style.display = "block";
   document.addEventListener("mousemove", onDragMove);
   document.addEventListener("mouseup", onDragEnd);
 }
-
 function onDragMove(e) {
-  ghostEl.style.left = e.clientX + "px";
-  ghostEl.style.top = e.clientY + "px";
-
+  ghostEl.style.left = e.clientX + "px"; ghostEl.style.top = e.clientY + "px";
   const zone = document.getElementById("selectedDropZone");
   const rect = zone.getBoundingClientRect();
-  const over = e.clientX >= rect.left && e.clientX <= rect.right &&
-                e.clientY >= rect.top && e.clientY <= rect.bottom;
-  zone.classList.toggle("drag-over", over);
+  zone.classList.toggle("drag-over", e.clientX>=rect.left&&e.clientX<=rect.right&&e.clientY>=rect.top&&e.clientY<=rect.bottom);
 }
-
 function onDragEnd(e) {
   ghostEl.style.display = "none";
   document.removeEventListener("mousemove", onDragMove);
   document.removeEventListener("mouseup", onDragEnd);
-
   const zone = document.getElementById("selectedDropZone");
   const rect = zone.getBoundingClientRect();
-  if (e.clientX >= rect.left && e.clientX <= rect.right &&
-      e.clientY >= rect.top && e.clientY <= rect.bottom) {
-    zone.classList.remove("drag-over");
-    commitDrop();
+  if (e.clientX>=rect.left&&e.clientX<=rect.right&&e.clientY>=rect.top&&e.clientY<=rect.bottom) {
+    zone.classList.remove("drag-over"); commitDrop();
   }
   zone.classList.remove("drag-over");
 }
-
-// タッチ対応
 function onTouchStart(e) {
   e.preventDefault();
   const btn = e.currentTarget;
-  dragTag = btn.dataset.tag;
-  dragCat = btn.dataset.cat;
-  dragIsStyle = btn.dataset.isstyle === "true";
-
-  ghostEl.textContent = btn.textContent.trim();
-  ghostEl.style.display = "block";
-
+  dragTag = btn.dataset.tag; dragCat = btn.dataset.cat; dragIsStyle = btn.dataset.isstyle === "true";
+  ghostEl.textContent = btn.textContent.trim(); ghostEl.style.display = "block";
   document.addEventListener("touchmove", onTouchMove, {passive:false});
   document.addEventListener("touchend", onTouchEnd);
 }
-
 function onTouchMove(e) {
   e.preventDefault();
   const t = e.touches[0];
-  ghostEl.style.left = t.clientX + "px";
-  ghostEl.style.top = t.clientY + "px";
-
+  ghostEl.style.left = t.clientX + "px"; ghostEl.style.top = t.clientY + "px";
   const zone = document.getElementById("selectedDropZone");
   const rect = zone.getBoundingClientRect();
-  const over = t.clientX >= rect.left && t.clientX <= rect.right &&
-                t.clientY >= rect.top && t.clientY <= rect.bottom;
-  zone.classList.toggle("drag-over", over);
+  zone.classList.toggle("drag-over", t.clientX>=rect.left&&t.clientX<=rect.right&&t.clientY>=rect.top&&t.clientY<=rect.bottom);
 }
-
 function onTouchEnd(e) {
   ghostEl.style.display = "none";
   document.removeEventListener("touchmove", onTouchMove);
   document.removeEventListener("touchend", onTouchEnd);
-
   const t = e.changedTouches[0];
   const zone = document.getElementById("selectedDropZone");
   const rect = zone.getBoundingClientRect();
-  if (t.clientX >= rect.left && t.clientX <= rect.right &&
-      t.clientY >= rect.top && t.clientY <= rect.bottom) {
-    zone.classList.remove("drag-over");
-    commitDrop();
+  if (t.clientX>=rect.left&&t.clientX<=rect.right&&t.clientY>=rect.top&&t.clientY<=rect.bottom) {
+    zone.classList.remove("drag-over"); commitDrop();
   }
   zone.classList.remove("drag-over");
 }
-
 function commitDrop() {
   if (!dragTag) return;
-  if (dragIsStyle) {
-    selectedStyle = dragTag;
-  } else {
-    selected[dragCat] = dragTag;
-  }
-  renderTagList(currentCat);
+  if (dragIsStyle) selectedStyle = dragTag;
+  else selected[dragCat] = dragTag;
+  updateCatTabBadge(dragCat);
+  renderTagList(currentCat, currentSubGroup);
   renderSelectedZone();
   dragTag = null; dragCat = null;
 }
 
 // ===== スワイプモード =====
-let swipeCatKeys = Object.keys(allTags);
-let swipeCatIndex = 0;
-let swipeCardIndex = 0;
+const swipeCatKeys = Object.keys(allTagGroups);
+let swipeCatIndex = 0, swipeCardIndex = 0;
 
 function initSwipe() {
-  const tabHtml = swipeCatKeys.map((key, i) =>
+  document.getElementById("swipeCatTabs").innerHTML = swipeCatKeys.map((key, i) =>
     `<button class="swipe-cat-tab ${i===0?'active':''}" onclick="loadSwipeCat(${i})">${catLabels[key]}</button>`
   ).join("");
-  document.getElementById("swipeCatTabs").innerHTML = tabHtml;
   loadSwipeCat(0);
 }
-
 function loadSwipeCat(index) {
-  swipeCatIndex = index;
-  swipeCardIndex = 0;
+  swipeCatIndex = index; swipeCardIndex = 0;
   document.querySelectorAll(".swipe-cat-tab").forEach((t, i) => t.classList.toggle("active", i === index));
   renderSwipeCards();
 }
-
 function getUnselectedCards() {
   const catKey = swipeCatKeys[swipeCatIndex];
-  const cards = allTags[catKey];
   const already = catKey === "style" ? selectedStyle : selected[catKey];
-  return cards.filter(c => c.tag !== already);
+  return getFlatTags(catKey).filter(c => c.tag !== already);
 }
-
 function renderSwipeCards() {
   const stack = document.getElementById("cardStack");
   const cards = getUnselectedCards();
   const remaining = cards.slice(swipeCardIndex, swipeCardIndex + 3);
-
   stack.innerHTML = "";
   if (remaining.length === 0) {
     const catKey = swipeCatKeys[swipeCatIndex];
     const current = catKey === "style" ? selectedStyle : selected[catKey];
     stack.innerHTML = `<div style="text-align:center;padding:60px 0;color:#aaa;font-size:14px">
-      ${current ? '✅ ' + getLabelByTag(current) : '✅ 完了！'}<br>次のカテゴリーへ
-    </div>`;
+      ${current ? "✅ " + getLabelByTag(current, catKey) : "✅ 完了！"}<br>次のカテゴリーへ</div>`;
     return;
   }
-
   [...remaining].reverse().forEach((card, i) => {
     const isTop = i === remaining.length - 1;
     const div = document.createElement("div");
     div.className = "swipe-card" + (isTop ? " top" : "");
+    const emoji = card.label.match(/^(\S+)/)?.[1] || "✨";
     div.innerHTML = `
-      <div class="like-overlay">追加！</div>
-      <div class="nope-overlay">スキップ</div>
-      <div class="card-emoji">${getEmoji(card.tag)}</div>
+      <div class="like-overlay">追加！</div><div class="nope-overlay">スキップ</div>
+      <div class="card-emoji">${emoji}</div>
       <div class="card-label">${card.label}</div>
-      <div class="card-sublabel">${card.tag}</div>
-    `;
+      <div class="card-sublabel">${card.tag.substring(0,28)}</div>`;
     if (isTop) setupSwipeDrag(div, card);
     stack.appendChild(div);
   });
 }
-
-function getEmoji(tag) {
-  for (let cat in allTags) {
-    const found = allTags[cat].find(t => t.tag === tag);
-    if (found) {
-      const match = found.label.match(/^(\S+)/);
-      if (match) return match[1];
-    }
-  }
-  return "✨";
-}
-
 function setupSwipeDrag(el, card) {
   let startX = 0, isDragging = false;
-  function onStart(x) { startX = x; isDragging = true; }
-  function onMove(x) {
+  const onStart = x => { startX = x; isDragging = true; };
+  const onMove = x => {
     if (!isDragging) return;
     const d = x - startX;
     el.style.transform = `translateX(${d}px) rotate(${d*0.05}deg)`;
     el.querySelector(".like-overlay").style.opacity = d > 30 ? Math.min(d/100,1) : 0;
     el.querySelector(".nope-overlay").style.opacity = d < -30 ? Math.min(-d/100,1) : 0;
-  }
-  function onEnd(x) {
+  };
+  const onEnd = x => {
     if (!isDragging) return;
     isDragging = false;
     const d = x - startX;
@@ -1161,7 +1202,7 @@ function setupSwipeDrag(el, card) {
     el.querySelector(".nope-overlay").style.opacity = 0;
     if (d > 60) doSwipeRight(card);
     else if (d < -60) doSwipeLeft();
-  }
+  };
   el.addEventListener("mousedown", e => onStart(e.clientX));
   document.addEventListener("mousemove", e => onMove(e.clientX));
   document.addEventListener("mouseup", e => onEnd(e.clientX));
@@ -1169,73 +1210,61 @@ function setupSwipeDrag(el, card) {
   el.addEventListener("touchmove", e => onMove(e.touches[0].clientX), {passive:true});
   el.addEventListener("touchend", e => onEnd(e.changedTouches[0].clientX));
 }
-
 function doSwipeLeft() {
   swipeCardIndex++;
-  const cards = getUnselectedCards();
-  if (swipeCardIndex >= cards.length) {
-    autoNextCat();
-  } else {
-    renderSwipeCards();
-  }
+  if (swipeCardIndex >= getUnselectedCards().length) autoNextCat();
+  else renderSwipeCards();
 }
-
 function doSwipeRight(card) {
   const catKey = swipeCatKeys[swipeCatIndex];
   if (catKey === "style") selectedStyle = card.tag;
   else selected[catKey] = card.tag;
+  updateCatTabBadge(catKey);
   swipeCardIndex++;
   renderSelectedZone();
   autoNextCat();
 }
-
 function autoNextCat() {
-  const nextIndex = swipeCatIndex + 1;
-  if (nextIndex < swipeCatKeys.length) {
-    setTimeout(() => loadSwipeCat(nextIndex), 300);
-  } else {
-    renderSwipeCards();
-  }
+  const next = swipeCatIndex + 1;
+  if (next < swipeCatKeys.length) setTimeout(() => loadSwipeCat(next), 300);
+  else renderSwipeCards();
 }
-function swipeLeft() {
-  const cards = getUnselectedCards();
-  if (swipeCardIndex < cards.length) doSwipeLeft();
-}
-function swipeRight() {
-  const cards = getUnselectedCards();
-  if (swipeCardIndex < cards.length) doSwipeRight(cards[swipeCardIndex]);
-}
+function swipeLeft() { if (swipeCardIndex < getUnselectedCards().length) doSwipeLeft(); }
+function swipeRight() { const c = getUnselectedCards(); if (swipeCardIndex < c.length) doSwipeRight(c[swipeCardIndex]); }
 
 // ===== モード切替 =====
 function switchMode(mode) {
   document.getElementById("dragMode").style.display = mode === "drag" ? "block" : "none";
   document.getElementById("swipeMode").style.display = mode === "swipe" ? "block" : "none";
   document.querySelectorAll(".mode-tab").forEach((t, i) =>
-    t.classList.toggle("active", (i === 0) === (mode === "drag"))
-  );
+    t.classList.toggle("active", (i === 0) === (mode === "drag")));
 }
 
 // ===== ランダム =====
 function randomGenerate() {
   selected = {}; selectedStyle = "";
+  eyesState = { mode: "normal", left: "", right: "" };
+  colorState = { mode: "normal", col1: "", col2: "" };
+  attrState = { base: "", detail: "" };
   const pick = arr => arr[Math.floor(Math.random() * arr.length)];
-  // 必須カテゴリ
-  ["gender", "hair", "color", "face"].forEach(cat => {
-    selected[cat] = pick(allTags[cat]).tag;
+  ["gender","hair","color","face"].forEach(cat => { selected[cat] = pick(getFlatTags(cat)).tag; });
+  ["age","body","eyes","attr","outfit","acc","pose","bg"].forEach(cat => {
+    if (Math.random() > 0.5) selected[cat] = pick(getFlatTags(cat)).tag;
   });
-  // 任意カテゴリ（50%で選択）
-  ["age", "body", "eyes", "attr", "outfit", "acc", "pose", "bg"].forEach(cat => {
-    if (Math.random() > 0.5) selected[cat] = pick(allTags[cat]).tag;
-  });
-  selectedStyle = pick(allTags.style).tag;
-  renderTagList(currentCat);
+  selectedStyle = pick(getFlatTags("style")).tag;
+  renderTagList(currentCat, currentSubGroup);
+  updateAllBadges();
   renderSelectedZone();
 }
 
 // ===== リセット =====
 function resetAll() {
   selected = {}; selectedStyle = "";
-  renderTagList(currentCat);
+  eyesState = { mode: "normal", left: "", right: "" };
+  colorState = { mode: "normal", col1: "", col2: "" };
+  attrState = { base: "", detail: "" };
+  renderTagList(currentCat, currentSubGroup);
+  updateAllBadges();
   renderSelectedZone();
   document.getElementById("resultCard").style.display = "none";
   document.getElementById("loading").style.display = "none";
@@ -1249,7 +1278,6 @@ async function generate() {
   const { data } = await sb.from("usage").select("count").eq("user_id", currentUser.id).eq("date", today).single();
   const count = data ? data.count : 0;
   const limit = currentUser.email === "amekaze.shinogin@gmail.com" ? 9999 : 3;
-
   if (count >= limit) { alert("本日の無料生成回数（" + limit + "回）を超えました。"); return; }
   if (Object.keys(selected).length === 0 && !selectedStyle) { alert("タグを選択してください"); return; }
 
@@ -1264,7 +1292,6 @@ async function generate() {
     const res = await fetch(workerUrl);
     const json = await res.json();
     const storageUrl = json.url;
-
     if (!storageUrl) throw new Error("URLが取得できませんでした");
 
     if (data) await sb.from("usage").update({count: count+1}).eq("user_id", currentUser.id).eq("date", today);
@@ -1280,23 +1307,13 @@ async function generate() {
       document.getElementById("resultCard").style.display = "block";
       document.getElementById("save-btn").style.display = "inline-block";
       img.scrollIntoView({behavior:"smooth"});
-
-      await sb.from("history").insert({
-        user_id: currentUser.id,
-        image_url: storageUrl,
-        tags: selected,
-        style: style
-      });
+      await sb.from("history").insert({ user_id: currentUser.id, image_url: storageUrl, tags: selected, style });
     };
-    img.onerror = () => {
-      document.getElementById("loading").style.display = "none";
-      alert("画像の表示に失敗しました。もう一度お試しください。");
-    };
+    img.onerror = () => { document.getElementById("loading").style.display = "none"; alert("画像表示に失敗しました。"); };
     img.src = storageUrl;
-
   } catch(e) {
     document.getElementById("loading").style.display = "none";
-    alert("生成に失敗しました。もう一度お試しください。\n詳細: " + e.message);
+    alert("生成に失敗しました。\n詳細: " + e.message);
   }
 }
 
@@ -1308,23 +1325,21 @@ function saveImage() {
 
 // ===== 認証 =====
 async function login() {
-  const email = document.getElementById("emailInput").value;
-  const pass = document.getElementById("passInput").value;
-  const { data, error } = await sb.auth.signInWithPassword({email, password: pass});
+  const { error } = await sb.auth.signInWithPassword({
+    email: document.getElementById("emailInput").value,
+    password: document.getElementById("passInput").value
+  });
   if (error) alert("ログイン失敗: " + error.message);
 }
 async function signup() {
-  const email = document.getElementById("emailInput").value;
-  const pass = document.getElementById("passInput").value;
-  const { data, error } = await sb.auth.signUp({email, password: pass});
+  const { error } = await sb.auth.signUp({
+    email: document.getElementById("emailInput").value,
+    password: document.getElementById("passInput").value
+  });
   if (error) alert("登録失敗: " + error.message);
   else alert("確認メールを送りました！");
 }
-async function logout() {
-  await sb.auth.signOut();
-  currentUser = null;
-  updateAuthUI();
-}
+async function logout() { await sb.auth.signOut(); currentUser = null; updateAuthUI(); }
 function updateAuthUI() {
   if (currentUser) {
     document.getElementById("authArea").style.display = "none";
@@ -1353,7 +1368,6 @@ sb.auth.onAuthStateChange((event, session) => {
   updateAuthUI();
 });
 
-// 初期化実行
 init();
 </script>
 </body>
