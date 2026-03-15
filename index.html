@@ -99,27 +99,32 @@
       position: relative;
       background: #f8f9ff;
       border-bottom: 1px solid var(--border);
+      display: flex;
+      align-items: flex-end;
     }
-    .cat-tabs-wrapper::after {
-      content: "›";
-      position: absolute; right: 0; top: 0; bottom: 0;
-      width: 36px;
-      background: linear-gradient(to right, transparent, #f8f9ff 60%);
-      display: flex; align-items: center; justify-content: flex-end;
-      padding-right: 6px;
-      font-size: 18px; color: var(--primary);
-      pointer-events: none;
-      transition: opacity 0.2s;
+    .cat-scroll-btn {
+      flex-shrink: 0;
+      width: 28px; height: 36px;
+      border: none; background: transparent;
+      color: var(--primary); font-size: 16px; font-weight: 700;
+      cursor: pointer; display: flex; align-items: center; justify-content: center;
+      transition: all 0.15s; border-radius: 6px;
+      padding-bottom: 4px;
     }
-    .cat-tabs-wrapper.scrolled-end::after { opacity: 0; }
+    .cat-scroll-btn:hover { background: #ede9ff; }
+    .cat-scroll-btn:disabled { opacity: 0.25; cursor: default; background: transparent; }
     .cat-tabs {
       display: flex;
       overflow-x: auto;
-      scrollbar-width: none;
-      padding: 6px 36px 0 6px;
+      flex: 1;
+      padding: 6px 0 0;
       gap: 4px;
+      scrollbar-width: thin;
+      scrollbar-color: #c7b8f5 #f0f2f8;
     }
-    .cat-tabs::-webkit-scrollbar { display: none; }
+    .cat-tabs::-webkit-scrollbar { height: 4px; }
+    .cat-tabs::-webkit-scrollbar-track { background: #f0f2f8; border-radius: 2px; }
+    .cat-tabs::-webkit-scrollbar-thumb { background: #c7b8f5; border-radius: 2px; }
     .cat-tab {
       padding: 7px 12px; border-radius: 8px 8px 0 0;
       border: none; background: transparent;
@@ -418,7 +423,9 @@
       <!-- 左：カテゴリタブ＋タグ一覧 -->
       <div class="left-panel">
         <div class="cat-tabs-wrapper" id="catTabsWrapper">
+          <button class="cat-scroll-btn" id="catScrollLeft" onclick="scrollTabs(-1)" disabled>‹</button>
           <div class="cat-tabs" id="catTabs"></div>
+          <button class="cat-scroll-btn" id="catScrollRight" onclick="scrollTabs(1)">›</button>
         </div>
         <div class="tag-list-area" id="tagListArea"></div>
       </div>
@@ -533,15 +540,30 @@ function init() {
   initDragDrop();
   initSwipe();
 
-  // タブのスクロール末尾検知（矢印フェードアウト）
+  // タブの左右ボタン制御
   const tabs = document.getElementById("catTabs");
-  const wrapper = document.getElementById("catTabsWrapper");
-  if (tabs && wrapper) {
-    tabs.addEventListener("scroll", () => {
-      const atEnd = tabs.scrollLeft + tabs.clientWidth >= tabs.scrollWidth - 4;
-      wrapper.classList.toggle("scrolled-end", atEnd);
-    });
+  if (tabs) {
+    tabs.addEventListener("scroll", updateScrollBtns);
+    setTimeout(updateScrollBtns, 100);
   }
+}
+
+// ===== タブ左右スクロール =====
+function scrollTabs(dir) {
+  const tabs = document.getElementById("catTabs");
+  if (tabs) {
+    tabs.scrollBy({ left: dir * 120, behavior: "smooth" });
+    setTimeout(updateScrollBtns, 320);
+  }
+}
+
+function updateScrollBtns() {
+  const tabs = document.getElementById("catTabs");
+  const btnL = document.getElementById("catScrollLeft");
+  const btnR = document.getElementById("catScrollRight");
+  if (!tabs || !btnL || !btnR) return;
+  btnL.disabled = tabs.scrollLeft <= 0;
+  btnR.disabled = tabs.scrollLeft + tabs.clientWidth >= tabs.scrollWidth - 4;
 }
 
 // ===== カテゴリタブ構築 =====
