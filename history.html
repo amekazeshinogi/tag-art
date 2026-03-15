@@ -164,9 +164,68 @@
       color: white; border-color: transparent;
     }
     .page-btn:disabled { opacity: 0.4; cursor: not-allowed; }
+
+    /* モーダル */
+    .modal {
+      display: none; position: fixed; inset: 0; z-index: 200;
+      background: rgba(0,0,0,0.85);
+      align-items: center; justify-content: center;
+      padding: 16px;
+    }
+    .modal.open { display: flex; }
+    .modal-inner {
+      position: relative; max-width: 480px; width: 100%;
+      animation: modalIn 0.2s ease;
+    }
+    @keyframes modalIn {
+      from { transform: scale(0.9); opacity: 0; }
+      to { transform: scale(1); opacity: 1; }
+    }
+    .modal-img {
+      width: 100%; border-radius: 16px;
+      box-shadow: 0 8px 40px rgba(0,0,0,0.4);
+      display: block;
+    }
+    .modal-close {
+      position: absolute; top: -14px; right: -14px;
+      width: 36px; height: 36px; border-radius: 50%;
+      background: white; border: none;
+      font-size: 18px; cursor: pointer;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.3);
+      display: flex; align-items: center; justify-content: center;
+    }
+    .modal-btns {
+      display: flex; gap: 10px; margin-top: 14px;
+    }
+    .modal-dl-btn, .modal-del-btn {
+      flex: 1; padding: 12px;
+      border-radius: 12px; border: none;
+      font-size: 14px; font-weight: 700; cursor: pointer;
+    }
+    .modal-dl-btn {
+      background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+      color: white;
+    }
+    .modal-del-btn {
+      background: #fff0f0; color: #e53935;
+      border: 1.5px solid #ffcccc;
+    }
+    .card img { cursor: zoom-in; }
   </style>
 </head>
 <body>
+
+<!-- モーダル -->
+<div class="modal" id="modal" onclick="closeModal(event)">
+  <div class="modal-inner">
+    <button class="modal-close" onclick="closeModalDirect()">×</button>
+    <img class="modal-img" id="modalImg" src="" alt="">
+    <div class="modal-btns">
+      <button class="modal-dl-btn" onclick="downloadImg(currentModalUrl, currentModalId)">💾 ダウンロード</button>
+      <button class="modal-del-btn" onclick="deleteFromModal()">🗑️ 削除</button>
+    </div>
+  </div>
+</div>
 
 <div class="header">
   <button class="back-btn" onclick="location.href='index.html'">← 戻る</button>
@@ -247,7 +306,7 @@ async function loadHistory(page = 1) {
     const card = document.createElement("div");
     card.className = "card";
     card.innerHTML = `
-      <img src="${item.image_url}" alt="生成画像" loading="lazy" onerror="this.style.background='#f0f2f8'">
+      <img src="${item.image_url}" alt="生成画像" loading="lazy" onerror="this.style.background='#f0f2f8'" onclick="openModal('${item.image_url}', '${item.id}')">
       <div class="card-body">
         <div class="card-date">${formatDate(item.created_at)}</div>
         <div class="card-style">${item.style || ""}</div>
@@ -287,6 +346,34 @@ function downloadImg(url, id) {
   a.href = url;
   a.download = "tag-art-" + id + ".jpg";
   a.click();
+}
+
+// モーダル
+let currentModalUrl = "";
+let currentModalId = "";
+
+function openModal(url, id) {
+  currentModalUrl = url;
+  currentModalId = id;
+  document.getElementById("modalImg").src = url;
+  document.getElementById("modal").classList.add("open");
+  document.body.style.overflow = "hidden";
+}
+
+function closeModal(e) {
+  if (e.target === document.getElementById("modal")) closeModalDirect();
+}
+
+function closeModalDirect() {
+  document.getElementById("modal").classList.remove("open");
+  document.body.style.overflow = "";
+}
+
+async function deleteFromModal() {
+  if (!confirm("この画像を削除しますか？")) return;
+  closeModalDirect();
+  await sb.from("history").delete().eq("id", currentModalId).eq("user_id", currentUser.id);
+  loadHistory(currentPage);
 }
 
 // 1件削除
