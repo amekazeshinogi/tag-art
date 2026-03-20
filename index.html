@@ -820,26 +820,35 @@ function renderTagList(cat, groupIdx) {
   const area = document.getElementById("tagListArea");
   const isStyle = cat === "style";
   const group = allTagGroups[cat].groups[groupIdx];
-  let html = `<div class="cat-label">${catLabels[cat]} — ${group.label}</div><div class="tag-grid">`;
+
+  let lockBanner = "";
+  if (isStyle && userPlan !== "pro") {
+    lockBanner = `<div style="background:#fff8f0;border:1.5px solid #ffe0b2;border-radius:10px;padding:10px 12px;margin-bottom:12px;font-size:12px;color:#e65100;text-align:center;">
+      🔒 FREEプランは「アニメ」スタイルのみ使用可能です。<br>
+      <span onclick="showPlanModal()" style="color:#764ba2;font-weight:700;cursor:pointer;text-decoration:underline;">⭐ PROにアップグレードで全スタイル解放</span>
+    </div>`;
+  }
+
+  let html = `<div class="cat-label">${catLabels[cat]} — ${group.label}</div>${lockBanner}<div class="tag-grid">`;
   group.tags.forEach(t => {
     const isSelected = isStyle ? selectedStyle === t.tag : selected[cat] === t.tag;
     const isAttrBase = cat === "attr" && attrState.base === t.detailKey;
-    const cls = (isSelected||isAttrBase) ? (isStyle?"tag-btn style-selected":"tag-btn selected") : "tag-btn";
-    const esc = t.tag.replace(/\\/g,"\\\\").replace(/'/g,"\\'");
+    const isLocked = isStyle && userPlan !== "pro" && t.tag !== "anime style";
+    let cls, onclickAttr;
+    if (isLocked) {
+      cls = "tag-btn";
+      onclickAttr = `onclick="showPlanModal()"`;
+    } else {
+      cls = (isSelected||isAttrBase) ? (isStyle?"tag-btn style-selected":"tag-btn selected") : "tag-btn";
+      const esc = t.tag.replace(/\\/g,"\\\\").replace(/'/g,"\\'");
+      onclickAttr = `onclick="tapSelect('${cat}','${esc}',${isStyle},${!!t.isGradient},${!!t.isOddai},${!!t.hasDetail},'${t.detailKey||''}')"`;
+    }
+    const lockIcon = isLocked ? " 🔒" : "";
+    const lockedStyle = isLocked ? ' style="opacity:0.45;"' : '';
     html += `<button class="${cls}" data-tag="${t.tag}" data-cat="${cat}" data-isstyle="${isStyle}"
-      onclick="tapSelect('${cat}','${esc}',${isStyle},${!!t.isGradient},${!!t.isOddai},${!!t.hasDetail},'${t.detailKey||''}')"
-      draggable="false">${t.label}</button>`;
+      ${onclickAttr} draggable="false"${lockedStyle}>${t.label}${lockIcon}</button>`;
   });
-  html += `</div>`;
-  if (cat==="eyes"&&eyesState.mode==="oddai") html += buildOddaiPanel();
-  if (cat==="color"&&colorState.mode==="gradient") html += buildGradientPanel();
-  if (cat==="attr"&&attrState.base&&attrDetails[attrState.base]) html += buildAttrDetailPanel(attrState.base);
-  area.innerHTML = html;
-  area.querySelectorAll(".tag-btn").forEach(btn => {
-    btn.addEventListener("mousedown", onDragStart);
-    btn.addEventListener("touchstart", onTouchStart, {passive: false});
-  });
-}
+  html += \`</div>\`;
 
 // ===== 段階選択パネル =====
 function buildOddaiPanel() {
