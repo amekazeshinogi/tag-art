@@ -763,7 +763,7 @@ async function startCheckout(mode) {
     if (data.url) {
       window.location.href = data.url;
     } else {
-      alert("決済ページの取得に失敗しました。");
+      alert("決済ページの取得に失敗しました。\n詳細: " + JSON.stringify(data));
     }
   } catch(e) {
     alert("エラーが発生しました: " + e.message);
