@@ -251,17 +251,24 @@
 
 <!-- ヘッダー -->
 <div class="header">
-  <h1>tag-art <span>アイコン生成</span></h1>
-  <div class="header-btns" id="authArea">
-    <button class="hbtn" onclick="showAuthModal('login')">ログイン</button>
-    <button class="hbtn signup" onclick="showAuthModal('signup')">✨ 無料登録</button>
-  </div>
-  <div class="header-btns" id="userInfo" style="display:none;">
-    <span id="userEmail"></span>
-    <span class="plan-badge" id="planBadge">FREE</span>
-    <button class="hbtn" onclick="showPlanModal()">⭐ アップグレード</button>
-    <button class="hbtn" onclick="location.href='history.html'">📷 履歴</button>
-    <button class="hbtn" onclick="logout()">ログアウト</button>
+  <h1>tag-art <span id="headerSub">アイコン生成</span></h1>
+  <div style="display:flex;align-items:center;gap:6px;flex-wrap:wrap;">
+    <div class="header-btns" id="authArea">
+      <button class="hbtn" onclick="showAuthModal('login')" id="btnLogin">ログイン</button>
+      <button class="hbtn signup" onclick="showAuthModal('signup')" id="btnSignup">✨ 無料登録</button>
+    </div>
+    <div class="header-btns" id="userInfo" style="display:none;">
+      <span id="userEmail"></span>
+      <span class="plan-badge" id="planBadge">FREE</span>
+      <button class="hbtn" onclick="showPlanModal()" id="btnUpgrade">⭐ アップグレード</button>
+      <button class="hbtn" onclick="location.href='history.html'" id="btnHistory">📷 履歴</button>
+      <button class="hbtn" onclick="logout()" id="btnLogout">ログアウト</button>
+    </div>
+    <!-- 言語切替 -->
+    <div style="display:flex;gap:4px;margin-left:4px;">
+      <button class="hbtn lang-btn active-lang" id="langJA" onclick="setLang('ja')" style="padding:4px 8px;font-size:11px;">🇯🇵 JP</button>
+      <button class="hbtn lang-btn" id="langEN" onclick="setLang('en')" style="padding:4px 8px;font-size:11px;">🇺🇸 EN</button>
+    </div>
   </div>
 </div>
 
@@ -708,9 +715,254 @@ const catLabels = {
   acc:"👓 アクセ", pose:"🤸 ポーズ", bg:"🖼️ 背景", style:"🎨 スタイル"
 };
 
+
 let currentCat = "gender";
 let currentSubGroup = 0;
+let currentLang = "ja";
 function getFlatTags(cat) { return allTagGroups[cat].groups.flatMap(g => g.tags); }
+
+// ===== 言語データ =====
+const i18n = {
+  ja: {
+    headerSub: "アイコン生成",
+    btnLogin: "ログイン", btnSignup: "✨ 無料登録", btnUpgrade: "⭐ アップグレード",
+    btnHistory: "📷 履歴", btnLogout: "ログアウト",
+    modeTagSelect: "🏷️ タグ選択", modeSwipe: "👆 スワイプ",
+    selectedTitle: "✅ 選択中のタグ",
+    dropHint: "タグをここにドロップ<br>またはタップで選択",
+    btnGenerate: "✨ 生成する", btnRandom: "🎲 ランダム", btnReset: "🔄 リセット",
+    btnSave: "💾 画像を保存する",
+    loading: "⏳ 生成中...（20〜30秒かかります）",
+    loginTitle: "ログイン", loginSub: "tag-artへようこそ",
+    tabLogin: "ログイン", tabSignup: "新規登録（無料）",
+    signupNote: "🎉 無料で始められます！1日3回まで生成可能",
+    emailPlaceholder: "メールアドレス", passPlaceholder: "パスワード",
+    pass2Placeholder: "パスワード（6文字以上）",
+    btnDoLogin: "ログイン", btnDoSignup: "無料で登録する",
+    planTitle: "プランを選ぶ", planSub: "もっとたくさん生成したい方へ",
+    planFreeFeatures: "✔ 1日3回まで生成<br>✔ 全タグ使用可能",
+    planProFeatures: "✔ 1日20回まで生成<br>✔ 全タグ使用可能<br>✔ いつでも解約可能",
+    planCreditFeatures: "✔ 10回分の生成クレジット<br>✔ 有効期限なし<br>✔ 何度でも購入可能",
+    btnProUpgrade: "Proにアップグレード →",
+    btnCreditBuy: "10回分を購入（¥150）→",
+    freeLockMsg: "🔒 FREEプランは「アニメ」スタイルのみ使用可能です。",
+    freeLockLink: "⭐ PROにアップグレードで全スタイル解放",
+    otherInputPlaceholder: "自由入力（日本語OK）",
+    otherInputLabel: "✏️ その他",
+    catLabels: {
+      gender:"👤 性別", age:"🎂 年齢感", body:"💪 体型", hair:"💇 髪型", color:"🎨 髪色",
+      eyes:"👁️ 瞳", face:"😊 表情", attr:"✨ 属性", outfit:"👗 服装",
+      acc:"👓 アクセ", pose:"🤸 ポーズ", bg:"🖼️ 背景", style:"🎨 スタイル"
+    },
+    tagLabels: {}  // JAはallTagGroupsのlabelをそのまま使う
+  },
+  en: {
+    headerSub: "Icon Generator",
+    btnLogin: "Login", btnSignup: "✨ Sign Up Free", btnUpgrade: "⭐ Upgrade",
+    btnHistory: "📷 History", btnLogout: "Logout",
+    modeTagSelect: "🏷️ Tag Select", modeSwipe: "👆 Swipe",
+    selectedTitle: "✅ Selected Tags",
+    dropHint: "Drop tags here<br>or tap to select",
+    btnGenerate: "✨ Generate", btnRandom: "🎲 Random", btnReset: "🔄 Reset",
+    btnSave: "💾 Save Image",
+    loading: "⏳ Generating... (20-30 seconds)",
+    loginTitle: "Login", loginSub: "Welcome to tag-art",
+    tabLogin: "Login", tabSignup: "Sign Up (Free)",
+    signupNote: "🎉 Start for free! Generate up to 3 times a day",
+    emailPlaceholder: "Email address", passPlaceholder: "Password",
+    pass2Placeholder: "Password (6+ characters)",
+    btnDoLogin: "Login", btnDoSignup: "Sign Up Free",
+    planTitle: "Choose a Plan", planSub: "For those who want to generate more",
+    planFreeFeatures: "✔ Up to 3 generations/day<br>✔ All tags available",
+    planProFeatures: "✔ Up to 20 generations/day<br>✔ All tags available<br>✔ Cancel anytime",
+    planCreditFeatures: "✔ 10 generation credits<br>✔ Never expire<br>✔ Purchase anytime",
+    btnProUpgrade: "Upgrade to Pro →",
+    btnCreditBuy: "Buy 10 credits (¥150) →",
+    freeLockMsg: "🔒 FREE plan: only 'Anime' style available.",
+    freeLockLink: "⭐ Upgrade to PRO for all styles",
+    otherInputPlaceholder: "Free input (any language OK)",
+    otherInputLabel: "✏️ Other",
+    catLabels: {
+      gender:"👤 Gender", age:"🎂 Age", body:"💪 Body", hair:"💇 Hair", color:"🎨 Hair Color",
+      eyes:"👁️ Eyes", face:"😊 Expression", attr:"✨ Attribute", outfit:"👗 Outfit",
+      acc:"👓 Accessory", pose:"🤸 Pose", bg:"🖼️ Background", style:"🎨 Style"
+    },
+    tagLabels: {
+      // gender
+      "boy":"👦 Male","girl":"👧 Female","neutral":"🧑 Neutral",
+      // age
+      "child appearance, innocent, small":"🌱 Child","youthful, teenage appearance":"🎒 Teen",
+      "young adult appearance, fresh":"🌟 Young Adult","baby face, innocent appearance":"🍬 Baby Face",
+      "youthful energy, lively":"⚡ Youthful","adult appearance, mature":"🍂 Adult",
+      "middle-aged appearance, experienced":"🌿 Middle-aged","elderly appearance, wise, aged":"🏔️ Elderly",
+      "mature face, dignified, experienced look":"👑 Dignified",
+      "ancient being, immortal look, ageless, mystical aura":"🌀 Immortal",
+      "ancient soul, childlike appearance but wise eyes, timeless":"🌿 Ancient Soul",
+      "androgynous, ageless appearance":"🌙 Ageless",
+      // body
+      "short, petite":"🌱 Petite","slim, slender body":"🌿 Slim",
+      "delicate, fragile appearance":"🕊️ Delicate","small, chibi proportions":"🧸 Chibi",
+      "tiny, very small":"🐾 Tiny","average build":"👤 Average",
+      "athletic, muscular build":"💪 Athletic","well-built, broad shoulders":"🏋️ Muscular",
+      "tall, long legs":"📏 Tall","curvy, voluptuous":"🌸 Curvy",
+      "chubby, round body":"🍩 Chubby","lanky, thin and tall":"🦒 Lanky",
+      // hair
+      "short hair":"✂️ Short","bob cut":"💆 Bob","undercut hair style":"🔪 Undercut",
+      "spiky hair":"⚡ Spiky","long hair":"💁 Long","wavy hair":"🌊 Wavy",
+      "curly hair":"🌀 Curly","straight sleek hair":"✨ Straight",
+      "very long hair, floor length":"💫 Very Long","ponytail":"🐴 Ponytail",
+      "twin tails":"🎀 Twin Tails","braid hair":"🌾 Braid",
+      "single bun hair":"🍡 Bun","double bun hair":"🐭 Double Bun",
+      "side ponytail":"🎵 Side Ponytail","half up half down hair":"🌸 Half Up",
+      "ahoge, single strand hair":"🌀 Ahoge","messy hair":"💫 Messy",
+      // color
+      "black hair":"🖤 Black","brown hair":"🤎 Brown","blonde hair":"💛 Blonde",
+      "auburn hair":"🍂 Auburn","ash grey hair":"🌫️ Ash Grey","white hair":"🤍 White",
+      "silver hair":"🩶 Silver","pink hair":"🌸 Pink","blue hair":"💙 Blue",
+      "red hair":"❤️ Red","purple hair":"💜 Purple","green hair":"💚 Green",
+      "orange hair":"🧡 Orange","teal hair":"🩵 Teal","dark navy hair":"🌊 Dark Navy",
+      "rainbow hair":"🌈 Rainbow","gradient hair":"🎨 Gradient","streaked hair, highlights":"✨ Highlights",
+      // eyes
+      "blue eyes":"💙 Blue Eyes","red eyes":"❤️ Red Eyes","green eyes":"💚 Green Eyes",
+      "golden eyes":"💛 Golden Eyes","purple eyes":"💜 Purple Eyes","silver eyes":"🩶 Silver Eyes",
+      "black eyes":"🖤 Black Eyes","teal eyes":"🩵 Teal Eyes",
+      "heterochromia":"👁️ Heterochromia","large sparkling eyes":"✨ Sparkling",
+      "sharp eyes":"🔪 Sharp Eyes","gentle eyes":"🌸 Gentle Eyes",
+      "glowing eyes":"🌟 Glowing Eyes","sleepy half closed eyes":"😴 Sleepy Eyes",
+      "cat eyes, slit pupils":"🐱 Cat Eyes","heart shaped pupils":"💖 Heart Eyes",
+      "star shaped pupils":"⭐ Star Eyes",
+      // face
+      "smile":"😊 Smile","wink":"😉 Wink","laughing, happy":"😄 Laughing",
+      "gentle smile, soft expression":"🌸 Gentle","mischievous grin":"😈 Mischievous",
+      "smirk, confident":"😏 Smirk","serious":"😐 Serious","cool expression":"😎 Cool",
+      "determined, fierce expression":"🔥 Fierce","daydreaming, distant look":"💭 Daydream",
+      "surprised":"😮 Surprised","shy, blushing":"😳 Shy","crying, tears":"😢 Crying",
+      "sleepy, tired expression":"😴 Sleepy","angry expression":"😠 Angry",
+      "nervous, anxious expression":"😰 Nervous","embarrassed expression":"🙈 Embarrassed",
+      // attr
+      "cat ears":"🐱 Cat Ears","fox ears":"🦊 Fox Ears","bunny ears":"🐰 Bunny Ears",
+      "wolf ears and tail":"🐺 Wolf Ears","bear ears":"🐻 Bear Ears","sheep horns":"🐑 Sheep Horns",
+      "angel wings":"😇 Angel","demon horns":"😈 Demon","elf ears":"🧝 Elf",
+      "dragon wings":"🐉 Dragon","halo":"👼 Halo","witch hat":"🧙 Witch",
+      "fairy wings":"🧚 Fairy","nine tails, kitsune":"🦊 Nine Tails",
+      "oni horns, japanese demon":"👹 Oni","mermaid tail":"🧜 Mermaid",
+      "vampire fangs":"🧛 Vampire","robot parts, cyborg":"🤖 Cyborg",
+      "plant, flower growing from head":"🌺 Plant",
+      // outfit
+      "school uniform":"🎓 School Uniform","casual clothes":"👕 Casual",
+      "hoodie":"🧥 Hoodie","sportswear":"🏃 Sportswear","pajamas":"😴 Pajamas",
+      "swimsuit":"🏊 Swimsuit","kimono":"👘 Kimono","yukata":"🎆 Yukata",
+      "shrine maiden outfit, miko":"⛩️ Miko","hakama":"🎌 Hakama",
+      "ninja outfit":"🥷 Ninja","fantasy armor":"⚔️ Armor",
+      "wizard robe":"🧙 Wizard Robe","maid outfit":"🫧 Maid",
+      "gothic lolita fashion":"🖤 Gothic Lolita","idol costume":"🌟 Idol",
+      "dress":"👗 Dress","wedding dress":"💒 Wedding Dress","suit":"💼 Suit",
+      "sailor uniform":"⚓ Sailor","military uniform":"🎖️ Military",
+      "detective coat, trench coat":"🔍 Detective","winter coat, fur coat":"❄️ Winter Coat",
+      // acc
+      "glasses":"👓 Glasses","sunglasses":"🕶️ Sunglasses","monocle":"🧐 Monocle",
+      "eye patch":"🏴‍☠️ Eye Patch","hat":"🎩 Hat","beret":"🎨 Beret",
+      "ribbon":"🎀 Ribbon","hair clip, hairpin":"📎 Hairpin",
+      "cat ear headband":"🐱 Cat Headband","flower in hair":"🌸 Flower",
+      "feather accessory":"🪶 Feather","crown":"👑 Crown","hood up":"🧥 Hood",
+      "headphones":"🎧 Headphones","mask":"😷 Mask","earrings":"💎 Earrings",
+      "necklace, pendant":"📿 Necklace","choker":"🖤 Choker","bow tie":"🎀 Bow Tie",
+      "scarf":"🧣 Scarf","bracelet, wristband":"⌚ Bracelet","gloves":"🧤 Gloves",
+      // pose
+      "front facing, looking at viewer":"👀 Front","side profile view":"➡️ Profile",
+      "looking back, turned around":"🔄 Turn Back","back view, seen from behind":"🔙 Back View",
+      "arms crossed":"💪 Arms Crossed","hands on hips":"🫵 Hands on Hips",
+      "leaning against wall":"🧱 Wall Lean","hand raised up high":"🙋 Hand Raised",
+      "pointing finger":"👉 Pointing","waving hand, greeting":"👋 Waving",
+      "peace sign, v sign":"✌️ Peace Sign","jumping pose":"🦘 Jumping",
+      "running pose":"🏃 Running","dancing pose":"💃 Dancing",
+      "fighting stance, battle ready":"⚔️ Fighting","sitting pose":"🪑 Sitting",
+      "kneeling pose":"🧎 Kneeling","lying down, resting pose":"🛌 Lying Down",
+      "curled up, hugging knees":"🤗 Curled Up","thinking pose, hand on chin":"🤔 Thinking",
+      "reading a book":"📖 Reading",
+      // bg
+      "white background":"⬜ White BG","transparent background":"🔲 Transparent",
+      "gradient background, colorful":"🌈 Gradient BG",
+      "nature background, forest":"🌲 Forest","cherry blossom background":"🌸 Cherry Blossom",
+      "beach background, ocean":"🏖️ Beach","snowy winter background":"❄️ Snow",
+      "sunset background, golden hour":"🌅 Sunset","meadow background, flowers":"🌼 Meadow",
+      "rainy background, rain":"🌧️ Rain","city background, urban":"🏙️ City",
+      "school background":"🏫 School","cafe background":"☕ Cafe",
+      "library background, books":"📚 Library","rooftop background":"🏙️ Rooftop",
+      "japanese temple background":"⛩️ Temple","festival background, fireworks":"🎆 Festival",
+      "fantasy background, magical":"🌌 Fantasy","night sky background, stars":"🌙 Night Sky",
+      "space background, galaxy":"🚀 Space","dark dungeon background":"🏰 Dungeon",
+      // style
+      "anime style":"🎌 Anime","pastel anime style":"🌸 Pastel Anime",
+      "chibi super deformed style":"🧸 Chibi Style","retro anime style":"📺 Retro Anime",
+      "cute characters style":"🎪 Cute Style","watercolor illustration style":"🎨 Watercolor",
+      "digital painting style":"🖼️ Digital Paint","vintage style photography":"📸 Vintage",
+      "sketch style":"✏️ Sketch","3d render style":"🎮 3D Style",
+      "pixel art":"🕹️ Pixel Art","rpg character style":"🗡️ RPG Style",
+      "kemono furry animal style":"🐾 Kemono","business avatar":"💼 Business",
+      "high quality general":"✨ High Quality"
+    }
+  }
+};
+
+// ===== 言語切替 =====
+function setLang(lang) {
+  currentLang = lang;
+  const t = i18n[lang];
+
+  // ボタン状態
+  document.getElementById("langJA").classList.toggle("active-lang", lang === "ja");
+  document.getElementById("langEN").classList.toggle("active-lang", lang === "en");
+
+  // catLabels更新
+  Object.assign(catLabels, t.catLabels);
+
+  // UI更新
+  const ids = {
+    "headerSub": t.headerSub,
+    "btnLogin": t.btnLogin, "btnSignup": t.btnSignup,
+    "btnUpgrade": t.btnUpgrade, "btnHistory": t.btnHistory, "btnLogout": t.btnLogout,
+    "save-btn": t.btnSave
+  };
+  Object.entries(ids).forEach(([id, text]) => {
+    const el = document.getElementById(id);
+    if (el) el.textContent = text;
+  });
+
+  // モード切替ボタン
+  const modeTabs = document.querySelectorAll(".mode-tab");
+  if (modeTabs[0]) modeTabs[0].textContent = t.modeTagSelect;
+  if (modeTabs[1]) modeTabs[1].textContent = t.modeSwipe;
+
+  // 生成ボタン
+  document.querySelectorAll(".btn-generate").forEach(btn => btn.textContent = t.btnGenerate);
+  document.querySelectorAll(".btn-sub").forEach((btn, i) => {
+    if (i % 2 === 0) btn.textContent = t.btnRandom;
+    else btn.textContent = t.btnReset;
+  });
+
+  // 選択中タグタイトル
+  document.querySelectorAll(".selected-panel h3").forEach(el => el.textContent = t.selectedTitle);
+
+  // ローディング
+  document.getElementById("loading").textContent = t.loading;
+
+  // タブとUI再描画
+  buildCatTabs();
+  renderTagList(currentCat, currentSubGroup);
+  renderSelectedZone();
+}
+
+function getLabelForTag(tag) {
+  const t = i18n[currentLang];
+  if (t.tagLabels && t.tagLabels[tag]) return t.tagLabels[tag];
+  // fallback: allTagGroupsのlabel
+  for (const cat in allTagGroups) {
+    const found = getFlatTags(cat).find(t2 => t2.tag === tag);
+    if (found) return found.label;
+  }
+  return tag;
+}
 
 // ===== 初期化 =====
 function init() {
@@ -828,39 +1080,78 @@ function renderTagList(cat, groupIdx) {
   const area = document.getElementById("tagListArea");
   const isStyle = cat === "style";
   const group = allTagGroups[cat].groups[groupIdx];
-  const isProStyle = isStyle && userPlan === "pro";
   const isFreestyle = isStyle && userPlan !== "pro";
+  const t = i18n[currentLang];
+
+  // ロックバナー
   let lockBanner = "";
   if (isFreestyle) {
     lockBanner = "<div style='background:#fff8f0;border:1.5px solid #ffe0b2;border-radius:10px;padding:10px 12px;margin-bottom:12px;font-size:12px;color:#e65100;text-align:center;'>"
-      + "🔒 FREEプランは「アニメ」スタイルのみ使用可能です。<br>"
-      + "<span onclick='showPlanModal()' style='color:#764ba2;font-weight:700;cursor:pointer;text-decoration:underline;'>⭐ PROにアップグレードで全スタイル解放</span>"
+      + t.freeLockMsg + "<br>"
+      + "<span onclick='showPlanModal()' style='color:#764ba2;font-weight:700;cursor:pointer;text-decoration:underline;'>" + t.freeLockLink + "</span>"
       + "</div>";
   }
-  let html = "<div class='cat-label'>" + catLabels[cat] + " — " + group.label + "</div>" + lockBanner + "<div class='tag-grid'>";
-  group.tags.forEach(t => {
-    const isSelected = isStyle ? selectedStyle === t.tag : selected[cat] === t.tag;
-    const isAttrBase = cat === "attr" && attrState.base === t.detailKey;
-    const isLocked = isFreestyle && t.tag !== "anime style";
+
+  // グループラベル（英語の場合は英語グループ名）
+  const groupLabels = {
+    ja: { "すべて":"すべて","若い系":"若い系","大人系":"大人系","特殊系":"特殊系","短め系":"短め系","長め系":"長め系","まとめ髪系":"まとめ髪系","特徴系":"特徴系","ナチュラル系":"ナチュラル系","ビビッド系":"ビビッド系","カラー系":"カラー系","ポジティブ系":"ポジティブ系","クール系":"クール系","ネガティブ系":"ネガティブ系","動物系":"動物系","神話・魔法系":"神話・魔法系","学校・日常系":"学校・日常系","和装系":"和装系","ファンタジー系":"ファンタジー系","フォーマル系":"フォーマル系","顔・頭系":"顔・頭系","首・体系":"首・体系","手系":"手系","立ちポーズ系":"立ちポーズ系","動きポーズ系":"動きポーズ系","座り・寝系":"座り・寝系","シンプル系":"シンプル系","自然系":"自然系","都市・建物系":"都市・建物系","小柄系":"小柄系","標準系":"標準系","大柄系":"大柄系","アニメ系":"アニメ系","アート系":"アート系" },
+    en: { "すべて":"All","若い系":"Young","大人系":"Adult","特殊系":"Special","短め系":"Short","長め系":"Long","まとめ髪系":"Updo","特徴系":"Unique","ナチュラル系":"Natural","ビビッド系":"Vivid","カラー系":"Color","ポジティブ系":"Positive","クール系":"Cool","ネガティブ系":"Negative","動物系":"Animal","神話・魔法系":"Mythical","学校・日常系":"Casual","和装系":"Japanese","ファンタジー系":"Fantasy","フォーマル系":"Formal","顔・頭系":"Face/Head","首・体系":"Neck/Body","手系":"Hands","立ちポーズ系":"Standing","動きポーズ系":"Action","座り・寝系":"Sitting/Lying","シンプル系":"Simple","自然系":"Nature","都市・建物系":"Urban","小柄系":"Small","標準系":"Average","大柄系":"Large","アニメ系":"Anime","アート系":"Art" }
+  };
+  const groupLabel = (groupLabels[currentLang]||groupLabels.ja)[group.label] || group.label;
+
+  let html = "<div class='cat-label'>" + catLabels[cat] + " — " + groupLabel + "</div>" + lockBanner + "<div class='tag-grid'>";
+  group.tags.forEach(tag => {
+    const isSelected = isStyle ? selectedStyle === tag.tag : selected[cat] === tag.tag;
+    const isAttrBase = cat === "attr" && attrState.base === tag.detailKey;
+    const isLocked = isFreestyle && tag.tag !== "anime style";
     let cls = (isSelected||isAttrBase) ? (isStyle?"tag-btn style-selected":"tag-btn selected") : "tag-btn";
-    const esc = t.tag.replace(/\\/g,"\\\\").replace(/'/g,"\\'");
-    const dk = t.detailKey||"";
+    const esc = tag.tag.replace(/\\/g,"\\\\").replace(/'/g,"\\'");
+    const dk = tag.detailKey||"";
     let onclk = isLocked
       ? "showPlanModal()"
-      : "tapSelect('" + cat + "','" + esc + "'," + isStyle + "," + (!!t.isGradient) + "," + (!!t.isOddai) + "," + (!!t.hasDetail) + ",'" + dk + "')";
+      : "tapSelect('" + cat + "','" + esc + "'," + isStyle + "," + (!!tag.isGradient) + "," + (!!tag.isOddai) + "," + (!!tag.hasDetail) + ",'" + dk + "')";
     const lockIcon = isLocked ? " 🔒" : "";
     const opacityStyle = isLocked ? " style='opacity:0.45;'" : "";
-    html += "<button class='" + cls + "' data-tag='" + t.tag + "' data-cat='" + cat + "' data-isstyle='" + isStyle + "' onclick='" + onclk + "' draggable='false'" + opacityStyle + ">" + t.label + lockIcon + "</button>";
+    const displayLabel = getLabelForTag(tag.tag);
+    html += "<button class='" + cls + "' data-tag='" + tag.tag + "' data-cat='" + cat + "' data-isstyle='" + isStyle + "' onclick='" + onclk + "' draggable='false'" + opacityStyle + ">" + displayLabel + lockIcon + "</button>";
   });
   html += "</div>";
   if (cat==="eyes"&&eyesState.mode==="oddai") html += buildOddaiPanel();
   if (cat==="color"&&colorState.mode==="gradient") html += buildGradientPanel();
   if (cat==="attr"&&attrState.base&&attrDetails[attrState.base]) html += buildAttrDetailPanel(attrState.base);
+
+  // その他入力欄（スタイル以外に表示）
+  if (!isStyle) {
+    const otherId = "otherInput_" + cat;
+    const otherVal = selected["other_" + cat] || "";
+    html += "<div style='margin-top:12px;'>"
+      + "<div style='font-size:11px;color:var(--text-muted);font-weight:600;margin-bottom:6px;'>" + t.otherInputLabel + "</div>"
+      + "<div style='display:flex;gap:6px;'>"
+      + "<input id='" + otherId + "' type='text' placeholder='" + t.otherInputPlaceholder + "' value='" + otherVal.replace(/'/g,"&#39;") + "'"
+      + " style='flex:1;padding:8px 12px;border:1.5px solid var(--border);border-radius:20px;font-size:13px;outline:none;'"
+      + " oninput='updateOtherInput("" + cat + "",this.value)'>"
+      + "</div></div>";
+  }
+
   area.innerHTML = html;
   area.querySelectorAll(".tag-btn").forEach(btn => {
     btn.addEventListener("mousedown", onDragStart);
     btn.addEventListener("touchstart", onTouchStart, {passive: false});
   });
+}
+
+// その他入力の更新（翻訳は生成時にWorker経由で行う）
+let otherInputTimer = null;
+function updateOtherInput(cat, value) {
+  clearTimeout(otherInputTimer);
+  otherInputTimer = setTimeout(() => {
+    if (value.trim()) {
+      selected["other_" + cat] = value.trim();
+    } else {
+      delete selected["other_" + cat];
+    }
+    renderSelectedZone();
+  }, 500);
 }
 
 // ===== 段階選択パネル =====
@@ -931,14 +1222,22 @@ function renderSelectedZone() {
     const zone=document.getElementById(zoneId); if(!zone) return;
     let chips=[];
     for(let cat in selected) {
-      const tag=selected[cat], label=getLabelForSelected(cat,tag);
-      chips.push(`<div class="selected-tag-chip" onclick="removeSelected('${cat}',false)"><span class="cat-badge">${catLabels[cat].split(" ")[0]}</span>${label}<span class="remove-x">×</span></div>`);
+      const tag=selected[cat];
+      // other_* キーはその他入力として別表示
+      if(cat.startsWith("other_")) {
+        const baseCat = cat.replace("other_","");
+        const catEmoji = (catLabels[baseCat]||"✏️").split(" ")[0];
+        chips.push(`<div class="selected-tag-chip" style="background:linear-gradient(135deg,#43e97b,#38f9d7);color:#333;" onclick="removeSelected('${cat}',false)"><span class="cat-badge">${catEmoji}</span>✏️ ${tag}<span class="remove-x">×</span></div>`);
+        continue;
+      }
+      const label=getLabelForSelected(cat,tag);
+      chips.push(`<div class="selected-tag-chip" onclick="removeSelected('${cat}',false)"><span class="cat-badge">${(catLabels[cat]||"").split(" ")[0]}</span>${label}<span class="remove-x">×</span></div>`);
     }
     if(selectedStyle) {
       const label=getLabelByTag(selectedStyle,"style");
       chips.push(`<div class="selected-tag-chip style-chip" onclick="removeSelected('style',true)"><span class="cat-badge">🎨</span>${label}<span class="remove-x">×</span></div>`);
     }
-    if(chips.length===0) { zone.classList.add("empty-hint"); zone.innerHTML='<div class="drop-hint-text">タグをここにドロップ<br>またはタップで選択</div>'; }
+    if(chips.length===0) { zone.classList.add("empty-hint"); zone.innerHTML='<div class="drop-hint-text">' + i18n[currentLang].dropHint + '</div>'; }
     else { zone.classList.remove("empty-hint"); zone.innerHTML=chips.join(""); }
   });
 }
@@ -1061,7 +1360,33 @@ async function generate() {
   }
   if(Object.keys(selected).length===0&&!selectedStyle){alert("タグを選択してください");return;}
 
-  const tags=Object.values(selected).join(", ");
+  // その他入力（other_*キー）を除いた通常タグ
+  const normalTags = Object.entries(selected)
+    .filter(([k]) => !k.startsWith("other_"))
+    .map(([,v]) => v).join(", ");
+
+  // その他入力テキストを収集
+  const otherTexts = Object.entries(selected)
+    .filter(([k]) => k.startsWith("other_"))
+    .map(([,v]) => v);
+
+  // その他入力を翻訳してからプロンプトに追加
+  let translatedOther = "";
+  if (otherTexts.length > 0) {
+    try {
+      const transRes = await fetch(WORKER_URL + "/translate", {
+        method: "POST",
+        headers: {"Content-Type": "application/json"},
+        body: JSON.stringify({texts: otherTexts})
+      });
+      const transData = await transRes.json();
+      translatedOther = transData.translated || otherTexts.join(", ");
+    } catch(e) {
+      translatedOther = otherTexts.join(", ");
+    }
+  }
+
+  const tags = [normalTags, translatedOther].filter(Boolean).join(", ");
   const style=selectedStyle||"anime style";
   const workerUrl=WORKER_URL+"/?prompt="+encodeURIComponent(tags)+"&style="+encodeURIComponent(style);
 
