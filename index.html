@@ -1007,7 +1007,7 @@ function buildStyleFirst() {
     const selCls = isSelected ? "style-first-btn selected" : "style-first-btn";
     const onclk = isLocked ? "showPlanModal()" : "selectStyleFirst('" + s.tag.replace(/'/g,"\'") + "')";
     const opacity = isLocked ? "opacity:0.45;" : "";
-    return "<button class='" + selCls + "' onclick="" + onclk + "" style='" + opacity + "'>" + label + lockIcon + "</button>";
+    return "<button class='" + selCls + "' onclick=\"" + onclk + "\" style='" + opacity + "'>" + label + lockIcon + "</button>";
   }).join("");
 }
 
