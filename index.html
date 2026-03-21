@@ -749,6 +749,14 @@ function showPlanModal() {
 }
 function hidePlanModal() { document.getElementById("planModal").classList.remove("show"); }
 
+// オーバーレイ（背景）クリックで閉じる
+document.getElementById("authModal").addEventListener("click", function(e) {
+  if (e.target === this) hideAuthModal();
+});
+document.getElementById("planModal").addEventListener("click", function(e) {
+  if (e.target === this) hidePlanModal();
+});
+
 // ===== Stripe決済 =====
 async function startCheckout(mode) {
   if (!currentUser) { hidePlanModal(); showAuthModal("signup"); return; }
