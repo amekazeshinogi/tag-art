@@ -3,7 +3,27 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>tag-art</title>
+  <title>tag-art - AIアイコン生成 | AI Icon Generator</title>
+  <meta name="description" content="タグを選んでオリジナルAIアイコンを生成。無料で毎日3回使えます。Create original AI icons by selecting tags. Free to use 3 times daily.">
+  <meta name="keywords" content="AIアイコン,AI icon,キャラクター生成,avatar generator,anime icon,tag-art">
+  <meta name="author" content="tag-art">
+  <meta name="robots" content="index, follow">
+  <link rel="canonical" href="https://amekazeshinogi.github.io/tag-art/">
+
+  <!-- OGP（SNSシェア用） -->
+  <meta property="og:title" content="tag-art - AIアイコン生成">
+  <meta property="og:description" content="タグを選んでオリジナルAIアイコンを生成！無料で毎日3回使えます。">
+  <meta property="og:type" content="website">
+  <meta property="og:url" content="https://amekazeshinogi.github.io/tag-art/">
+  <meta property="og:image" content="https://amekazeshinogi.github.io/tag-art/ogp.png">
+  <meta property="og:site_name" content="tag-art">
+  <meta property="og:locale" content="ja_JP">
+
+  <!-- Twitter Card -->
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="tag-art - AIアイコン生成">
+  <meta name="twitter:description" content="タグを選んでオリジナルAIアイコンを生成！無料で毎日3回使えます。">
+  <meta name="twitter:image" content="https://amekazeshinogi.github.io/tag-art/ogp.png">
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <style>
     * { box-sizing: border-box; margin: 0; padding: 0; }
@@ -277,10 +297,21 @@
       <button class="hbtn" onclick="location.href='history.html'" id="btnHistory">📷 履歴</button>
       <button class="hbtn" onclick="logout()" id="btnLogout">ログアウト</button>
     </div>
-    <!-- 言語切替 -->
-    <div style="display:flex;gap:4px;margin-left:4px;">
-      <button class="hbtn lang-btn active-lang" id="langJA" onclick="setLang('ja')" style="padding:4px 8px;font-size:11px;">🇯🇵 JP</button>
-      <button class="hbtn lang-btn" id="langEN" onclick="setLang('en')" style="padding:4px 8px;font-size:11px;">🇺🇸 EN</button>
+    <!-- 言語切替ドロップダウン -->
+    <div style="position:relative;" id="langDropdownWrapper">
+      <button class="hbtn" id="langDropdownBtn" onclick="toggleLangDropdown()" style="padding:5px 10px;font-size:12px;">🌐 <span id="langCurrentLabel">JP</span> ▾</button>
+      <div id="langDropdown" style="display:none;position:absolute;right:0;top:36px;background:white;border-radius:10px;box-shadow:0 4px 20px rgba(0,0,0,0.15);overflow:hidden;z-index:200;min-width:140px;">
+        <button onclick="setLang('ja');toggleLangDropdown()" style="display:block;width:100%;padding:10px 14px;border:none;background:none;text-align:left;font-size:13px;cursor:pointer;">🇯🇵 日本語</button>
+        <button onclick="setLang('en');toggleLangDropdown()" style="display:block;width:100%;padding:10px 14px;border:none;background:none;text-align:left;font-size:13px;cursor:pointer;">🇺🇸 English</button>
+        <button onclick="setLang('zh');toggleLangDropdown()" style="display:block;width:100%;padding:10px 14px;border:none;background:none;text-align:left;font-size:13px;cursor:pointer;">🇨🇳 中文</button>
+        <button onclick="setLang('ko');toggleLangDropdown()" style="display:block;width:100%;padding:10px 14px;border:none;background:none;text-align:left;font-size:13px;cursor:pointer;">🇰🇷 한국어</button>
+        <button onclick="setLang('es');toggleLangDropdown()" style="display:block;width:100%;padding:10px 14px;border:none;background:none;text-align:left;font-size:13px;cursor:pointer;">🇪🇸 Español</button>
+        <button onclick="setLang('fr');toggleLangDropdown()" style="display:block;width:100%;padding:10px 14px;border:none;background:none;text-align:left;font-size:13px;cursor:pointer;">🇫🇷 Français</button>
+        <button onclick="setLang('de');toggleLangDropdown()" style="display:block;width:100%;padding:10px 14px;border:none;background:none;text-align:left;font-size:13px;cursor:pointer;">🇩🇪 Deutsch</button>
+        <button onclick="setLang('ru');toggleLangDropdown()" style="display:block;width:100%;padding:10px 14px;border:none;background:none;text-align:left;font-size:13px;cursor:pointer;">🇷🇺 Русский</button>
+        <button onclick="setLang('hi');toggleLangDropdown()" style="display:block;width:100%;padding:10px 14px;border:none;background:none;text-align:left;font-size:13px;cursor:pointer;">🇮🇳 हिंदी</button>
+        <button onclick="setLang('ar');toggleLangDropdown()" style="display:block;width:100%;padding:10px 14px;border:none;background:none;text-align:left;font-size:13px;cursor:pointer;">🇸🇦 العربية</button>
+      </div>
     </div>
   </div>
 </div>
@@ -438,6 +469,16 @@
 </div>
 
 <div id="dragGhost"></div>
+
+<!-- フッター -->
+<footer style="text-align:center;padding:24px 16px;color:#aaa;font-size:12px;border-top:1px solid #e0e4ed;margin-top:20px;background:white;">
+  <p style="margin-bottom:6px;">
+    <a href="privacy.html" style="color:#667eea;text-decoration:none;margin:0 10px;">プライバシーポリシー / Privacy Policy</a>
+    <span style="margin:0 4px;">|</span>
+    <a href="https://amekazeshinogi.github.io/tag-art/" style="color:#667eea;text-decoration:none;margin:0 10px;">tag-art</a>
+  </p>
+  <p>© 2026 tag-art. Powered by Leonardo AI.</p>
+</footer>
 
 <script>
 const SUPABASE_URL = "https://eoademoyfyopqfnljhyf.supabase.co";
@@ -922,6 +963,414 @@ const i18n = {
       "kemono furry animal style":"🐾 Kemono","business avatar":"💼 Business",
       "high quality general":"✨ High Quality"
     }
+  },
+  zh: {
+    headerSub: "图标生成",
+    btnLogin: "登录", btnSignup: "✨ 免费注册", btnUpgrade: "⭐ 升级",
+    btnHistory: "📷 历史", btnLogout: "退出",
+    modeTagSelect: "🏷️ 标签选择", modeSwipe: "👆 滑动",
+    selectedTitle: "✅ 已选标签",
+    dropHint: "拖拽标签到此处<br>或点击选择",
+    btnGenerate: "✨ 生成", btnRandom: "🎲 随机", btnReset: "🔄 重置",
+    btnSave: "💾 保存图片",
+    loading: "⏳ 生成中...（20〜30秒）",
+    loginTitle: "登录", loginSub: "欢迎使用 tag-art",
+    tabLogin: "登录", tabSignup: "注册（免费）",
+    signupNote: "🎉 免费开始！每天可生成3次",
+    emailPlaceholder: "邮箱地址", passPlaceholder: "密码",
+    pass2Placeholder: "密码（6位以上）",
+    btnDoLogin: "登录", btnDoSignup: "免费注册",
+    planTitle: "选择方案", planSub: "想要更多生成次数？",
+    planFreeFeatures: "✔ 每天3次生成<br>✔ 所有标签可用",
+    planProFeatures: "✔ 每天20次生成<br>✔ 所有标签可用<br>✔ 随时取消",
+    planCreditFeatures: "✔ 10次生成积分<br>✔ 永不过期<br>✔ 随时购买",
+    btnProUpgrade: "升级到Pro →",
+    btnCreditBuy: "购买10次（¥150）→",
+    freeLockMsg: "🔒 免费版仅可使用「动漫」风格。",
+    freeLockLink: "⭐ 升级PRO解锁全部风格",
+    otherInputPlaceholder: "自由输入（中文也可）",
+    otherInputLabel: "✏️ 其他",
+    catLabels: {
+      gender:"👤 性别", age:"🎂 年龄感", body:"💪 体型", hair:"💇 发型", color:"🎨 发色",
+      eyes:"👁️ 瞳色", face:"😊 表情", attr:"✨ 属性", outfit:"👗 服装",
+      acc:"👓 配饰", pose:"🤸 姿势", bg:"🖼️ 背景", style:"🎨 风格"
+    },
+    tagLabels: {
+      "boy":"👦 男性","girl":"👧 女性","neutral":"🧑 中性",
+      "child appearance, innocent, small":"🌱 小孩","youthful, teenage appearance":"🎒 少年",
+      "young adult appearance, fresh":"🌟 青年","baby face, innocent appearance":"🍬 娃娃脸",
+      "youthful energy, lively":"⚡ 活力","adult appearance, mature":"🍂 成人",
+      "middle-aged appearance, experienced":"🌿 中年","elderly appearance, wise, aged":"🏔️ 老年",
+      "mature face, dignified, experienced look":"👑 威严",
+      "ancient being, immortal look, ageless, mystical aura":"🌀 仙人",
+      "ancient soul, childlike appearance but wise eyes, timeless":"🌿 永恒童颜",
+      "androgynous, ageless appearance":"🌙 中性年龄",
+      "short, petite":"🌱 娇小","slim, slender body":"🌿 纤细",
+      "delicate, fragile appearance":"🕊️ 纤弱","small, chibi proportions":"🧸 Q版",
+      "tiny, very small":"🐾 超小","average build":"👤 普通体型",
+      "athletic, muscular build":"💪 肌肉","well-built, broad shoulders":"🏋️ 魁梧",
+      "tall, long legs":"📏 高挑","curvy, voluptuous":"🌸 丰满",
+      "chubby, round body":"🍩 圆润","lanky, thin and tall":"🦒 细长",
+      "short hair":"✂️ 短发","bob cut":"💆 波波头","undercut hair style":"🔪 剃边",
+      "spiky hair":"⚡ 刺头","long hair":"💁 长发","wavy hair":"🌊 波浪发",
+      "curly hair":"🌀 卷发","straight sleek hair":"✨ 直发",
+      "very long hair, floor length":"💫 超长发","ponytail":"🐴 马尾",
+      "twin tails":"🎀 双马尾","braid hair":"🌾 编发",
+      "single bun hair":"🍡 丸子头","double bun hair":"🐭 双丸子",
+      "side ponytail":"🎵 侧马尾","half up half down hair":"🌸 半扎发",
+      "ahoge, single strand hair":"🌀 呆毛","messy hair":"💫 蓬乱",
+      "black hair":"🖤 黑发","brown hair":"🤎 棕发","blonde hair":"💛 金发",
+      "auburn hair":"🍂 红棕","ash grey hair":"🌫️ 灰发","white hair":"🤍 白发",
+      "silver hair":"🩶 银发","pink hair":"🌸 粉发","blue hair":"💙 蓝发",
+      "red hair":"❤️ 红发","purple hair":"💜 紫发","green hair":"💚 绿发",
+      "orange hair":"🧡 橙发","teal hair":"🩵 青发","dark navy hair":"🌊 深蓝发",
+      "rainbow hair":"🌈 彩虹发","gradient hair":"🎨 渐变发","streaked hair, highlights":"✨ 挑染",
+      "blue eyes":"💙 蓝眼","red eyes":"❤️ 红眼","green eyes":"💚 绿眼",
+      "golden eyes":"💛 金眼","purple eyes":"💜 紫眼","silver eyes":"🩶 银眼",
+      "black eyes":"🖤 黑眼","teal eyes":"🩵 青眼",
+      "heterochromia":"👁️ 异色瞳","large sparkling eyes":"✨ 闪亮眼",
+      "sharp eyes":"🔪 锐利眼","gentle eyes":"🌸 温柔眼",
+      "glowing eyes":"🌟 发光眼","sleepy half closed eyes":"😴 困倦眼",
+      "cat eyes, slit pupils":"🐱 猫眼","heart shaped pupils":"💖 心形瞳","star shaped pupils":"⭐ 星形瞳",
+      "smile":"😊 微笑","wink":"😉 眨眼","laughing, happy":"😄 大笑",
+      "gentle smile, soft expression":"🌸 温柔","mischievous grin":"😈 调皮",
+      "smirk, confident":"😏 自信","serious":"😐 严肃","cool expression":"😎 酷",
+      "determined, fierce expression":"🔥 斗志","daydreaming, distant look":"💭 发呆",
+      "surprised":"😮 惊讶","shy, blushing":"😳 害羞","crying, tears":"😢 哭泣",
+      "sleepy, tired expression":"😴 困倦","angry expression":"😠 愤怒",
+      "nervous, anxious expression":"😰 不安","embarrassed expression":"🙈 尴尬",
+      "cat ears":"🐱 猫耳","fox ears":"🦊 狐耳","bunny ears":"🐰 兔耳",
+      "wolf ears and tail":"🐺 狼耳","bear ears":"🐻 熊耳","sheep horns":"🐑 羊角",
+      "angel wings":"😇 天使","demon horns":"😈 恶魔","elf ears":"🧝 精灵",
+      "dragon wings":"🐉 龙翼","halo":"👼 光环","witch hat":"🧙 魔女",
+      "fairy wings":"🧚 妖精","nine tails, kitsune":"🦊 九尾狐",
+      "oni horns, japanese demon":"👹 鬼","mermaid tail":"🧜 美人鱼",
+      "vampire fangs":"🧛 吸血鬼","robot parts, cyborg":"🤖 机械",
+      "plant, flower growing from head":"🌺 花之人",
+      "school uniform":"🎓 制服","casual clothes":"👕 休闲","hoodie":"🧥 卫衣",
+      "sportswear":"🏃 运动装","pajamas":"😴 睡衣","swimsuit":"🏊 泳装",
+      "kimono":"👘 和服","yukata":"🎆 浴衣","shrine maiden outfit, miko":"⛩️ 巫女",
+      "hakama":"🎌 袴","ninja outfit":"🥷 忍者","fantasy armor":"⚔️ 盔甲",
+      "wizard robe":"🧙 法师袍","maid outfit":"🫧 女仆装","gothic lolita fashion":"🖤 哥特",
+      "idol costume":"🌟 偶像服","dress":"👗 连衣裙","wedding dress":"💒 婚纱",
+      "suit":"💼 西装","sailor uniform":"⚓ 水手服","military uniform":"🎖️ 军装",
+      "detective coat, trench coat":"🔍 侦探外套","winter coat, fur coat":"❄️ 冬装",
+      "glasses":"👓 眼镜","sunglasses":"🕶️ 墨镜","monocle":"🧐 单片眼镜",
+      "eye patch":"🏴‍☠️ 眼罩","hat":"🎩 帽子","beret":"🎨 贝雷帽",
+      "ribbon":"🎀 蝴蝶结","hair clip, hairpin":"📎 发夹",
+      "cat ear headband":"🐱 猫耳发箍","flower in hair":"🌸 花饰",
+      "feather accessory":"🪶 羽毛","crown":"👑 王冠","hood up":"🧥 风帽",
+      "headphones":"🎧 耳机","mask":"😷 口罩","earrings":"💎 耳环",
+      "necklace, pendant":"📿 项链","choker":"🖤 颈圈","bow tie":"🎀 领结",
+      "scarf":"🧣 围巾","bracelet, wristband":"⌚ 手链","gloves":"🧤 手套",
+      "front facing, looking at viewer":"👀 正面","side profile view":"➡️ 侧脸",
+      "looking back, turned around":"🔄 回头","back view, seen from behind":"🔙 背影",
+      "arms crossed":"💪 抱臂","hands on hips":"🫵 叉腰",
+      "leaning against wall":"🧱 靠墙","hand raised up high":"🙋 举手",
+      "pointing finger":"👉 指向","waving hand, greeting":"👋 挥手",
+      "peace sign, v sign":"✌️ 剪刀手","jumping pose":"🦘 跳跃",
+      "running pose":"🏃 奔跑","dancing pose":"💃 舞蹈",
+      "fighting stance, battle ready":"⚔️ 战斗姿势","sitting pose":"🪑 坐姿",
+      "kneeling pose":"🧎 跪姿","lying down, resting pose":"🛌 躺姿",
+      "curled up, hugging knees":"🤗 抱膝","thinking pose, hand on chin":"🤔 思考",
+      "reading a book":"📖 读书",
+      "white background":"⬜ 白背景","transparent background":"🔲 透明",
+      "gradient background, colorful":"🌈 渐变背景",
+      "nature background, forest":"🌲 森林","cherry blossom background":"🌸 樱花",
+      "beach background, ocean":"🏖️ 海滩","snowy winter background":"❄️ 雪景",
+      "sunset background, golden hour":"🌅 夕阳","meadow background, flowers":"🌼 花海",
+      "rainy background, rain":"🌧️ 雨天","city background, urban":"🏙️ 都市",
+      "school background":"🏫 学校","cafe background":"☕ 咖啡馆",
+      "library background, books":"📚 图书馆","rooftop background":"🏙️ 屋顶",
+      "japanese temple background":"⛩️ 神社","festival background, fireworks":"🎆 祭典",
+      "fantasy background, magical":"🌌 奇幻","night sky background, stars":"🌙 夜空",
+      "space background, galaxy":"🚀 宇宙","dark dungeon background":"🏰 地牢",
+      "anime style":"🎌 动漫风","pastel anime style":"🌸 粉彩动漫",
+      "chibi super deformed style":"🧸 Q版","retro anime style":"📺 复古动漫",
+      "cute characters style":"🎪 可爱风","watercolor illustration style":"🎨 水彩",
+      "digital painting style":"🖼️ 数字绘画","vintage style photography":"📸 复古",
+      "sketch style":"✏️ 素描","3d render style":"🎮 3D风格",
+      "pixel art":"🕹️ 像素艺术","rpg character style":"🗡️ RPG风格",
+      "kemono furry animal style":"🐾 兽人","business avatar":"💼 商务",
+      "high quality general":"✨ 高品质"
+    }
+  },
+  ko: {
+    headerSub: "아이콘 생성",
+    btnLogin: "로그인", btnSignup: "✨ 무료 가입", btnUpgrade: "⭐ 업그레이드",
+    btnHistory: "📷 기록", btnLogout: "로그아웃",
+    modeTagSelect: "🏷️ 태그 선택", modeSwipe: "👆 스와이프",
+    selectedTitle: "✅ 선택된 태그",
+    dropHint: "태그를 여기에 드롭<br>또는 탭하여 선택",
+    btnGenerate: "✨ 생성", btnRandom: "🎲 랜덤", btnReset: "🔄 리셋",
+    btnSave: "💾 이미지 저장",
+    loading: "⏳ 생성 중...（20〜30초）",
+    loginTitle: "로그인", loginSub: "tag-art에 오신 것을 환영합니다",
+    tabLogin: "로그인", tabSignup: "회원가입 (무료)",
+    signupNote: "🎉 무료로 시작! 하루 3회 생성 가능",
+    emailPlaceholder: "이메일 주소", passPlaceholder: "비밀번호",
+    pass2Placeholder: "비밀번호 (6자 이상)",
+    btnDoLogin: "로그인", btnDoSignup: "무료 가입",
+    planTitle: "플랜 선택", planSub: "더 많이 생성하고 싶다면",
+    planFreeFeatures: "✔ 하루 3회 생성<br>✔ 모든 태그 사용 가능",
+    planProFeatures: "✔ 하루 20회 생성<br>✔ 모든 태그 사용 가능<br>✔ 언제든지 해지 가능",
+    planCreditFeatures: "✔ 10회 생성 크레딧<br>✔ 유효기간 없음<br>✔ 언제든지 구매 가능",
+    btnProUpgrade: "Pro로 업그레이드 →",
+    btnCreditBuy: "10회 구매 (¥150) →",
+    freeLockMsg: "🔒 무료 플랜은 '애니메이션' 스타일만 사용 가능합니다.",
+    freeLockLink: "⭐ PRO 업그레이드로 전체 스타일 해제",
+    otherInputPlaceholder: "자유 입력 (한국어 가능)",
+    otherInputLabel: "✏️ 기타",
+    catLabels: {
+      gender:"👤 성별", age:"🎂 연령감", body:"💪 체형", hair:"💇 헤어", color:"🎨 머리 색",
+      eyes:"👁️ 눈", face:"😊 표정", attr:"✨ 속성", outfit:"👗 의상",
+      acc:"👓 액세서리", pose:"🤸 포즈", bg:"🖼️ 배경", style:"🎨 스타일"
+    },
+    tagLabels: {
+      "boy":"👦 남성","girl":"👧 여성","neutral":"🧑 중성",
+      "short hair":"✂️ 단발","long hair":"💁 장발","twin tails":"🎀 트윈테일",
+      "ponytail":"🐴 포니테일","bob cut":"💆 단발머리","wavy hair":"🌊 웨이브",
+      "black hair":"🖤 검은 머리","brown hair":"🤎 갈색 머리","blonde hair":"💛 금발",
+      "white hair":"🤍 흰 머리","pink hair":"🌸 핑크","blue hair":"💙 파란 머리",
+      "smile":"😊 미소","serious":"😐 진지","wink":"😉 윙크",
+      "surprised":"😮 놀람","cool expression":"😎 쿨",
+      "cat ears":"🐱 고양이 귀","fox ears":"🦊 여우 귀","angel wings":"😇 천사",
+      "demon horns":"😈 악마","elf ears":"🧝 엘프",
+      "school uniform":"🎓 교복","casual clothes":"👕 캐주얼","suit":"💼 정장",
+      "kimono":"👘 기모노","hoodie":"🧥 후디",
+      "anime style":"🎌 애니메이션","pastel anime style":"🌸 파스텔 애니",
+      "chibi super deformed style":"🧸 치비","pixel art":"🕹️ 픽셀 아트",
+      "business avatar":"💼 비즈니스","high quality general":"✨ 고품질"
+    }
+  },
+  es: {
+    headerSub: "Generador de Iconos",
+    btnLogin: "Iniciar sesión", btnSignup: "✨ Registrarse gratis", btnUpgrade: "⭐ Mejorar plan",
+    btnHistory: "📷 Historial", btnLogout: "Cerrar sesión",
+    modeTagSelect: "🏷️ Selección de etiquetas", modeSwipe: "👆 Deslizar",
+    selectedTitle: "✅ Etiquetas seleccionadas",
+    dropHint: "Arrastra etiquetas aquí<br>o toca para seleccionar",
+    btnGenerate: "✨ Generar", btnRandom: "🎲 Aleatorio", btnReset: "🔄 Reiniciar",
+    btnSave: "💾 Guardar imagen",
+    loading: "⏳ Generando... (20-30 segundos)",
+    loginTitle: "Iniciar sesión", loginSub: "Bienvenido a tag-art",
+    tabLogin: "Iniciar sesión", tabSignup: "Registrarse (gratis)",
+    signupNote: "🎉 ¡Empieza gratis! Genera hasta 3 veces al día",
+    emailPlaceholder: "Correo electrónico", passPlaceholder: "Contraseña",
+    pass2Placeholder: "Contraseña (mín. 6 caracteres)",
+    btnDoLogin: "Iniciar sesión", btnDoSignup: "Registrarse gratis",
+    planTitle: "Elige un plan", planSub: "Para quienes quieren generar más",
+    planFreeFeatures: "✔ Hasta 3 generaciones/día<br>✔ Todas las etiquetas disponibles",
+    planProFeatures: "✔ Hasta 20 generaciones/día<br>✔ Todas las etiquetas<br>✔ Cancela cuando quieras",
+    planCreditFeatures: "✔ 10 créditos de generación<br>✔ Sin fecha de vencimiento<br>✔ Compra cuando quieras",
+    btnProUpgrade: "Mejorar a Pro →",
+    btnCreditBuy: "Comprar 10 créditos (¥150) →",
+    freeLockMsg: "🔒 Plan GRATIS: solo estilo 'Anime' disponible.",
+    freeLockLink: "⭐ Mejora a PRO para desbloquear todos los estilos",
+    otherInputPlaceholder: "Entrada libre (cualquier idioma)",
+    otherInputLabel: "✏️ Otro",
+    catLabels: {
+      gender:"👤 Género", age:"🎂 Edad", body:"💪 Cuerpo", hair:"💇 Cabello", color:"🎨 Color de cabello",
+      eyes:"👁️ Ojos", face:"😊 Expresión", attr:"✨ Atributo", outfit:"👗 Vestimenta",
+      acc:"👓 Accesorio", pose:"🤸 Pose", bg:"🖼️ Fondo", style:"🎨 Estilo"
+    },
+    tagLabels: {
+      "boy":"👦 Masculino","girl":"👧 Femenino","neutral":"🧑 Neutral",
+      "short hair":"✂️ Corto","long hair":"💁 Largo","twin tails":"🎀 Coletas",
+      "black hair":"🖤 Negro","blonde hair":"💛 Rubio","white hair":"🤍 Blanco",
+      "smile":"😊 Sonrisa","serious":"😐 Serio","cool expression":"😎 Fresco",
+      "anime style":"🎌 Anime","pixel art":"🕹️ Pixel Art","business avatar":"💼 Negocios"
+    }
+  },
+  fr: {
+    headerSub: "Générateur d'icônes",
+    btnLogin: "Connexion", btnSignup: "✨ S'inscrire", btnUpgrade: "⭐ Améliorer",
+    btnHistory: "📷 Historique", btnLogout: "Déconnexion",
+    modeTagSelect: "🏷️ Sélection de tags", modeSwipe: "👆 Glisser",
+    selectedTitle: "✅ Tags sélectionnés",
+    dropHint: "Glissez les tags ici<br>ou tapez pour sélectionner",
+    btnGenerate: "✨ Générer", btnRandom: "🎲 Aléatoire", btnReset: "🔄 Réinitialiser",
+    btnSave: "💾 Sauvegarder",
+    loading: "⏳ Génération... (20-30 secondes)",
+    loginTitle: "Connexion", loginSub: "Bienvenue sur tag-art",
+    tabLogin: "Connexion", tabSignup: "S'inscrire (gratuit)",
+    signupNote: "🎉 Commencez gratuitement! 3 générations par jour",
+    emailPlaceholder: "Adresse e-mail", passPlaceholder: "Mot de passe",
+    pass2Placeholder: "Mot de passe (6 caractères min.)",
+    btnDoLogin: "Connexion", btnDoSignup: "S'inscrire gratuitement",
+    planTitle: "Choisir un plan", planSub: "Pour ceux qui veulent générer plus",
+    planFreeFeatures: "✔ 3 générations/jour<br>✔ Tous les tags disponibles",
+    planProFeatures: "✔ 20 générations/jour<br>✔ Tous les tags<br>✔ Résiliable à tout moment",
+    planCreditFeatures: "✔ 10 crédits de génération<br>✔ Sans expiration<br>✔ Achat à tout moment",
+    btnProUpgrade: "Passer à Pro →",
+    btnCreditBuy: "Acheter 10 crédits (¥150) →",
+    freeLockMsg: "🔒 Plan GRATUIT: seul le style 'Anime' est disponible.",
+    freeLockLink: "⭐ Passez à PRO pour débloquer tous les styles",
+    otherInputPlaceholder: "Saisie libre (toute langue)",
+    otherInputLabel: "✏️ Autre",
+    catLabels: {
+      gender:"👤 Genre", age:"🎂 Âge", body:"💪 Corps", hair:"💇 Cheveux", color:"🎨 Couleur cheveux",
+      eyes:"👁️ Yeux", face:"😊 Expression", attr:"✨ Attribut", outfit:"👗 Tenue",
+      acc:"👓 Accessoire", pose:"🤸 Pose", bg:"🖼️ Fond", style:"🎨 Style"
+    },
+    tagLabels: {
+      "boy":"👦 Masculin","girl":"👧 Féminin","neutral":"🧑 Neutre",
+      "short hair":"✂️ Court","long hair":"💁 Long","black hair":"🖤 Noir",
+      "blonde hair":"💛 Blond","smile":"😊 Sourire","serious":"😐 Sérieux",
+      "anime style":"🎌 Anime","pixel art":"🕹️ Pixel Art","business avatar":"💼 Professionnel"
+    }
+  },
+  de: {
+    headerSub: "Icon-Generator",
+    btnLogin: "Anmelden", btnSignup: "✨ Kostenlos registrieren", btnUpgrade: "⭐ Upgraden",
+    btnHistory: "📷 Verlauf", btnLogout: "Abmelden",
+    modeTagSelect: "🏷️ Tag-Auswahl", modeSwipe: "👆 Wischen",
+    selectedTitle: "✅ Ausgewählte Tags",
+    dropHint: "Tags hier ablegen<br>oder antippen zum Auswählen",
+    btnGenerate: "✨ Generieren", btnRandom: "🎲 Zufällig", btnReset: "🔄 Zurücksetzen",
+    btnSave: "💾 Bild speichern",
+    loading: "⏳ Generiere... (20-30 Sekunden)",
+    loginTitle: "Anmelden", loginSub: "Willkommen bei tag-art",
+    tabLogin: "Anmelden", tabSignup: "Registrieren (kostenlos)",
+    signupNote: "🎉 Kostenlos starten! 3 Mal täglich generieren",
+    emailPlaceholder: "E-Mail-Adresse", passPlaceholder: "Passwort",
+    pass2Placeholder: "Passwort (mind. 6 Zeichen)",
+    btnDoLogin: "Anmelden", btnDoSignup: "Kostenlos registrieren",
+    planTitle: "Plan wählen", planSub: "Für mehr Generierungen",
+    planFreeFeatures: "✔ 3 Generierungen/Tag<br>✔ Alle Tags verfügbar",
+    planProFeatures: "✔ 20 Generierungen/Tag<br>✔ Alle Tags<br>✔ Jederzeit kündbar",
+    planCreditFeatures: "✔ 10 Generierungs-Credits<br>✔ Kein Ablaufdatum<br>✔ Jederzeit kaufen",
+    btnProUpgrade: "Auf Pro upgraden →",
+    btnCreditBuy: "10 Credits kaufen (¥150) →",
+    freeLockMsg: "🔒 KOSTENLOS: nur 'Anime'-Stil verfügbar.",
+    freeLockLink: "⭐ Auf PRO upgraden für alle Stile",
+    otherInputPlaceholder: "Freie Eingabe (jede Sprache)",
+    otherInputLabel: "✏️ Sonstiges",
+    catLabels: {
+      gender:"👤 Geschlecht", age:"🎂 Alter", body:"💪 Körper", hair:"💇 Haare", color:"🎨 Haarfarbe",
+      eyes:"👁️ Augen", face:"😊 Ausdruck", attr:"✨ Attribut", outfit:"👗 Outfit",
+      acc:"👓 Accessoire", pose:"🤸 Pose", bg:"🖼️ Hintergrund", style:"🎨 Stil"
+    },
+    tagLabels: {
+      "boy":"👦 Männlich","girl":"👧 Weiblich","neutral":"🧑 Neutral",
+      "short hair":"✂️ Kurz","long hair":"💁 Lang","black hair":"🖤 Schwarz",
+      "blonde hair":"💛 Blond","smile":"😊 Lächeln","serious":"😐 Ernst",
+      "anime style":"🎌 Anime","pixel art":"🕹️ Pixelkunst","business avatar":"💼 Business"
+    }
+  },
+  ru: {
+    headerSub: "Генератор иконок",
+    btnLogin: "Войти", btnSignup: "✨ Регистрация", btnUpgrade: "⭐ Улучшить",
+    btnHistory: "📷 История", btnLogout: "Выйти",
+    modeTagSelect: "🏷️ Выбор тегов", modeSwipe: "👆 Свайп",
+    selectedTitle: "✅ Выбранные теги",
+    dropHint: "Перетащите теги сюда<br>или нажмите для выбора",
+    btnGenerate: "✨ Создать", btnRandom: "🎲 Случайно", btnReset: "🔄 Сброс",
+    btnSave: "💾 Сохранить",
+    loading: "⏳ Генерация... (20-30 секунд)",
+    loginTitle: "Войти", loginSub: "Добро пожаловать в tag-art",
+    tabLogin: "Войти", tabSignup: "Регистрация (бесплатно)",
+    signupNote: "🎉 Начните бесплатно! 3 генерации в день",
+    emailPlaceholder: "Электронная почта", passPlaceholder: "Пароль",
+    pass2Placeholder: "Пароль (мин. 6 символов)",
+    btnDoLogin: "Войти", btnDoSignup: "Зарегистрироваться бесплатно",
+    planTitle: "Выберите план", planSub: "Для большего количества генераций",
+    planFreeFeatures: "✔ 3 генерации/день<br>✔ Все теги доступны",
+    planProFeatures: "✔ 20 генераций/день<br>✔ Все теги<br>✔ Отмена в любое время",
+    planCreditFeatures: "✔ 10 кредитов<br>✔ Без срока действия<br>✔ Купить в любое время",
+    btnProUpgrade: "Перейти на Pro →",
+    btnCreditBuy: "Купить 10 кредитов (¥150) →",
+    freeLockMsg: "🔒 БЕСПЛАТНЫЙ план: только стиль 'Аниме'.",
+    freeLockLink: "⭐ Перейдите на PRO для всех стилей",
+    otherInputPlaceholder: "Свободный ввод (любой язык)",
+    otherInputLabel: "✏️ Другое",
+    catLabels: {
+      gender:"👤 Пол", age:"🎂 Возраст", body:"💪 Телосложение", hair:"💇 Причёска", color:"🎨 Цвет волос",
+      eyes:"👁️ Глаза", face:"😊 Выражение", attr:"✨ Атрибут", outfit:"👗 Одежда",
+      acc:"👓 Аксессуар", pose:"🤸 Поза", bg:"🖼️ Фон", style:"🎨 Стиль"
+    },
+    tagLabels: {
+      "boy":"👦 Мужской","girl":"👧 Женский","neutral":"🧑 Нейтральный",
+      "short hair":"✂️ Короткие","long hair":"💁 Длинные","black hair":"🖤 Чёрные",
+      "blonde hair":"💛 Светлые","smile":"😊 Улыбка","serious":"😐 Серьёзный",
+      "anime style":"🎌 Аниме","pixel art":"🕹️ Пиксель-арт","business avatar":"💼 Деловой"
+    }
+  },
+  hi: {
+    headerSub: "आइकॉन जनरेटर",
+    btnLogin: "लॉगिन", btnSignup: "✨ निःशुल्क साइन अप", btnUpgrade: "⭐ अपग्रेड करें",
+    btnHistory: "📷 इतिहास", btnLogout: "लॉगआउट",
+    modeTagSelect: "🏷️ टैग चुनें", modeSwipe: "👆 स्वाइप",
+    selectedTitle: "✅ चुने गए टैग",
+    dropHint: "टैग यहाँ छोड़ें<br>या चुनने के लिए टैप करें",
+    btnGenerate: "✨ बनाएं", btnRandom: "🎲 यादृच्छिक", btnReset: "🔄 रीसेट",
+    btnSave: "💾 छवि सहेजें",
+    loading: "⏳ बना रहे हैं... (20-30 सेकंड)",
+    loginTitle: "लॉगिन", loginSub: "tag-art में आपका स्वागत है",
+    tabLogin: "लॉगिन", tabSignup: "साइन अप (निःशुल्क)",
+    signupNote: "🎉 मुफ्त शुरू करें! प्रतिदिन 3 बार बना सकते हैं",
+    emailPlaceholder: "ईमेल पता", passPlaceholder: "पासवर्ड",
+    pass2Placeholder: "पासवर्ड (6+ अक्षर)",
+    btnDoLogin: "लॉगिन", btnDoSignup: "निःशुल्क साइन अप",
+    planTitle: "प्लान चुनें", planSub: "अधिक बनाने के लिए",
+    planFreeFeatures: "✔ प्रतिदिन 3 बार<br>✔ सभी टैग उपलब्ध",
+    planProFeatures: "✔ प्रतिदिन 20 बार<br>✔ सभी टैग<br>✔ कभी भी रद्द करें",
+    planCreditFeatures: "✔ 10 क्रेडिट<br>✔ कोई समाप्ति तिथि नहीं<br>✔ कभी भी खरीदें",
+    btnProUpgrade: "Pro में अपग्रेड →",
+    btnCreditBuy: "10 क्रेडिट खरीदें (¥150) →",
+    freeLockMsg: "🔒 FREE: केवल 'एनिमे' स्टाइल उपलब्ध।",
+    freeLockLink: "⭐ सभी स्टाइल के लिए PRO अपग्रेड करें",
+    otherInputPlaceholder: "स्वतंत्र इनपुट (कोई भी भाषा)",
+    otherInputLabel: "✏️ अन्य",
+    catLabels: {
+      gender:"👤 लिंग", age:"🎂 आयु", body:"💪 शरीर", hair:"💇 बाल", color:"🎨 बालों का रंग",
+      eyes:"👁️ आँखें", face:"😊 भाव", attr:"✨ विशेषता", outfit:"👗 पोशाक",
+      acc:"👓 सहायक उपकरण", pose:"🤸 मुद्रा", bg:"🖼️ पृष्ठभूमि", style:"🎨 शैली"
+    },
+    tagLabels: {
+      "boy":"👦 पुरुष","girl":"👧 महिला","neutral":"🧑 तटस्थ",
+      "short hair":"✂️ छोटे","long hair":"💁 लंबे","black hair":"🖤 काले",
+      "smile":"😊 मुस्कान","serious":"😐 गंभीर",
+      "anime style":"🎌 एनिमे","pixel art":"🕹️ पिक्सेल आर्ट","business avatar":"💼 व्यवसाय"
+    }
+  },
+  ar: {
+    headerSub: "مولّد الأيقونات",
+    btnLogin: "تسجيل الدخول", btnSignup: "✨ التسجيل مجاناً", btnUpgrade: "⭐ ترقية",
+    btnHistory: "📷 السجل", btnLogout: "تسجيل الخروج",
+    modeTagSelect: "🏷️ اختيار العلامات", modeSwipe: "👆 تمرير",
+    selectedTitle: "✅ العلامات المختارة",
+    dropHint: "اسحب العلامات هنا<br>أو انقر للاختيار",
+    btnGenerate: "✨ إنشاء", btnRandom: "🎲 عشوائي", btnReset: "🔄 إعادة تعيين",
+    btnSave: "💾 حفظ الصورة",
+    loading: "⏳ جارٍ الإنشاء... (20-30 ثانية)",
+    loginTitle: "تسجيل الدخول", loginSub: "مرحباً بك في tag-art",
+    tabLogin: "تسجيل الدخول", tabSignup: "التسجيل (مجاناً)",
+    signupNote: "🎉 ابدأ مجاناً! 3 مرات يومياً",
+    emailPlaceholder: "البريد الإلكتروني", passPlaceholder: "كلمة المرور",
+    pass2Placeholder: "كلمة المرور (6 أحرف على الأقل)",
+    btnDoLogin: "تسجيل الدخول", btnDoSignup: "التسجيل مجاناً",
+    planTitle: "اختر خطة", planSub: "لمن يريد إنشاء المزيد",
+    planFreeFeatures: "✔ 3 مرات يومياً<br>✔ جميع العلامات متاحة",
+    planProFeatures: "✔ 20 مرة يومياً<br>✔ جميع العلامات<br>✔ إلغاء في أي وقت",
+    planCreditFeatures: "✔ 10 رصيد<br>✔ لا تاريخ انتهاء<br>✔ شراء في أي وقت",
+    btnProUpgrade: "الترقية إلى Pro →",
+    btnCreditBuy: "شراء 10 أرصدة (¥150) →",
+    freeLockMsg: "🔒 مجاني: أسلوب 'أنيمي' فقط متاح.",
+    freeLockLink: "⭐ ترقية PRO لفتح جميع الأساليب",
+    otherInputPlaceholder: "إدخال حر (أي لغة)",
+    otherInputLabel: "✏️ أخرى",
+    catLabels: {
+      gender:"👤 الجنس", age:"🎂 العمر", body:"💪 الجسم", hair:"💇 الشعر", color:"🎨 لون الشعر",
+      eyes:"👁️ العيون", face:"😊 التعبير", attr:"✨ الصفة", outfit:"👗 الزي",
+      acc:"👓 الإكسسوار", pose:"🤸 الوضعية", bg:"🖼️ الخلفية", style:"🎨 الأسلوب"
+    },
+    tagLabels: {
+      "boy":"👦 ذكر","girl":"👧 أنثى","neutral":"🧑 محايد",
+      "short hair":"✂️ قصير","long hair":"💁 طويل","black hair":"🖤 أسود",
+      "smile":"😊 ابتسامة","serious":"😐 جاد",
+      "anime style":"🎌 أنيمي","pixel art":"🕹️ بكسل آرت","business avatar":"💼 عمل"
+    }
   }
 };
 
@@ -930,9 +1379,13 @@ function setLang(lang) {
   currentLang = lang;
   const t = i18n[lang];
 
-  // ボタン状態
-  document.getElementById("langJA").classList.toggle("active-lang", lang === "ja");
-  document.getElementById("langEN").classList.toggle("active-lang", lang === "en");
+  // 言語ラベル更新
+  const langLabels = {ja:"JP",en:"EN",zh:"中文",ko:"한국어",es:"ES",fr:"FR",de:"DE",ru:"RU",hi:"हिं",ar:"عر"};
+  const el = document.getElementById("langCurrentLabel");
+  if (el) el.textContent = langLabels[lang] || lang.toUpperCase();
+
+  // アラビア語はRTL
+  document.body.dir = lang === "ar" ? "rtl" : "ltr";
 
   // catLabels更新
   Object.assign(catLabels, t.catLabels);
@@ -986,6 +1439,19 @@ function getLabelForTag(tag) {
 }
 
 // ===== 初期化 =====
+function toggleLangDropdown() {
+  const dd = document.getElementById("langDropdown");
+  if (dd) dd.style.display = dd.style.display === "none" ? "block" : "none";
+}
+// 外クリックでドロップダウンを閉じる
+document.addEventListener("click", function(e) {
+  const wrapper = document.getElementById("langDropdownWrapper");
+  if (wrapper && !wrapper.contains(e.target)) {
+    const dd = document.getElementById("langDropdown");
+    if (dd) dd.style.display = "none";
+  }
+});
+
 function init() {
   buildCatTabs(); switchCat("gender"); initDragDrop(); initSwipe();
   buildStyleFirst();
