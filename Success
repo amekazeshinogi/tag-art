@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>決済完了 | tag-art</title>
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Hiragino Sans', sans-serif;
+      background: linear-gradient(135deg, #667eea, #764ba2);
+      min-height: 100vh;
+      display: flex; align-items: center; justify-content: center;
+    }
+    .card {
+      background: white; border-radius: 24px; padding: 48px 36px;
+      text-align: center; max-width: 420px; width: 92%;
+      box-shadow: 0 24px 60px rgba(0,0,0,0.2);
+      animation: popIn 0.4s ease;
+    }
+    @keyframes popIn {
+      from { transform: scale(0.9) translateY(20px); opacity: 0; }
+      to { transform: scale(1) translateY(0); opacity: 1; }
+    }
+    .icon { font-size: 72px; margin-bottom: 20px; animation: bounce 0.6s ease 0.3s both; }
+    @keyframes bounce {
+      0% { transform: scale(0); }
+      60% { transform: scale(1.2); }
+      100% { transform: scale(1); }
+    }
+    h1 { font-size: 26px; font-weight: 800; color: #333; margin-bottom: 12px; }
+    p { font-size: 15px; color: #666; line-height: 1.7; margin-bottom: 8px; }
+    .plan-badge {
+      display: inline-block;
+      background: linear-gradient(135deg, #ffd700, #ff9800);
+      color: #333; font-size: 14px; font-weight: 700;
+      padding: 6px 18px; border-radius: 20px; margin: 16px 0 24px;
+    }
+    .btn {
+      display: block; width: 100%; padding: 15px;
+      background: linear-gradient(135deg, #667eea, #764ba2);
+      color: white; border: none; border-radius: 12px;
+      font-size: 16px; font-weight: 700; cursor: pointer;
+      text-decoration: none; margin-bottom: 12px;
+      transition: all 0.2s;
+    }
+    .btn:hover { opacity: 0.9; transform: translateY(-1px); }
+    .note { font-size: 12px; color: #aaa; margin-top: 16px; }
+  </style>
+</head>
+<body>
+  <div class="card">
+    <div class="icon">🎉</div>
+    <h1 id="title">お支払い完了！</h1>
+    <p id="message">ありがとうございます。</p>
+    <div class="plan-badge" id="planBadge">⭐ PRO会員</div>
+    <p id="detail">より多くのスタイルと<br>1日20回まで画像生成がご利用いただけます。</p>
+    <br>
+    <a href="https://amekazeshinogi.github.io/tag-art/" class="btn">🎨 さっそく生成する</a>
+    <p class="note" id="note">※ プランの反映には少し時間がかかる場合があります。<br>反映されない場合はページを再読み込みしてください。</p>
+  </div>
+
+  <script>
+    // URLパラメータでクレジット購入か判定
+    const params = new URLSearchParams(location.search);
+    const sessionId = params.get("session_id");
+
+    // payment=successパラメータがある場合
+    if (location.search.includes("payment=success")) {
+      // セッションIDがあればStripe APIで判定できるが、シンプルに表示
+      document.getElementById("title").textContent = "お支払い完了！";
+      document.getElementById("message").textContent = "ありがとうございます。";
+    }
+
+    // 言語切替（ブラウザの言語に合わせる）
+    const lang = navigator.language || "ja";
+    if (lang.startsWith("en")) {
+      document.querySelector("html").lang = "en";
+      document.getElementById("title").textContent = "Payment Complete!";
+      document.getElementById("message").textContent = "Thank you for your purchase!";
+      document.getElementById("planBadge").textContent = "⭐ PRO Member";
+      document.getElementById("detail").innerHTML = "You can now generate up to<br>20 images per day.";
+      document.querySelector(".btn").textContent = "🎨 Start Generating";
+      document.getElementById("note").textContent = "※ It may take a moment for your plan to activate. Please refresh if needed.";
+    }
+  </script>
+</body>
+</html>
