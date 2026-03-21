@@ -1129,7 +1129,7 @@ function renderTagList(cat, groupIdx) {
       + "<div style='display:flex;gap:6px;'>"
       + "<input id='" + otherId + "' type='text' placeholder='" + t.otherInputPlaceholder + "' value='" + otherVal.replace(/'/g,"&#39;") + "'"
       + " style='flex:1;padding:8px 12px;border:1.5px solid var(--border);border-radius:20px;font-size:13px;outline:none;'"
-      + " oninput='updateOtherInput("" + cat + "",this.value)'>"
+      + " oninput=\"updateOtherInput('" + cat + "',this.value)\">"
       + "</div></div>";
   }
 
