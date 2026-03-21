@@ -236,6 +236,19 @@
     .btn-add { background: linear-gradient(135deg, #4caf50, #43e97b); color: white; }
     .btn-skip:hover, .btn-add:hover { transform: scale(1.08); }
 
+    /* スタイル選択（最初の画面） */
+    .style-first-btn {
+      padding: 8px 14px; background: #f0f2f8;
+      border: 1.5px solid #e0e4ed; border-radius: 20px;
+      font-size: 13px; color: #333; cursor: pointer; transition: all 0.18s;
+    }
+    .style-first-btn:hover { border-color: #ff9800; color: #e65100; background: #fff8f0; }
+    .style-first-btn.selected {
+      background: linear-gradient(135deg, #ff9800, #ff5722);
+      color: white; border-color: transparent;
+      box-shadow: 0 2px 8px rgba(255,152,0,0.35);
+    }
+
     #dragGhost { position: fixed; pointer-events: none; z-index: 9999; background: linear-gradient(135deg, var(--primary), var(--primary-dark)); color: white; padding: 8px 14px; border-radius: 20px; font-size: 13px; font-weight: 600; box-shadow: 0 4px 14px rgba(102,126,234,0.4); display: none; transform: translate(-50%, -50%); }
 
     @media (max-width: 600px) {
@@ -343,6 +356,13 @@
 </div>
 
 <div class="main-container">
+
+  <!-- ===== スタイル選択（最初の画面） ===== -->
+  <div id="styleFirstPanel" style="background:white;border-radius:14px;box-shadow:0 2px 12px rgba(102,126,234,0.10);padding:14px;margin-bottom:14px;">
+    <div style="font-size:12px;color:#999;font-weight:600;text-transform:uppercase;letter-spacing:0.8px;margin-bottom:10px;" id="styleFirstLabel">🎨 スタイルを選ぶ</div>
+    <div style="display:flex;flex-wrap:wrap;gap:8px;" id="styleFirstGrid"></div>
+  </div>
+
   <div class="mode-tabs">
     <button class="mode-tab active" onclick="switchMode('drag')">🏷️ タグ選択</button>
     <button class="mode-tab" onclick="switchMode('swipe')">👆 スワイプ</button>
@@ -951,6 +971,7 @@ function setLang(lang) {
   buildCatTabs();
   renderTagList(currentCat, currentSubGroup);
   renderSelectedZone();
+  buildStyleFirst();
 }
 
 function getLabelForTag(tag) {
@@ -967,8 +988,35 @@ function getLabelForTag(tag) {
 // ===== 初期化 =====
 function init() {
   buildCatTabs(); switchCat("gender"); initDragDrop(); initSwipe();
+  buildStyleFirst();
   const tabs = document.getElementById("catTabs");
   if (tabs) { tabs.addEventListener("scroll", updateScrollBtns); setTimeout(updateScrollBtns, 100); }
+}
+
+// ===== スタイル選択（最初の画面） =====
+function buildStyleFirst() {
+  const grid = document.getElementById("styleFirstGrid");
+  if (!grid) return;
+  const styles = allTagGroups.style.groups.flatMap(g => g.tags);
+  const t = i18n[currentLang];
+  grid.innerHTML = styles.map(s => {
+    const isLocked = userPlan !== "pro" && s.tag !== "anime style";
+    const isSelected = selectedStyle === s.tag;
+    const label = (t.tagLabels && t.tagLabels[s.tag]) ? t.tagLabels[s.tag] : s.label;
+    const lockIcon = isLocked ? " 🔒" : "";
+    const selCls = isSelected ? "style-first-btn selected" : "style-first-btn";
+    const onclk = isLocked ? "showPlanModal()" : "selectStyleFirst('" + s.tag.replace(/'/g,"\'") + "')";
+    const opacity = isLocked ? "opacity:0.45;" : "";
+    return "<button class='" + selCls + "' onclick="" + onclk + "" style='" + opacity + "'>" + label + lockIcon + "</button>";
+  }).join("");
+}
+
+function selectStyleFirst(tag) {
+  selectedStyle = selectedStyle === tag ? "" : tag;
+  buildStyleFirst();
+  renderSelectedZone();
+  // カテゴリタブのスタイルバッジも更新
+  updateCatTabBadge("style");
 }
 
 // ===== 認証モーダル =====
@@ -1473,6 +1521,8 @@ async function loadUserPlan() {
   const upgradeBtn=document.querySelector("#userInfo .hbtn");
   if(userPlan==="pro") upgradeBtn.textContent="✅ Pro会員";
 
+  buildStyleFirst();
+  renderTagList(currentCat, currentSubGroup);
   loadCount();
 }
 
