@@ -9,8 +9,6 @@
   <meta name="author" content="tag-art">
   <meta name="robots" content="index, follow">
   <link rel="canonical" href="https://amekazeshinogi.github.io/tag-art/">
-
-  <!-- OGP（SNSシェア用） -->
   <meta property="og:title" content="tag-art - AIアイコン生成">
   <meta property="og:description" content="タグを選んでオリジナルAIアイコンを生成！無料で毎日3回使えます。">
   <meta property="og:type" content="website">
@@ -18,12 +16,12 @@
   <meta property="og:image" content="https://amekazeshinogi.github.io/tag-art/ogp.png">
   <meta property="og:site_name" content="tag-art">
   <meta property="og:locale" content="ja_JP">
-
-  <!-- Twitter Card -->
   <meta name="twitter:card" content="summary_large_image">
   <meta name="twitter:title" content="tag-art - AIアイコン生成">
   <meta name="twitter:description" content="タグを選んでオリジナルAIアイコンを生成！無料で毎日3回使えます。">
   <meta name="twitter:image" content="https://amekazeshinogi.github.io/tag-art/ogp.png">
+  <!-- Monetag: 登録後に発行されるコードをここに貼る -->
+  <!-- <script src="https://alwingulla.com/88/tag.min.js" data-zone="YOUR_ZONE_ID" async></script> -->
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <style>
     * { box-sizing: border-box; margin: 0; padding: 0; }
@@ -34,7 +32,6 @@
     }
     body { font-family: -apple-system, BlinkMacSystemFont, 'Hiragino Sans', sans-serif; background: var(--bg); color: var(--text); min-height: 100vh; }
 
-    /* ヘッダー */
     .header {
       background: linear-gradient(135deg, var(--primary), var(--primary-dark));
       color: white; padding: 12px 16px;
@@ -53,13 +50,16 @@
     .hbtn:hover { background: rgba(255,255,255,0.4); }
     .hbtn.signup { background: rgba(255,255,255,0.45); }
     #userEmail { font-size: 11px; opacity: 0.85; max-width: 120px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
-    .plan-badge {
-      font-size: 10px; font-weight: 700; padding: 3px 8px; border-radius: 8px;
-      background: rgba(255,255,255,0.25);
-    }
+    .plan-badge { font-size: 10px; font-weight: 700; padding: 3px 8px; border-radius: 8px; background: rgba(255,255,255,0.25); }
     .plan-badge.pro { background: linear-gradient(135deg,#ffd700,#ff9800); color: #333; }
 
-    /* ===== 認証モーダル ===== */
+    /* 広告バナーエリア */
+    #adBanner {
+      text-align: center; padding: 6px 0;
+      background: #f8f9ff; border-bottom: 1px solid var(--border);
+      min-height: 50px; display: flex; align-items: center; justify-content: center;
+    }
+
     .modal-overlay {
       display: none; position: fixed; inset: 0; z-index: 999;
       background: rgba(0,0,0,0.55); backdrop-filter: blur(4px);
@@ -73,47 +73,26 @@
       animation: modalIn 0.22s ease;
     }
     @keyframes modalIn { from { transform: scale(0.9) translateY(16px); opacity: 0; } to { transform: scale(1) translateY(0); opacity: 1; } }
-    .modal-close {
-      position: absolute; top: 14px; right: 16px;
-      background: none; border: none; font-size: 22px; color: var(--text-muted); cursor: pointer;
-    }
+    .modal-close { position: absolute; top: 14px; right: 16px; background: none; border: none; font-size: 22px; color: var(--text-muted); cursor: pointer; }
     .modal-logo { text-align: center; font-size: 36px; margin-bottom: 8px; }
     .modal-title { text-align: center; font-size: 20px; font-weight: 800; margin-bottom: 4px; }
     .modal-sub { text-align: center; font-size: 13px; color: var(--text-muted); margin-bottom: 20px; line-height: 1.5; }
-
-    /* タブ */
     .auth-tabs { display: flex; border: 1.5px solid var(--border); border-radius: 10px; overflow: hidden; margin-bottom: 18px; }
     .auth-tab { flex: 1; padding: 10px; border: none; background: white; font-size: 13px; font-weight: 600; color: var(--text-muted); cursor: pointer; transition: all 0.2s; }
     .auth-tab.active { background: linear-gradient(135deg, var(--primary), var(--primary-dark)); color: white; }
-
-    /* フォーム */
-    .auth-input {
-      display: block; width: 100%; padding: 13px 14px;
-      border: 1.5px solid var(--border); border-radius: 10px;
-      font-size: 14px; margin-bottom: 10px; outline: none; transition: border 0.2s;
-    }
+    .auth-input { display: block; width: 100%; padding: 13px 14px; border: 1.5px solid var(--border); border-radius: 10px; font-size: 14px; margin-bottom: 10px; outline: none; transition: border 0.2s; }
     .auth-input:focus { border-color: var(--primary); }
-    .auth-submit {
-      width: 100%; padding: 14px; border: none; border-radius: 12px;
-      background: linear-gradient(135deg, var(--primary), var(--primary-dark));
-      color: white; font-size: 15px; font-weight: 700; cursor: pointer;
-      transition: all 0.2s; margin-top: 4px;
-    }
+    .auth-submit { width: 100%; padding: 14px; border: none; border-radius: 12px; background: linear-gradient(135deg, var(--primary), var(--primary-dark)); color: white; font-size: 15px; font-weight: 700; cursor: pointer; transition: all 0.2s; margin-top: 4px; }
     .auth-submit:hover { opacity: 0.9; transform: translateY(-1px); }
     #authMsg { text-align: center; color: #e44; font-size: 13px; margin-top: 10px; min-height: 18px; }
 
-    /* ===== プランモーダル ===== */
     .plan-modal-box {
       background: white; border-radius: 24px; padding: 28px 22px 22px;
       width: 92%; max-width: 440px; position: relative;
       box-shadow: 0 24px 60px rgba(0,0,0,0.25);
-      animation: modalIn 0.22s ease;
-      max-height: 90vh; overflow-y: auto;
+      animation: modalIn 0.22s ease; max-height: 90vh; overflow-y: auto;
     }
-    .plan-card {
-      border: 1.5px solid var(--border); border-radius: 14px;
-      padding: 16px; margin-bottom: 12px;
-    }
+    .plan-card { border: 1.5px solid var(--border); border-radius: 14px; padding: 16px; margin-bottom: 12px; }
     .plan-card.pro-card { border-color: var(--primary); background: #f8f0ff; }
     .plan-card.credit-card { border-color: var(--accent); background: #fff8f0; }
     .plan-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px; }
@@ -123,62 +102,34 @@
     .plan-price { font-size: 22px; font-weight: 800; }
     .plan-price span { font-size: 13px; color: var(--text-muted); font-weight: 400; }
     .plan-features { font-size: 13px; color: #666; line-height: 1.8; margin-bottom: 12px; }
-    .plan-btn {
-      width: 100%; padding: 12px; border: none; border-radius: 10px;
-      font-size: 14px; font-weight: 700; cursor: pointer; transition: all 0.2s;
-      color: white;
-    }
+    .plan-btn { width: 100%; padding: 12px; border: none; border-radius: 10px; font-size: 14px; font-weight: 700; cursor: pointer; transition: all 0.2s; color: white; }
     .plan-btn.pro-btn { background: linear-gradient(135deg, var(--primary), var(--primary-dark)); }
     .plan-btn.credit-btn { background: linear-gradient(135deg, var(--accent), #ff5722); }
     .plan-btn:hover { opacity: 0.9; transform: translateY(-1px); }
-    .recommended-badge {
-      position: absolute; top: -10px; right: 14px;
-      background: linear-gradient(135deg, var(--primary), var(--primary-dark));
-      color: white; font-size: 11px; font-weight: 700;
-      padding: 3px 10px; border-radius: 10px;
-    }
-    .current-plan-info {
-      background: #f8f9ff; border-radius: 10px; padding: 12px;
-      margin-bottom: 16px; font-size: 13px; color: var(--text-muted); text-align: center;
-    }
+    .recommended-badge { position: absolute; top: -10px; right: 14px; background: linear-gradient(135deg, var(--primary), var(--primary-dark)); color: white; font-size: 11px; font-weight: 700; padding: 3px 10px; border-radius: 10px; }
+    .current-plan-info { background: #f8f9ff; border-radius: 10px; padding: 12px; margin-bottom: 16px; font-size: 13px; color: var(--text-muted); text-align: center; }
 
-    /* メイン */
     .main-container { max-width: 900px; margin: 0 auto; padding: 16px; }
     .mode-tabs { display: flex; gap: 8px; margin-bottom: 14px; }
-    .mode-tab {
-      flex: 1; padding: 10px; border-radius: 10px; border: none;
-      background: var(--card); color: var(--text-muted);
-      font-size: 14px; font-weight: 600; cursor: pointer; box-shadow: var(--shadow); transition: all 0.2s;
-    }
+    .mode-tab { flex: 1; padding: 10px; border-radius: 10px; border: none; background: var(--card); color: var(--text-muted); font-size: 14px; font-weight: 600; cursor: pointer; box-shadow: var(--shadow); transition: all 0.2s; }
     .mode-tab.active { background: linear-gradient(135deg, var(--primary), var(--primary-dark)); color: white; }
 
-    /* 2カラム */
     .two-col { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; align-items: start; }
     .left-panel { background: var(--card); border-radius: var(--radius); box-shadow: var(--shadow); overflow: hidden; }
 
-    /* カテゴリタブ */
     .cat-tabs-wrapper { position: relative; background: #f8f9ff; border-bottom: 1px solid var(--border); display: flex; align-items: flex-end; }
-    .cat-scroll-btn {
-      flex-shrink: 0; width: 28px; height: 36px; border: none; background: transparent;
-      color: var(--primary); font-size: 16px; font-weight: 700; cursor: pointer;
-      display: flex; align-items: center; justify-content: center; transition: all 0.15s; border-radius: 6px; padding-bottom: 4px;
-    }
+    .cat-scroll-btn { flex-shrink: 0; width: 28px; height: 36px; border: none; background: transparent; color: var(--primary); font-size: 16px; font-weight: 700; cursor: pointer; display: flex; align-items: center; justify-content: center; transition: all 0.15s; border-radius: 6px; padding-bottom: 4px; }
     .cat-scroll-btn:hover { background: #ede9ff; }
     .cat-scroll-btn:disabled { opacity: 0.25; cursor: default; background: transparent; }
     .cat-tabs { display: flex; overflow-x: auto; flex: 1; padding: 6px 0 0; gap: 4px; scrollbar-width: thin; scrollbar-color: #c7b8f5 #f0f2f8; }
     .cat-tabs::-webkit-scrollbar { height: 4px; }
     .cat-tabs::-webkit-scrollbar-track { background: #f0f2f8; border-radius: 2px; }
     .cat-tabs::-webkit-scrollbar-thumb { background: #c7b8f5; border-radius: 2px; }
-    .cat-tab {
-      padding: 7px 12px; border-radius: 8px 8px 0 0; border: none; background: transparent;
-      font-size: 12px; font-weight: 600; color: var(--text-muted); cursor: pointer;
-      white-space: nowrap; flex-shrink: 0; transition: all 0.15s; border-bottom: 2px solid transparent; position: relative;
-    }
+    .cat-tab { padding: 7px 12px; border-radius: 8px 8px 0 0; border: none; background: transparent; font-size: 12px; font-weight: 600; color: var(--text-muted); cursor: pointer; white-space: nowrap; flex-shrink: 0; transition: all 0.15s; border-bottom: 2px solid transparent; position: relative; }
     .cat-tab.active { color: var(--primary-dark); background: white; border-bottom: 2px solid var(--primary); }
     .cat-tab .sel-dot { position: absolute; top: 4px; right: 4px; width: 6px; height: 6px; border-radius: 50%; background: #4caf50; display: none; }
     .cat-tab.has-selection .sel-dot { display: block; }
 
-    /* サブタブ */
     .sub-tabs-wrapper { background: #f0f2f8; border-bottom: 1px solid var(--border); padding: 6px 12px; display: flex; gap: 6px; overflow-x: auto; scrollbar-width: none; }
     .sub-tabs-wrapper::-webkit-scrollbar { display: none; }
     .sub-tab { padding: 5px 12px; border-radius: 14px; border: 1.5px solid var(--border); background: white; font-size: 11px; font-weight: 600; color: var(--text-muted); cursor: pointer; white-space: nowrap; flex-shrink: 0; transition: all 0.15s; }
@@ -193,14 +144,12 @@
     .tag-btn.selected { background: linear-gradient(135deg, var(--primary), var(--primary-dark)); color: white; border-color: transparent; box-shadow: 0 2px 8px rgba(102,126,234,0.35); }
     .tag-btn.style-selected { background: linear-gradient(135deg, #ff9800, #ff5722); color: white; border-color: transparent; box-shadow: 0 2px 8px rgba(255,152,0,0.35); }
 
-    /* 段階選択 */
     .substep-panel { background: #fff8f0; border: 1.5px solid #ffe0b2; border-radius: 10px; padding: 12px; margin-top: 12px; animation: fadeIn 0.2s ease; }
     .substep-title { font-size: 11px; font-weight: 700; color: #e65100; margin-bottom: 10px; letter-spacing: 0.5px; }
     .substep-label { font-size: 11px; color: var(--text-muted); font-weight: 600; margin-bottom: 5px; margin-top: 8px; }
     .substep-row { display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 4px; }
     @keyframes fadeIn { from { opacity:0; transform:translateY(-6px); } to { opacity:1; transform:translateY(0); } }
 
-    /* 右パネル */
     .right-panel { display: flex; flex-direction: column; gap: 10px; }
     .selected-panel { background: var(--card); border-radius: var(--radius); box-shadow: var(--shadow); padding: 14px; }
     .selected-panel h3 { font-size: 12px; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.8px; margin-bottom: 12px; font-weight: 600; }
@@ -235,10 +184,10 @@
     #swipeMode { display: none; }
     .swipe-cat-tabs { display: flex; gap: 6px; overflow-x: auto; padding-bottom: 5px; margin-bottom: 12px; scrollbar-width: none; }
     .swipe-cat-tabs::-webkit-scrollbar { display: none; }
-    .swipe-cat-tab { padding: 7px 14px; border-radius: 20px; border: 1.5px solid var(--border); background: var(--card); color: #666; font-size: 12px; font-weight: 600; cursor: pointer; white-space: nowrap; flex-shrink: 0; transition: all 0.15s; }
+    .swipe-cat-tab { padding: 7px 14px; border-radius: 20px; border: 1.5px solid var(--border); background: var(--card); color: #666; font-size: 12px; font-weight: 600; cursor: pointer; white-space: nowrap; flex-shrink: 0; transition: all 0.15s; text-align: center; }
     .swipe-cat-tab.active { background: linear-gradient(135deg, var(--primary), var(--primary-dark)); color: white; border-color: transparent; }
     .swipe-container { text-align: center; }
-    .card-stack { position: relative; height: 220px; margin: 0 auto 16px; width: 200px; }
+    .card-stack { position: relative; height: 240px; margin: 0 auto 8px; width: 220px; }
     .swipe-card { position: absolute; inset: 0; background: white; border-radius: 16px; box-shadow: 0 4px 20px rgba(0,0,0,0.12); display: flex; flex-direction: column; align-items: center; justify-content: center; cursor: grab; user-select: none; }
     .swipe-card.top { z-index: 3; }
     .like-overlay, .nope-overlay { position: absolute; top: 16px; font-size: 13px; font-weight: 800; padding: 4px 12px; border-radius: 8px; opacity: 0; pointer-events: none; }
@@ -247,27 +196,22 @@
     .card-emoji { font-size: 56px; margin-bottom: 10px; }
     .card-label { font-size: 18px; font-weight: 700; color: var(--text); }
     .card-sublabel { font-size: 11px; color: var(--text-muted); margin-top: 4px; }
-    .swipe-hint { display: flex; justify-content: space-between; padding: 0 20px; margin-bottom: 12px; }
+    .swipe-hint { display: flex; justify-content: space-between; padding: 0 20px; margin-bottom: 8px; }
     .hint-left { color: #f44336; font-size: 13px; font-weight: 600; }
     .hint-right { color: #4caf50; font-size: 13px; font-weight: 600; }
-    .swipe-btns { display: flex; justify-content: center; gap: 24px; }
+    .swipe-btns { display: flex; justify-content: center; gap: 24px; margin-bottom: 10px; }
     .btn-skip, .btn-add { width: 56px; height: 56px; border-radius: 50%; border: none; font-size: 22px; cursor: pointer; box-shadow: 0 4px 14px rgba(0,0,0,0.15); transition: all 0.15s; }
-    .btn-skip { background: white; color: #f44336; }
+    .btn-skip { background: white; color: #f44336; border: 2px solid #f44336; }
     .btn-add { background: linear-gradient(135deg, #4caf50, #43e97b); color: white; }
     .btn-skip:hover, .btn-add:hover { transform: scale(1.08); }
+    .swipe-skip-cat-area { text-align: center; margin-bottom: 12px; }
+    .swipe-skip-cat-btn { padding: 6px 16px; border: 1.5px solid var(--border); background: white; border-radius: 16px; font-size: 12px; color: var(--text-muted); cursor: pointer; transition: all 0.15s; }
+    .swipe-skip-cat-btn:hover { border-color: var(--primary); color: var(--primary-dark); }
+    #swipeCompletePanel { animation: popIn 0.3s ease; }
 
-    /* スタイル選択（最初の画面） */
-    .style-first-btn {
-      padding: 8px 14px; background: #f0f2f8;
-      border: 1.5px solid #e0e4ed; border-radius: 20px;
-      font-size: 13px; color: #333; cursor: pointer; transition: all 0.18s;
-    }
+    .style-first-btn { padding: 8px 14px; background: #f0f2f8; border: 1.5px solid #e0e4ed; border-radius: 20px; font-size: 13px; color: #333; cursor: pointer; transition: all 0.18s; }
     .style-first-btn:hover { border-color: #ff9800; color: #e65100; background: #fff8f0; }
-    .style-first-btn.selected {
-      background: linear-gradient(135deg, #ff9800, #ff5722);
-      color: white; border-color: transparent;
-      box-shadow: 0 2px 8px rgba(255,152,0,0.35);
-    }
+    .style-first-btn.selected { background: linear-gradient(135deg, #ff9800, #ff5722); color: white; border-color: transparent; box-shadow: 0 2px 8px rgba(255,152,0,0.35); }
 
     #dragGhost { position: fixed; pointer-events: none; z-index: 9999; background: linear-gradient(135deg, var(--primary), var(--primary-dark)); color: white; padding: 8px 14px; border-radius: 20px; font-size: 13px; font-weight: 600; box-shadow: 0 4px 14px rgba(102,126,234,0.4); display: none; transform: translate(-50%, -50%); }
 
@@ -282,7 +226,6 @@
 </head>
 <body>
 
-<!-- ヘッダー -->
 <div class="header">
   <h1>tag-art <span id="headerSub">アイコン生成</span></h1>
   <div style="display:flex;align-items:center;gap:6px;flex-wrap:wrap;">
@@ -297,7 +240,6 @@
       <button class="hbtn" onclick="location.href='history.html'" id="btnHistory">📷 履歴</button>
       <button class="hbtn" onclick="logout()" id="btnLogout">ログアウト</button>
     </div>
-    <!-- 言語切替ドロップダウン -->
     <div style="position:relative;" id="langDropdownWrapper">
       <button class="hbtn" id="langDropdownBtn" onclick="toggleLangDropdown()" style="padding:5px 10px;font-size:12px;">🌐 <span id="langCurrentLabel">JP</span> ▾</button>
       <div id="langDropdown" style="display:none;position:absolute;right:0;top:36px;background:white;border-radius:10px;box-shadow:0 4px 20px rgba(0,0,0,0.15);overflow:hidden;z-index:200;min-width:140px;">
@@ -316,7 +258,11 @@
   </div>
 </div>
 
-<!-- 認証モーダル -->
+<!-- 広告バナーエリア（Adsterra または A-ads のコードをここに貼る） -->
+<div id="adBanner">
+  <!-- 例: <script async data-cfasync="false" src="//..."></script> -->
+</div>
+
 <div class="modal-overlay" id="authModal">
   <div class="modal-box">
     <button class="modal-close" onclick="hideAuthModal()">×</button>
@@ -344,42 +290,25 @@
   </div>
 </div>
 
-<!-- プランモーダル -->
 <div class="modal-overlay" id="planModal">
   <div class="plan-modal-box">
     <button class="modal-close" onclick="hidePlanModal()">×</button>
     <div class="modal-logo">⭐</div>
     <h2 class="modal-title">プランを選ぶ</h2>
     <p class="modal-sub">もっとたくさん生成したい方へ</p>
-
     <div class="current-plan-info" id="currentPlanInfo">現在のプラン：FREE（1日3回）</div>
-
-    <!-- 無料プラン -->
     <div class="plan-card">
-      <div class="plan-header">
-        <span class="plan-name">FREE</span>
-        <span class="plan-price">¥0</span>
-      </div>
+      <div class="plan-header"><span class="plan-name">FREE</span><span class="plan-price">¥0</span></div>
       <div class="plan-features">✔ 1日3回まで生成<br>✔ 全タグ使用可能</div>
     </div>
-
-    <!-- Proプラン -->
     <div class="plan-card pro-card" style="position:relative;">
       <div class="recommended-badge">おすすめ</div>
-      <div class="plan-header">
-        <span class="plan-name pro">PRO</span>
-        <span class="plan-price">¥980<span>/月</span></span>
-      </div>
+      <div class="plan-header"><span class="plan-name pro">PRO</span><span class="plan-price">¥980<span>/月</span></span></div>
       <div class="plan-features">✔ 1日20回まで生成<br>✔ 全タグ使用可能<br>✔ いつでも解約可能</div>
       <button class="plan-btn pro-btn" onclick="startCheckout('subscription')">Proにアップグレード →</button>
     </div>
-
-    <!-- クレジット購入 -->
     <div class="plan-card credit-card">
-      <div class="plan-header">
-        <span class="plan-name credit">クレジット購入</span>
-        <span class="plan-price">¥150<span>/10回</span></span>
-      </div>
+      <div class="plan-header"><span class="plan-name credit">クレジット購入</span><span class="plan-price">¥150<span>/10回</span></span></div>
       <div class="plan-features">✔ 10回分の生成クレジット<br>✔ 有効期限なし<br>✔ 何度でも購入可能</div>
       <button class="plan-btn credit-btn" onclick="startCheckout('payment')">10回分を購入（¥150）→</button>
     </div>
@@ -388,7 +317,6 @@
 
 <div class="main-container">
 
-  <!-- ===== スタイル選択（最初の画面） ===== -->
   <div id="styleFirstPanel" style="background:white;border-radius:14px;box-shadow:0 2px 12px rgba(102,126,234,0.10);padding:14px;margin-bottom:14px;">
     <div style="font-size:12px;color:#999;font-weight:600;text-transform:uppercase;letter-spacing:0.8px;margin-bottom:10px;" id="styleFirstLabel">🎨 スタイルを選ぶ</div>
     <div style="display:flex;flex-wrap:wrap;gap:8px;" id="styleFirstGrid"></div>
@@ -436,6 +364,9 @@
     <div class="swipe-container">
       <div class="card-stack" id="cardStack"></div>
       <div class="swipe-hint"><span class="hint-left">← スキップ</span><span class="hint-right">追加 →</span></div>
+      <div class="swipe-skip-cat-area">
+        <button class="swipe-skip-cat-btn" onclick="skipCurrentCat()">⏭️ このカテゴリーをスキップ</button>
+      </div>
       <div class="swipe-btns">
         <button class="btn-skip" onclick="swipeLeft()">✕</button>
         <button class="btn-add" onclick="swipeRight()">♥</button>
@@ -468,10 +399,15 @@
   </div>
 </div>
 
+<!-- A-ads 広告エリア（フッター上） -->
+<div style="text-align:center;padding:16px;background:white;border-top:1px solid var(--border);">
+  <!-- A-ads のコードをここに貼る -->
+  <!-- <iframe data-aa="YOUR_ID" src="//ad.a-ads.com/YOUR_ID?size=728x90" style="width:728px;max-width:100%;height:90px;border:0;"></iframe> -->
+</div>
+
 <div id="dragGhost"></div>
 
-<!-- フッター -->
-<footer style="text-align:center;padding:24px 16px;color:#aaa;font-size:12px;border-top:1px solid #e0e4ed;margin-top:20px;background:white;">
+<footer style="text-align:center;padding:24px 16px;color:#aaa;font-size:12px;border-top:1px solid #e0e4ed;margin-top:0;background:white;">
   <p style="margin-bottom:6px;">
     <a href="privacy.html" style="color:#667eea;text-decoration:none;margin:0 10px;">プライバシーポリシー / Privacy Policy</a>
     <span style="margin:0 4px;">|</span>
@@ -541,6 +477,34 @@ const allTagGroups = {
       {tag:"curvy, voluptuous",label:"🌸 グラマー"},
       {tag:"chubby, round body",label:"🍩 ぽっちゃり"},
       {tag:"lanky, thin and tall",label:"🦒 ひょろ長い"}
+    ]}
+  ]},
+  skin: { groups: [
+    { label: "明るい系", tags: [
+      {tag:"fair skin, pale skin",label:"🤍 色白"},
+      {tag:"light skin tone",label:"🌸 明るい肌"},
+      {tag:"ivory skin",label:"✨ アイボリー"},
+      {tag:"peach skin tone",label:"🍑 ピーチ"}
+    ]},
+    { label: "標準系", tags: [
+      {tag:"natural skin tone",label:"🌿 ナチュラル"},
+      {tag:"medium skin tone",label:"🌰 ミディアム"},
+      {tag:"warm skin tone, golden",label:"☀️ ゴールデン"},
+      {tag:"olive skin tone",label:"🫒 オリーブ"}
+    ]},
+    { label: "ダーク系", tags: [
+      {tag:"tan skin, sun-kissed",label:"🌊 タン"},
+      {tag:"brown skin tone",label:"🍂 ブラウン"},
+      {tag:"dark skin tone",label:"🌑 ダーク"},
+      {tag:"deep skin tone, ebony",label:"🖤 エボニー"}
+    ]},
+    { label: "ファンタジー系", tags: [
+      {tag:"pale blue skin, fantasy",label:"💙 青い肌"},
+      {tag:"green skin tone, fantasy",label:"💚 緑の肌"},
+      {tag:"purple skin tone, fantasy",label:"💜 紫の肌"},
+      {tag:"golden metallic skin",label:"✨ 金属肌"},
+      {tag:"dark purple skin, shadow",label:"🌑 影の肌"},
+      {tag:"white marble skin, crystal",label:"💎 クリスタル肌"}
     ]}
   ]},
   hair: { groups: [
@@ -770,12 +734,12 @@ const attrDetails = {
     {tag:"red nine tails kitsune",label:"❤️ 赤九尾"}
   ]
 };
-const catLabels = {
-  gender:"👤 性別", age:"🎂 年齢感", body:"💪 体型", hair:"💇 髪型", color:"🎨 髪色",
-  eyes:"👁️ 瞳", face:"😊 表情", attr:"✨ 属性", outfit:"👗 服装",
-  acc:"👓 アクセ", pose:"🤸 ポーズ", bg:"🖼️ 背景", style:"🎨 スタイル"
+let catLabels = {
+  gender:"👤 性別", age:"🎂 年齢感", body:"💪 体型", skin:"🎨 肌色",
+  hair:"💇 髪型", color:"🎨 髪色", eyes:"👁️ 瞳", face:"😊 表情",
+  attr:"✨ 属性", outfit:"👗 服装", acc:"👓 アクセ",
+  pose:"🤸 ポーズ", bg:"🖼️ 背景", style:"🎨 スタイル"
 };
-
 
 let currentCat = "gender";
 let currentSubGroup = 0;
@@ -785,592 +749,310 @@ function getFlatTags(cat) { return allTagGroups[cat].groups.flatMap(g => g.tags)
 // ===== 言語データ =====
 const i18n = {
   ja: {
-    headerSub: "アイコン生成",
-    btnLogin: "ログイン", btnSignup: "✨ 無料登録", btnUpgrade: "⭐ アップグレード",
-    btnHistory: "📷 履歴", btnLogout: "ログアウト",
-    modeTagSelect: "🏷️ タグ選択", modeSwipe: "👆 スワイプ",
-    selectedTitle: "✅ 選択中のタグ",
-    dropHint: "タグをここにドロップ<br>またはタップで選択",
-    btnGenerate: "✨ 生成する", btnRandom: "🎲 ランダム", btnReset: "🔄 リセット",
-    btnSave: "💾 画像を保存する",
-    loading: "⏳ 生成中...（20〜30秒かかります）",
-    loginTitle: "ログイン", loginSub: "tag-artへようこそ",
-    tabLogin: "ログイン", tabSignup: "新規登録（無料）",
-    signupNote: "🎉 無料で始められます！1日3回まで生成可能",
-    emailPlaceholder: "メールアドレス", passPlaceholder: "パスワード",
-    pass2Placeholder: "パスワード（6文字以上）",
-    btnDoLogin: "ログイン", btnDoSignup: "無料で登録する",
-    planTitle: "プランを選ぶ", planSub: "もっとたくさん生成したい方へ",
-    planFreeFeatures: "✔ 1日3回まで生成<br>✔ 全タグ使用可能",
-    planProFeatures: "✔ 1日20回まで生成<br>✔ 全タグ使用可能<br>✔ いつでも解約可能",
-    planCreditFeatures: "✔ 10回分の生成クレジット<br>✔ 有効期限なし<br>✔ 何度でも購入可能",
-    btnProUpgrade: "Proにアップグレード →",
-    btnCreditBuy: "10回分を購入（¥150）→",
-    freeLockMsg: "🔒 FREEプランは「アニメ」スタイルのみ使用可能です。",
-    freeLockLink: "⭐ PROにアップグレードで全スタイル解放",
-    otherInputPlaceholder: "自由入力（日本語OK）",
-    otherInputLabel: "✏️ その他",
-    catLabels: {
-      gender:"👤 性別", age:"🎂 年齢感", body:"💪 体型", hair:"💇 髪型", color:"🎨 髪色",
-      eyes:"👁️ 瞳", face:"😊 表情", attr:"✨ 属性", outfit:"👗 服装",
-      acc:"👓 アクセ", pose:"🤸 ポーズ", bg:"🖼️ 背景", style:"🎨 スタイル"
+    headerSub:"アイコン生成", btnLogin:"ログイン", btnSignup:"✨ 無料登録",
+    btnUpgrade:"⭐ アップグレード", btnHistory:"📷 履歴", btnLogout:"ログアウト",
+    modeTagSelect:"🏷️ タグ選択", modeSwipe:"👆 スワイプ",
+    selectedTitle:"✅ 選択中のタグ",
+    dropHint:"タグをここにドロップ<br>またはタップで選択",
+    btnGenerate:"✨ 生成する", btnRandom:"🎲 ランダム", btnReset:"🔄 リセット",
+    btnSave:"💾 画像を保存する", loading:"⏳ 生成中...（20〜30秒かかります）",
+    loginTitle:"ログイン", loginSub:"tag-artへようこそ",
+    tabLogin:"ログイン", tabSignup:"新規登録（無料）",
+    signupNote:"🎉 無料で始められます！1日3回まで生成可能",
+    emailPlaceholder:"メールアドレス", passPlaceholder:"パスワード",
+    pass2Placeholder:"パスワード（6文字以上）",
+    btnDoLogin:"ログイン", btnDoSignup:"無料で登録する",
+    freeLockMsg:"🔒 FREEプランは「アニメ」スタイルのみ使用可能です。",
+    freeLockLink:"⭐ PROにアップグレードで全スタイル解放",
+    otherInputPlaceholder:"自由入力（日本語OK）", otherInputLabel:"✏️ その他",
+    swipeSkipCat:"⏭️ このカテゴリーをスキップ",
+    swipeComplete:"🎉 タグの選択が完了しました！",
+    swipeGenerateBtn:"✨ この内容で生成する",
+    swipeContinueBtn:"続けてタグを選ぶ",
+    catLabels:{
+      gender:"👤 性別", age:"🎂 年齢感", body:"💪 体型", skin:"🎨 肌色",
+      hair:"💇 髪型", color:"🎨 髪色", eyes:"👁️ 瞳", face:"😊 表情",
+      attr:"✨ 属性", outfit:"👗 服装", acc:"👓 アクセ",
+      pose:"🤸 ポーズ", bg:"🖼️ 背景", style:"🎨 スタイル"
     },
-    tagLabels: {}  // JAはallTagGroupsのlabelをそのまま使う
+    tagLabels:{}
   },
   en: {
-    headerSub: "Icon Generator",
-    btnLogin: "Login", btnSignup: "✨ Sign Up Free", btnUpgrade: "⭐ Upgrade",
-    btnHistory: "📷 History", btnLogout: "Logout",
-    modeTagSelect: "🏷️ Tag Select", modeSwipe: "👆 Swipe",
-    selectedTitle: "✅ Selected Tags",
-    dropHint: "Drop tags here<br>or tap to select",
-    btnGenerate: "✨ Generate", btnRandom: "🎲 Random", btnReset: "🔄 Reset",
-    btnSave: "💾 Save Image",
-    loading: "⏳ Generating... (20-30 seconds)",
-    loginTitle: "Login", loginSub: "Welcome to tag-art",
-    tabLogin: "Login", tabSignup: "Sign Up (Free)",
-    signupNote: "🎉 Start for free! Generate up to 3 times a day",
-    emailPlaceholder: "Email address", passPlaceholder: "Password",
-    pass2Placeholder: "Password (6+ characters)",
-    btnDoLogin: "Login", btnDoSignup: "Sign Up Free",
-    planTitle: "Choose a Plan", planSub: "For those who want to generate more",
-    planFreeFeatures: "✔ Up to 3 generations/day<br>✔ All tags available",
-    planProFeatures: "✔ Up to 20 generations/day<br>✔ All tags available<br>✔ Cancel anytime",
-    planCreditFeatures: "✔ 10 generation credits<br>✔ Never expire<br>✔ Purchase anytime",
-    btnProUpgrade: "Upgrade to Pro →",
-    btnCreditBuy: "Buy 10 credits (¥150) →",
-    freeLockMsg: "🔒 FREE plan: only 'Anime' style available.",
-    freeLockLink: "⭐ Upgrade to PRO for all styles",
-    otherInputPlaceholder: "Free input (any language OK)",
-    otherInputLabel: "✏️ Other",
-    catLabels: {
-      gender:"👤 Gender", age:"🎂 Age", body:"💪 Body", hair:"💇 Hair", color:"🎨 Hair Color",
-      eyes:"👁️ Eyes", face:"😊 Expression", attr:"✨ Attribute", outfit:"👗 Outfit",
-      acc:"👓 Accessory", pose:"🤸 Pose", bg:"🖼️ Background", style:"🎨 Style"
+    headerSub:"Icon Generator", btnLogin:"Login", btnSignup:"✨ Sign Up Free",
+    btnUpgrade:"⭐ Upgrade", btnHistory:"📷 History", btnLogout:"Logout",
+    modeTagSelect:"🏷️ Tag Select", modeSwipe:"👆 Swipe",
+    selectedTitle:"✅ Selected Tags",
+    dropHint:"Drop tags here<br>or tap to select",
+    btnGenerate:"✨ Generate", btnRandom:"🎲 Random", btnReset:"🔄 Reset",
+    btnSave:"💾 Save Image", loading:"⏳ Generating... (20-30 seconds)",
+    loginTitle:"Login", loginSub:"Welcome to tag-art",
+    tabLogin:"Login", tabSignup:"Sign Up (Free)",
+    signupNote:"🎉 Start for free! Generate up to 3 times a day",
+    emailPlaceholder:"Email address", passPlaceholder:"Password",
+    pass2Placeholder:"Password (6+ characters)",
+    btnDoLogin:"Login", btnDoSignup:"Sign Up Free",
+    freeLockMsg:"🔒 FREE plan: only 'Anime' style available.",
+    freeLockLink:"⭐ Upgrade to PRO for all styles",
+    otherInputPlaceholder:"Free input (any language OK)", otherInputLabel:"✏️ Other",
+    swipeSkipCat:"⏭️ Skip this category",
+    swipeComplete:"🎉 Tag selection complete!",
+    swipeGenerateBtn:"✨ Generate with these tags",
+    swipeContinueBtn:"Continue selecting tags",
+    catLabels:{
+      gender:"👤 Gender", age:"🎂 Age", body:"💪 Body", skin:"🎨 Skin Tone",
+      hair:"💇 Hair", color:"🎨 Hair Color", eyes:"👁️ Eyes", face:"😊 Expression",
+      attr:"✨ Attribute", outfit:"👗 Outfit", acc:"👓 Accessory",
+      pose:"🤸 Pose", bg:"🖼️ Background", style:"🎨 Style"
     },
-    tagLabels: {
-      // gender
+    tagLabels:{
       "boy":"👦 Male","girl":"👧 Female","neutral":"🧑 Neutral",
-      // age
-      "child appearance, innocent, small":"🌱 Child","youthful, teenage appearance":"🎒 Teen",
-      "young adult appearance, fresh":"🌟 Young Adult","baby face, innocent appearance":"🍬 Baby Face",
-      "youthful energy, lively":"⚡ Youthful","adult appearance, mature":"🍂 Adult",
-      "middle-aged appearance, experienced":"🌿 Middle-aged","elderly appearance, wise, aged":"🏔️ Elderly",
-      "mature face, dignified, experienced look":"👑 Dignified",
-      "ancient being, immortal look, ageless, mystical aura":"🌀 Immortal",
-      "ancient soul, childlike appearance but wise eyes, timeless":"🌿 Ancient Soul",
-      "androgynous, ageless appearance":"🌙 Ageless",
-      // body
-      "short, petite":"🌱 Petite","slim, slender body":"🌿 Slim",
-      "delicate, fragile appearance":"🕊️ Delicate","small, chibi proportions":"🧸 Chibi",
-      "tiny, very small":"🐾 Tiny","average build":"👤 Average",
-      "athletic, muscular build":"💪 Athletic","well-built, broad shoulders":"🏋️ Muscular",
-      "tall, long legs":"📏 Tall","curvy, voluptuous":"🌸 Curvy",
-      "chubby, round body":"🍩 Chubby","lanky, thin and tall":"🦒 Lanky",
-      // hair
-      "short hair":"✂️ Short","bob cut":"💆 Bob","undercut hair style":"🔪 Undercut",
-      "spiky hair":"⚡ Spiky","long hair":"💁 Long","wavy hair":"🌊 Wavy",
-      "curly hair":"🌀 Curly","straight sleek hair":"✨ Straight",
-      "very long hair, floor length":"💫 Very Long","ponytail":"🐴 Ponytail",
-      "twin tails":"🎀 Twin Tails","braid hair":"🌾 Braid",
-      "single bun hair":"🍡 Bun","double bun hair":"🐭 Double Bun",
-      "side ponytail":"🎵 Side Ponytail","half up half down hair":"🌸 Half Up",
-      "ahoge, single strand hair":"🌀 Ahoge","messy hair":"💫 Messy",
-      // color
-      "black hair":"🖤 Black","brown hair":"🤎 Brown","blonde hair":"💛 Blonde",
-      "auburn hair":"🍂 Auburn","ash grey hair":"🌫️ Ash Grey","white hair":"🤍 White",
-      "silver hair":"🩶 Silver","pink hair":"🌸 Pink","blue hair":"💙 Blue",
-      "red hair":"❤️ Red","purple hair":"💜 Purple","green hair":"💚 Green",
-      "orange hair":"🧡 Orange","teal hair":"🩵 Teal","dark navy hair":"🌊 Dark Navy",
-      "rainbow hair":"🌈 Rainbow","gradient hair":"🎨 Gradient","streaked hair, highlights":"✨ Highlights",
-      // eyes
-      "blue eyes":"💙 Blue Eyes","red eyes":"❤️ Red Eyes","green eyes":"💚 Green Eyes",
-      "golden eyes":"💛 Golden Eyes","purple eyes":"💜 Purple Eyes","silver eyes":"🩶 Silver Eyes",
-      "black eyes":"🖤 Black Eyes","teal eyes":"🩵 Teal Eyes",
-      "heterochromia":"👁️ Heterochromia","large sparkling eyes":"✨ Sparkling",
-      "sharp eyes":"🔪 Sharp Eyes","gentle eyes":"🌸 Gentle Eyes",
-      "glowing eyes":"🌟 Glowing Eyes","sleepy half closed eyes":"😴 Sleepy Eyes",
-      "cat eyes, slit pupils":"🐱 Cat Eyes","heart shaped pupils":"💖 Heart Eyes",
-      "star shaped pupils":"⭐ Star Eyes",
-      // face
-      "smile":"😊 Smile","wink":"😉 Wink","laughing, happy":"😄 Laughing",
-      "gentle smile, soft expression":"🌸 Gentle","mischievous grin":"😈 Mischievous",
-      "smirk, confident":"😏 Smirk","serious":"😐 Serious","cool expression":"😎 Cool",
-      "determined, fierce expression":"🔥 Fierce","daydreaming, distant look":"💭 Daydream",
-      "surprised":"😮 Surprised","shy, blushing":"😳 Shy","crying, tears":"😢 Crying",
-      "sleepy, tired expression":"😴 Sleepy","angry expression":"😠 Angry",
-      "nervous, anxious expression":"😰 Nervous","embarrassed expression":"🙈 Embarrassed",
-      // attr
-      "cat ears":"🐱 Cat Ears","fox ears":"🦊 Fox Ears","bunny ears":"🐰 Bunny Ears",
-      "wolf ears and tail":"🐺 Wolf Ears","bear ears":"🐻 Bear Ears","sheep horns":"🐑 Sheep Horns",
-      "angel wings":"😇 Angel","demon horns":"😈 Demon","elf ears":"🧝 Elf",
-      "dragon wings":"🐉 Dragon","halo":"👼 Halo","witch hat":"🧙 Witch",
-      "fairy wings":"🧚 Fairy","nine tails, kitsune":"🦊 Nine Tails",
-      "oni horns, japanese demon":"👹 Oni","mermaid tail":"🧜 Mermaid",
-      "vampire fangs":"🧛 Vampire","robot parts, cyborg":"🤖 Cyborg",
-      "plant, flower growing from head":"🌺 Plant",
-      // outfit
+      "fair skin, pale skin":"🤍 Fair","light skin tone":"🌸 Light",
+      "ivory skin":"✨ Ivory","peach skin tone":"🍑 Peach",
+      "natural skin tone":"🌿 Natural","medium skin tone":"🌰 Medium",
+      "warm skin tone, golden":"☀️ Golden","olive skin tone":"🫒 Olive",
+      "tan skin, sun-kissed":"🌊 Tan","brown skin tone":"🍂 Brown",
+      "dark skin tone":"🌑 Dark","deep skin tone, ebony":"🖤 Ebony",
+      "pale blue skin, fantasy":"💙 Blue Skin","green skin tone, fantasy":"💚 Green Skin",
+      "purple skin tone, fantasy":"💜 Purple Skin","golden metallic skin":"✨ Metallic",
+      "dark purple skin, shadow":"🌑 Shadow Skin","white marble skin, crystal":"💎 Crystal",
+      "short hair":"✂️ Short","long hair":"💁 Long","twin tails":"🎀 Twin Tails",
+      "black hair":"🖤 Black","blonde hair":"💛 Blonde","white hair":"🤍 White",
+      "pink hair":"🌸 Pink","blue hair":"💙 Blue",
+      "smile":"😊 Smile","serious":"😐 Serious","cool expression":"😎 Cool",
+      "cat ears":"🐱 Cat Ears","fox ears":"🦊 Fox Ears","angel wings":"😇 Angel",
+      "demon horns":"😈 Demon","elf ears":"🧝 Elf",
       "school uniform":"🎓 School Uniform","casual clothes":"👕 Casual",
-      "hoodie":"🧥 Hoodie","sportswear":"🏃 Sportswear","pajamas":"😴 Pajamas",
-      "swimsuit":"🏊 Swimsuit","kimono":"👘 Kimono","yukata":"🎆 Yukata",
-      "shrine maiden outfit, miko":"⛩️ Miko","hakama":"🎌 Hakama",
-      "ninja outfit":"🥷 Ninja","fantasy armor":"⚔️ Armor",
-      "wizard robe":"🧙 Wizard Robe","maid outfit":"🫧 Maid",
-      "gothic lolita fashion":"🖤 Gothic Lolita","idol costume":"🌟 Idol",
-      "dress":"👗 Dress","wedding dress":"💒 Wedding Dress","suit":"💼 Suit",
-      "sailor uniform":"⚓ Sailor","military uniform":"🎖️ Military",
-      "detective coat, trench coat":"🔍 Detective","winter coat, fur coat":"❄️ Winter Coat",
-      // acc
-      "glasses":"👓 Glasses","sunglasses":"🕶️ Sunglasses","monocle":"🧐 Monocle",
-      "eye patch":"🏴‍☠️ Eye Patch","hat":"🎩 Hat","beret":"🎨 Beret",
-      "ribbon":"🎀 Ribbon","hair clip, hairpin":"📎 Hairpin",
-      "cat ear headband":"🐱 Cat Headband","flower in hair":"🌸 Flower",
-      "feather accessory":"🪶 Feather","crown":"👑 Crown","hood up":"🧥 Hood",
-      "headphones":"🎧 Headphones","mask":"😷 Mask","earrings":"💎 Earrings",
-      "necklace, pendant":"📿 Necklace","choker":"🖤 Choker","bow tie":"🎀 Bow Tie",
-      "scarf":"🧣 Scarf","bracelet, wristband":"⌚ Bracelet","gloves":"🧤 Gloves",
-      // pose
-      "front facing, looking at viewer":"👀 Front","side profile view":"➡️ Profile",
-      "looking back, turned around":"🔄 Turn Back","back view, seen from behind":"🔙 Back View",
-      "arms crossed":"💪 Arms Crossed","hands on hips":"🫵 Hands on Hips",
-      "leaning against wall":"🧱 Wall Lean","hand raised up high":"🙋 Hand Raised",
-      "pointing finger":"👉 Pointing","waving hand, greeting":"👋 Waving",
-      "peace sign, v sign":"✌️ Peace Sign","jumping pose":"🦘 Jumping",
-      "running pose":"🏃 Running","dancing pose":"💃 Dancing",
-      "fighting stance, battle ready":"⚔️ Fighting","sitting pose":"🪑 Sitting",
-      "kneeling pose":"🧎 Kneeling","lying down, resting pose":"🛌 Lying Down",
-      "curled up, hugging knees":"🤗 Curled Up","thinking pose, hand on chin":"🤔 Thinking",
-      "reading a book":"📖 Reading",
-      // bg
-      "white background":"⬜ White BG","transparent background":"🔲 Transparent",
-      "gradient background, colorful":"🌈 Gradient BG",
-      "nature background, forest":"🌲 Forest","cherry blossom background":"🌸 Cherry Blossom",
-      "beach background, ocean":"🏖️ Beach","snowy winter background":"❄️ Snow",
-      "sunset background, golden hour":"🌅 Sunset","meadow background, flowers":"🌼 Meadow",
-      "rainy background, rain":"🌧️ Rain","city background, urban":"🏙️ City",
-      "school background":"🏫 School","cafe background":"☕ Cafe",
-      "library background, books":"📚 Library","rooftop background":"🏙️ Rooftop",
-      "japanese temple background":"⛩️ Temple","festival background, fireworks":"🎆 Festival",
-      "fantasy background, magical":"🌌 Fantasy","night sky background, stars":"🌙 Night Sky",
-      "space background, galaxy":"🚀 Space","dark dungeon background":"🏰 Dungeon",
-      // style
-      "anime style":"🎌 Anime","pastel anime style":"🌸 Pastel Anime",
-      "chibi super deformed style":"🧸 Chibi Style","retro anime style":"📺 Retro Anime",
-      "cute characters style":"🎪 Cute Style","watercolor illustration style":"🎨 Watercolor",
-      "digital painting style":"🖼️ Digital Paint","vintage style photography":"📸 Vintage",
-      "sketch style":"✏️ Sketch","3d render style":"🎮 3D Style",
-      "pixel art":"🕹️ Pixel Art","rpg character style":"🗡️ RPG Style",
-      "kemono furry animal style":"🐾 Kemono","business avatar":"💼 Business",
+      "suit":"💼 Suit","kimono":"👘 Kimono","hoodie":"🧥 Hoodie",
+      "anime style":"🎌 Anime","pixel art":"🕹️ Pixel Art","business avatar":"💼 Business",
       "high quality general":"✨ High Quality"
     }
   },
   zh: {
-    headerSub: "图标生成",
-    btnLogin: "登录", btnSignup: "✨ 免费注册", btnUpgrade: "⭐ 升级",
-    btnHistory: "📷 历史", btnLogout: "退出",
-    modeTagSelect: "🏷️ 标签选择", modeSwipe: "👆 滑动",
-    selectedTitle: "✅ 已选标签",
-    dropHint: "拖拽标签到此处<br>或点击选择",
-    btnGenerate: "✨ 生成", btnRandom: "🎲 随机", btnReset: "🔄 重置",
-    btnSave: "💾 保存图片",
-    loading: "⏳ 生成中...（20〜30秒）",
-    loginTitle: "登录", loginSub: "欢迎使用 tag-art",
-    tabLogin: "登录", tabSignup: "注册（免费）",
-    signupNote: "🎉 免费开始！每天可生成3次",
-    emailPlaceholder: "邮箱地址", passPlaceholder: "密码",
-    pass2Placeholder: "密码（6位以上）",
-    btnDoLogin: "登录", btnDoSignup: "免费注册",
-    planTitle: "选择方案", planSub: "想要更多生成次数？",
-    planFreeFeatures: "✔ 每天3次生成<br>✔ 所有标签可用",
-    planProFeatures: "✔ 每天20次生成<br>✔ 所有标签可用<br>✔ 随时取消",
-    planCreditFeatures: "✔ 10次生成积分<br>✔ 永不过期<br>✔ 随时购买",
-    btnProUpgrade: "升级到Pro →",
-    btnCreditBuy: "购买10次（¥150）→",
-    freeLockMsg: "🔒 免费版仅可使用「动漫」风格。",
-    freeLockLink: "⭐ 升级PRO解锁全部风格",
-    otherInputPlaceholder: "自由输入（中文也可）",
-    otherInputLabel: "✏️ 其他",
-    catLabels: {
-      gender:"👤 性别", age:"🎂 年龄感", body:"💪 体型", hair:"💇 发型", color:"🎨 发色",
-      eyes:"👁️ 瞳色", face:"😊 表情", attr:"✨ 属性", outfit:"👗 服装",
-      acc:"👓 配饰", pose:"🤸 姿势", bg:"🖼️ 背景", style:"🎨 风格"
+    headerSub:"图标生成", btnLogin:"登录", btnSignup:"✨ 免费注册",
+    btnUpgrade:"⭐ 升级", btnHistory:"📷 历史", btnLogout:"退出",
+    modeTagSelect:"🏷️ 标签选择", modeSwipe:"👆 滑动",
+    selectedTitle:"✅ 已选标签", dropHint:"拖拽标签到此处<br>或点击选择",
+    btnGenerate:"✨ 生成", btnRandom:"🎲 随机", btnReset:"🔄 重置",
+    btnSave:"💾 保存图片", loading:"⏳ 生成中...（20〜30秒）",
+    loginTitle:"登录", loginSub:"欢迎使用 tag-art",
+    tabLogin:"登录", tabSignup:"注册（免费）",
+    signupNote:"🎉 免费开始！每天可生成3次",
+    emailPlaceholder:"邮箱地址", passPlaceholder:"密码",
+    pass2Placeholder:"密码（6位以上）", btnDoLogin:"登录", btnDoSignup:"免费注册",
+    freeLockMsg:"🔒 免费版仅可使用「动漫」风格。",
+    freeLockLink:"⭐ 升级PRO解锁全部风格",
+    otherInputPlaceholder:"自由输入（中文也可）", otherInputLabel:"✏️ 其他",
+    swipeSkipCat:"⏭️ 跳过此类别",
+    swipeComplete:"🎉 标签选择完成！",
+    swipeGenerateBtn:"✨ 生成图标",
+    swipeContinueBtn:"继续选择标签",
+    catLabels:{
+      gender:"👤 性别", age:"🎂 年龄感", body:"💪 体型", skin:"🎨 肤色",
+      hair:"💇 发型", color:"🎨 发色", eyes:"👁️ 瞳色", face:"😊 表情",
+      attr:"✨ 属性", outfit:"👗 服装", acc:"👓 配饰",
+      pose:"🤸 姿势", bg:"🖼️ 背景", style:"🎨 风格"
     },
-    tagLabels: {
+    tagLabels:{
       "boy":"👦 男性","girl":"👧 女性","neutral":"🧑 中性",
-      "child appearance, innocent, small":"🌱 小孩","youthful, teenage appearance":"🎒 少年",
-      "young adult appearance, fresh":"🌟 青年","baby face, innocent appearance":"🍬 娃娃脸",
-      "youthful energy, lively":"⚡ 活力","adult appearance, mature":"🍂 成人",
-      "middle-aged appearance, experienced":"🌿 中年","elderly appearance, wise, aged":"🏔️ 老年",
-      "mature face, dignified, experienced look":"👑 威严",
-      "ancient being, immortal look, ageless, mystical aura":"🌀 仙人",
-      "ancient soul, childlike appearance but wise eyes, timeless":"🌿 永恒童颜",
-      "androgynous, ageless appearance":"🌙 中性年龄",
-      "short, petite":"🌱 娇小","slim, slender body":"🌿 纤细",
-      "delicate, fragile appearance":"🕊️ 纤弱","small, chibi proportions":"🧸 Q版",
-      "tiny, very small":"🐾 超小","average build":"👤 普通体型",
-      "athletic, muscular build":"💪 肌肉","well-built, broad shoulders":"🏋️ 魁梧",
-      "tall, long legs":"📏 高挑","curvy, voluptuous":"🌸 丰满",
-      "chubby, round body":"🍩 圆润","lanky, thin and tall":"🦒 细长",
-      "short hair":"✂️ 短发","bob cut":"💆 波波头","undercut hair style":"🔪 剃边",
-      "spiky hair":"⚡ 刺头","long hair":"💁 长发","wavy hair":"🌊 波浪发",
-      "curly hair":"🌀 卷发","straight sleek hair":"✨ 直发",
-      "very long hair, floor length":"💫 超长发","ponytail":"🐴 马尾",
-      "twin tails":"🎀 双马尾","braid hair":"🌾 编发",
-      "single bun hair":"🍡 丸子头","double bun hair":"🐭 双丸子",
-      "side ponytail":"🎵 侧马尾","half up half down hair":"🌸 半扎发",
-      "ahoge, single strand hair":"🌀 呆毛","messy hair":"💫 蓬乱",
-      "black hair":"🖤 黑发","brown hair":"🤎 棕发","blonde hair":"💛 金发",
-      "auburn hair":"🍂 红棕","ash grey hair":"🌫️ 灰发","white hair":"🤍 白发",
-      "silver hair":"🩶 银发","pink hair":"🌸 粉发","blue hair":"💙 蓝发",
-      "red hair":"❤️ 红发","purple hair":"💜 紫发","green hair":"💚 绿发",
-      "orange hair":"🧡 橙发","teal hair":"🩵 青发","dark navy hair":"🌊 深蓝发",
-      "rainbow hair":"🌈 彩虹发","gradient hair":"🎨 渐变发","streaked hair, highlights":"✨ 挑染",
-      "blue eyes":"💙 蓝眼","red eyes":"❤️ 红眼","green eyes":"💚 绿眼",
-      "golden eyes":"💛 金眼","purple eyes":"💜 紫眼","silver eyes":"🩶 银眼",
-      "black eyes":"🖤 黑眼","teal eyes":"🩵 青眼",
-      "heterochromia":"👁️ 异色瞳","large sparkling eyes":"✨ 闪亮眼",
-      "sharp eyes":"🔪 锐利眼","gentle eyes":"🌸 温柔眼",
-      "glowing eyes":"🌟 发光眼","sleepy half closed eyes":"😴 困倦眼",
-      "cat eyes, slit pupils":"🐱 猫眼","heart shaped pupils":"💖 心形瞳","star shaped pupils":"⭐ 星形瞳",
-      "smile":"😊 微笑","wink":"😉 眨眼","laughing, happy":"😄 大笑",
-      "gentle smile, soft expression":"🌸 温柔","mischievous grin":"😈 调皮",
-      "smirk, confident":"😏 自信","serious":"😐 严肃","cool expression":"😎 酷",
-      "determined, fierce expression":"🔥 斗志","daydreaming, distant look":"💭 发呆",
-      "surprised":"😮 惊讶","shy, blushing":"😳 害羞","crying, tears":"😢 哭泣",
-      "sleepy, tired expression":"😴 困倦","angry expression":"😠 愤怒",
-      "nervous, anxious expression":"😰 不安","embarrassed expression":"🙈 尴尬",
-      "cat ears":"🐱 猫耳","fox ears":"🦊 狐耳","bunny ears":"🐰 兔耳",
-      "wolf ears and tail":"🐺 狼耳","bear ears":"🐻 熊耳","sheep horns":"🐑 羊角",
-      "angel wings":"😇 天使","demon horns":"😈 恶魔","elf ears":"🧝 精灵",
-      "dragon wings":"🐉 龙翼","halo":"👼 光环","witch hat":"🧙 魔女",
-      "fairy wings":"🧚 妖精","nine tails, kitsune":"🦊 九尾狐",
-      "oni horns, japanese demon":"👹 鬼","mermaid tail":"🧜 美人鱼",
-      "vampire fangs":"🧛 吸血鬼","robot parts, cyborg":"🤖 机械",
-      "plant, flower growing from head":"🌺 花之人",
-      "school uniform":"🎓 制服","casual clothes":"👕 休闲","hoodie":"🧥 卫衣",
-      "sportswear":"🏃 运动装","pajamas":"😴 睡衣","swimsuit":"🏊 泳装",
-      "kimono":"👘 和服","yukata":"🎆 浴衣","shrine maiden outfit, miko":"⛩️ 巫女",
-      "hakama":"🎌 袴","ninja outfit":"🥷 忍者","fantasy armor":"⚔️ 盔甲",
-      "wizard robe":"🧙 法师袍","maid outfit":"🫧 女仆装","gothic lolita fashion":"🖤 哥特",
-      "idol costume":"🌟 偶像服","dress":"👗 连衣裙","wedding dress":"💒 婚纱",
-      "suit":"💼 西装","sailor uniform":"⚓ 水手服","military uniform":"🎖️ 军装",
-      "detective coat, trench coat":"🔍 侦探外套","winter coat, fur coat":"❄️ 冬装",
-      "glasses":"👓 眼镜","sunglasses":"🕶️ 墨镜","monocle":"🧐 单片眼镜",
-      "eye patch":"🏴‍☠️ 眼罩","hat":"🎩 帽子","beret":"🎨 贝雷帽",
-      "ribbon":"🎀 蝴蝶结","hair clip, hairpin":"📎 发夹",
-      "cat ear headband":"🐱 猫耳发箍","flower in hair":"🌸 花饰",
-      "feather accessory":"🪶 羽毛","crown":"👑 王冠","hood up":"🧥 风帽",
-      "headphones":"🎧 耳机","mask":"😷 口罩","earrings":"💎 耳环",
-      "necklace, pendant":"📿 项链","choker":"🖤 颈圈","bow tie":"🎀 领结",
-      "scarf":"🧣 围巾","bracelet, wristband":"⌚ 手链","gloves":"🧤 手套",
-      "front facing, looking at viewer":"👀 正面","side profile view":"➡️ 侧脸",
-      "looking back, turned around":"🔄 回头","back view, seen from behind":"🔙 背影",
-      "arms crossed":"💪 抱臂","hands on hips":"🫵 叉腰",
-      "leaning against wall":"🧱 靠墙","hand raised up high":"🙋 举手",
-      "pointing finger":"👉 指向","waving hand, greeting":"👋 挥手",
-      "peace sign, v sign":"✌️ 剪刀手","jumping pose":"🦘 跳跃",
-      "running pose":"🏃 奔跑","dancing pose":"💃 舞蹈",
-      "fighting stance, battle ready":"⚔️ 战斗姿势","sitting pose":"🪑 坐姿",
-      "kneeling pose":"🧎 跪姿","lying down, resting pose":"🛌 躺姿",
-      "curled up, hugging knees":"🤗 抱膝","thinking pose, hand on chin":"🤔 思考",
-      "reading a book":"📖 读书",
-      "white background":"⬜ 白背景","transparent background":"🔲 透明",
-      "gradient background, colorful":"🌈 渐变背景",
-      "nature background, forest":"🌲 森林","cherry blossom background":"🌸 樱花",
-      "beach background, ocean":"🏖️ 海滩","snowy winter background":"❄️ 雪景",
-      "sunset background, golden hour":"🌅 夕阳","meadow background, flowers":"🌼 花海",
-      "rainy background, rain":"🌧️ 雨天","city background, urban":"🏙️ 都市",
-      "school background":"🏫 学校","cafe background":"☕ 咖啡馆",
-      "library background, books":"📚 图书馆","rooftop background":"🏙️ 屋顶",
-      "japanese temple background":"⛩️ 神社","festival background, fireworks":"🎆 祭典",
-      "fantasy background, magical":"🌌 奇幻","night sky background, stars":"🌙 夜空",
-      "space background, galaxy":"🚀 宇宙","dark dungeon background":"🏰 地牢",
-      "anime style":"🎌 动漫风","pastel anime style":"🌸 粉彩动漫",
-      "chibi super deformed style":"🧸 Q版","retro anime style":"📺 复古动漫",
-      "cute characters style":"🎪 可爱风","watercolor illustration style":"🎨 水彩",
-      "digital painting style":"🖼️ 数字绘画","vintage style photography":"📸 复古",
-      "sketch style":"✏️ 素描","3d render style":"🎮 3D风格",
-      "pixel art":"🕹️ 像素艺术","rpg character style":"🗡️ RPG风格",
-      "kemono furry animal style":"🐾 兽人","business avatar":"💼 商务",
-      "high quality general":"✨ 高品质"
+      "fair skin, pale skin":"🤍 白皙","light skin tone":"🌸 明亮",
+      "natural skin tone":"🌿 自然","medium skin tone":"🌰 中等",
+      "dark skin tone":"🌑 深色","pale blue skin, fantasy":"💙 蓝肤",
+      "anime style":"🎌 动漫风","pixel art":"🕹️ 像素艺术","business avatar":"💼 商务"
     }
   },
   ko: {
-    headerSub: "아이콘 생성",
-    btnLogin: "로그인", btnSignup: "✨ 무료 가입", btnUpgrade: "⭐ 업그레이드",
-    btnHistory: "📷 기록", btnLogout: "로그아웃",
-    modeTagSelect: "🏷️ 태그 선택", modeSwipe: "👆 스와이프",
-    selectedTitle: "✅ 선택된 태그",
-    dropHint: "태그를 여기에 드롭<br>또는 탭하여 선택",
-    btnGenerate: "✨ 생성", btnRandom: "🎲 랜덤", btnReset: "🔄 리셋",
-    btnSave: "💾 이미지 저장",
-    loading: "⏳ 생성 중...（20〜30초）",
-    loginTitle: "로그인", loginSub: "tag-art에 오신 것을 환영합니다",
-    tabLogin: "로그인", tabSignup: "회원가입 (무료)",
-    signupNote: "🎉 무료로 시작! 하루 3회 생성 가능",
-    emailPlaceholder: "이메일 주소", passPlaceholder: "비밀번호",
-    pass2Placeholder: "비밀번호 (6자 이상)",
-    btnDoLogin: "로그인", btnDoSignup: "무료 가입",
-    planTitle: "플랜 선택", planSub: "더 많이 생성하고 싶다면",
-    planFreeFeatures: "✔ 하루 3회 생성<br>✔ 모든 태그 사용 가능",
-    planProFeatures: "✔ 하루 20회 생성<br>✔ 모든 태그 사용 가능<br>✔ 언제든지 해지 가능",
-    planCreditFeatures: "✔ 10회 생성 크레딧<br>✔ 유효기간 없음<br>✔ 언제든지 구매 가능",
-    btnProUpgrade: "Pro로 업그레이드 →",
-    btnCreditBuy: "10회 구매 (¥150) →",
-    freeLockMsg: "🔒 무료 플랜은 '애니메이션' 스타일만 사용 가능합니다.",
-    freeLockLink: "⭐ PRO 업그레이드로 전체 스타일 해제",
-    otherInputPlaceholder: "자유 입력 (한국어 가능)",
-    otherInputLabel: "✏️ 기타",
-    catLabels: {
-      gender:"👤 성별", age:"🎂 연령감", body:"💪 체형", hair:"💇 헤어", color:"🎨 머리 색",
-      eyes:"👁️ 눈", face:"😊 표정", attr:"✨ 속성", outfit:"👗 의상",
-      acc:"👓 액세서리", pose:"🤸 포즈", bg:"🖼️ 배경", style:"🎨 스타일"
+    headerSub:"아이콘 생성", btnLogin:"로그인", btnSignup:"✨ 무료 가입",
+    btnUpgrade:"⭐ 업그레이드", btnHistory:"📷 기록", btnLogout:"로그아웃",
+    modeTagSelect:"🏷️ 태그 선택", modeSwipe:"👆 스와이프",
+    selectedTitle:"✅ 선택된 태그", dropHint:"태그를 여기에 드롭<br>또는 탭하여 선택",
+    btnGenerate:"✨ 생성", btnRandom:"🎲 랜덤", btnReset:"🔄 리셋",
+    btnSave:"💾 이미지 저장", loading:"⏳ 생성 중...（20〜30초）",
+    loginTitle:"로그인", loginSub:"tag-art에 오신 것을 환영합니다",
+    tabLogin:"로그인", tabSignup:"회원가입 (무료)",
+    signupNote:"🎉 무료로 시작! 하루 3회 생성 가능",
+    emailPlaceholder:"이메일 주소", passPlaceholder:"비밀번호",
+    pass2Placeholder:"비밀번호 (6자 이상)", btnDoLogin:"로그인", btnDoSignup:"무료 가입",
+    freeLockMsg:"🔒 무료 플랜은 '애니메이션' 스타일만 사용 가능합니다.",
+    freeLockLink:"⭐ PRO 업그레이드로 전체 스타일 해제",
+    otherInputPlaceholder:"자유 입력 (한국어 가능)", otherInputLabel:"✏️ 기타",
+    swipeSkipCat:"⏭️ 이 카테고리 건너뛰기",
+    swipeComplete:"🎉 태그 선택 완료!",
+    swipeGenerateBtn:"✨ 이 내용으로 생성",
+    swipeContinueBtn:"계속 태그 선택",
+    catLabels:{
+      gender:"👤 성별", age:"🎂 연령감", body:"💪 체형", skin:"🎨 피부색",
+      hair:"💇 헤어", color:"🎨 머리 색", eyes:"👁️ 눈", face:"😊 표정",
+      attr:"✨ 속성", outfit:"👗 의상", acc:"👓 액세서리",
+      pose:"🤸 포즈", bg:"🖼️ 배경", style:"🎨 스타일"
     },
-    tagLabels: {
+    tagLabels:{
       "boy":"👦 남성","girl":"👧 여성","neutral":"🧑 중성",
-      "short hair":"✂️ 단발","long hair":"💁 장발","twin tails":"🎀 트윈테일",
-      "ponytail":"🐴 포니테일","bob cut":"💆 단발머리","wavy hair":"🌊 웨이브",
-      "black hair":"🖤 검은 머리","brown hair":"🤎 갈색 머리","blonde hair":"💛 금발",
-      "white hair":"🤍 흰 머리","pink hair":"🌸 핑크","blue hair":"💙 파란 머리",
-      "smile":"😊 미소","serious":"😐 진지","wink":"😉 윙크",
-      "surprised":"😮 놀람","cool expression":"😎 쿨",
-      "cat ears":"🐱 고양이 귀","fox ears":"🦊 여우 귀","angel wings":"😇 천사",
-      "demon horns":"😈 악마","elf ears":"🧝 엘프",
-      "school uniform":"🎓 교복","casual clothes":"👕 캐주얼","suit":"💼 정장",
-      "kimono":"👘 기모노","hoodie":"🧥 후디",
-      "anime style":"🎌 애니메이션","pastel anime style":"🌸 파스텔 애니",
-      "chibi super deformed style":"🧸 치비","pixel art":"🕹️ 픽셀 아트",
-      "business avatar":"💼 비즈니스","high quality general":"✨ 고품질"
+      "fair skin, pale skin":"🤍 흰 피부","natural skin tone":"🌿 자연스러운",
+      "dark skin tone":"🌑 어두운 피부",
+      "anime style":"🎌 애니메이션","pixel art":"🕹️ 픽셀 아트","business avatar":"💼 비즈니스"
     }
   },
   es: {
-    headerSub: "Generador de Iconos",
-    btnLogin: "Iniciar sesión", btnSignup: "✨ Registrarse gratis", btnUpgrade: "⭐ Mejorar plan",
-    btnHistory: "📷 Historial", btnLogout: "Cerrar sesión",
-    modeTagSelect: "🏷️ Selección de etiquetas", modeSwipe: "👆 Deslizar",
-    selectedTitle: "✅ Etiquetas seleccionadas",
-    dropHint: "Arrastra etiquetas aquí<br>o toca para seleccionar",
-    btnGenerate: "✨ Generar", btnRandom: "🎲 Aleatorio", btnReset: "🔄 Reiniciar",
-    btnSave: "💾 Guardar imagen",
-    loading: "⏳ Generando... (20-30 segundos)",
-    loginTitle: "Iniciar sesión", loginSub: "Bienvenido a tag-art",
-    tabLogin: "Iniciar sesión", tabSignup: "Registrarse (gratis)",
-    signupNote: "🎉 ¡Empieza gratis! Genera hasta 3 veces al día",
-    emailPlaceholder: "Correo electrónico", passPlaceholder: "Contraseña",
-    pass2Placeholder: "Contraseña (mín. 6 caracteres)",
-    btnDoLogin: "Iniciar sesión", btnDoSignup: "Registrarse gratis",
-    planTitle: "Elige un plan", planSub: "Para quienes quieren generar más",
-    planFreeFeatures: "✔ Hasta 3 generaciones/día<br>✔ Todas las etiquetas disponibles",
-    planProFeatures: "✔ Hasta 20 generaciones/día<br>✔ Todas las etiquetas<br>✔ Cancela cuando quieras",
-    planCreditFeatures: "✔ 10 créditos de generación<br>✔ Sin fecha de vencimiento<br>✔ Compra cuando quieras",
-    btnProUpgrade: "Mejorar a Pro →",
-    btnCreditBuy: "Comprar 10 créditos (¥150) →",
-    freeLockMsg: "🔒 Plan GRATIS: solo estilo 'Anime' disponible.",
-    freeLockLink: "⭐ Mejora a PRO para desbloquear todos los estilos",
-    otherInputPlaceholder: "Entrada libre (cualquier idioma)",
-    otherInputLabel: "✏️ Otro",
-    catLabels: {
-      gender:"👤 Género", age:"🎂 Edad", body:"💪 Cuerpo", hair:"💇 Cabello", color:"🎨 Color de cabello",
-      eyes:"👁️ Ojos", face:"😊 Expresión", attr:"✨ Atributo", outfit:"👗 Vestimenta",
-      acc:"👓 Accesorio", pose:"🤸 Pose", bg:"🖼️ Fondo", style:"🎨 Estilo"
+    headerSub:"Generador de Iconos", btnLogin:"Iniciar sesión", btnSignup:"✨ Registrarse",
+    btnUpgrade:"⭐ Mejorar plan", btnHistory:"📷 Historial", btnLogout:"Cerrar sesión",
+    modeTagSelect:"🏷️ Etiquetas", modeSwipe:"👆 Deslizar",
+    selectedTitle:"✅ Etiquetas seleccionadas", dropHint:"Arrastra etiquetas aquí<br>o toca para seleccionar",
+    btnGenerate:"✨ Generar", btnRandom:"🎲 Aleatorio", btnReset:"🔄 Reiniciar",
+    btnSave:"💾 Guardar imagen", loading:"⏳ Generando... (20-30 segundos)",
+    loginTitle:"Iniciar sesión", loginSub:"Bienvenido a tag-art",
+    tabLogin:"Iniciar sesión", tabSignup:"Registrarse (gratis)",
+    signupNote:"🎉 ¡Empieza gratis! 3 generaciones al día",
+    emailPlaceholder:"Correo electrónico", passPlaceholder:"Contraseña",
+    pass2Placeholder:"Contraseña (mín. 6 caracteres)", btnDoLogin:"Iniciar sesión", btnDoSignup:"Registrarse",
+    freeLockMsg:"🔒 Plan GRATIS: solo estilo 'Anime'.",
+    freeLockLink:"⭐ Mejora a PRO para todos los estilos",
+    otherInputPlaceholder:"Entrada libre", otherInputLabel:"✏️ Otro",
+    swipeSkipCat:"⏭️ Saltar categoría",
+    swipeComplete:"🎉 ¡Selección completa!",
+    swipeGenerateBtn:"✨ Generar con estas etiquetas",
+    swipeContinueBtn:"Seguir seleccionando",
+    catLabels:{
+      gender:"👤 Género", age:"🎂 Edad", body:"💪 Cuerpo", skin:"🎨 Piel",
+      hair:"💇 Cabello", color:"🎨 Color", eyes:"👁️ Ojos", face:"😊 Expresión",
+      attr:"✨ Atributo", outfit:"👗 Ropa", acc:"👓 Accesorio",
+      pose:"🤸 Pose", bg:"🖼️ Fondo", style:"🎨 Estilo"
     },
-    tagLabels: {
-      "boy":"👦 Masculino","girl":"👧 Femenino","neutral":"🧑 Neutral",
-      "short hair":"✂️ Corto","long hair":"💁 Largo","twin tails":"🎀 Coletas",
-      "black hair":"🖤 Negro","blonde hair":"💛 Rubio","white hair":"🤍 Blanco",
-      "smile":"😊 Sonrisa","serious":"😐 Serio","cool expression":"😎 Fresco",
-      "anime style":"🎌 Anime","pixel art":"🕹️ Pixel Art","business avatar":"💼 Negocios"
-    }
+    tagLabels:{"boy":"👦 Masculino","girl":"👧 Femenino","anime style":"🎌 Anime","pixel art":"🕹️ Pixel Art"}
   },
   fr: {
-    headerSub: "Générateur d'icônes",
-    btnLogin: "Connexion", btnSignup: "✨ S'inscrire", btnUpgrade: "⭐ Améliorer",
-    btnHistory: "📷 Historique", btnLogout: "Déconnexion",
-    modeTagSelect: "🏷️ Sélection de tags", modeSwipe: "👆 Glisser",
-    selectedTitle: "✅ Tags sélectionnés",
-    dropHint: "Glissez les tags ici<br>ou tapez pour sélectionner",
-    btnGenerate: "✨ Générer", btnRandom: "🎲 Aléatoire", btnReset: "🔄 Réinitialiser",
-    btnSave: "💾 Sauvegarder",
-    loading: "⏳ Génération... (20-30 secondes)",
-    loginTitle: "Connexion", loginSub: "Bienvenue sur tag-art",
-    tabLogin: "Connexion", tabSignup: "S'inscrire (gratuit)",
-    signupNote: "🎉 Commencez gratuitement! 3 générations par jour",
-    emailPlaceholder: "Adresse e-mail", passPlaceholder: "Mot de passe",
-    pass2Placeholder: "Mot de passe (6 caractères min.)",
-    btnDoLogin: "Connexion", btnDoSignup: "S'inscrire gratuitement",
-    planTitle: "Choisir un plan", planSub: "Pour ceux qui veulent générer plus",
-    planFreeFeatures: "✔ 3 générations/jour<br>✔ Tous les tags disponibles",
-    planProFeatures: "✔ 20 générations/jour<br>✔ Tous les tags<br>✔ Résiliable à tout moment",
-    planCreditFeatures: "✔ 10 crédits de génération<br>✔ Sans expiration<br>✔ Achat à tout moment",
-    btnProUpgrade: "Passer à Pro →",
-    btnCreditBuy: "Acheter 10 crédits (¥150) →",
-    freeLockMsg: "🔒 Plan GRATUIT: seul le style 'Anime' est disponible.",
-    freeLockLink: "⭐ Passez à PRO pour débloquer tous les styles",
-    otherInputPlaceholder: "Saisie libre (toute langue)",
-    otherInputLabel: "✏️ Autre",
-    catLabels: {
-      gender:"👤 Genre", age:"🎂 Âge", body:"💪 Corps", hair:"💇 Cheveux", color:"🎨 Couleur cheveux",
-      eyes:"👁️ Yeux", face:"😊 Expression", attr:"✨ Attribut", outfit:"👗 Tenue",
-      acc:"👓 Accessoire", pose:"🤸 Pose", bg:"🖼️ Fond", style:"🎨 Style"
+    headerSub:"Générateur d'icônes", btnLogin:"Connexion", btnSignup:"✨ S'inscrire",
+    btnUpgrade:"⭐ Améliorer", btnHistory:"📷 Historique", btnLogout:"Déconnexion",
+    modeTagSelect:"🏷️ Tags", modeSwipe:"👆 Glisser",
+    selectedTitle:"✅ Tags sélectionnés", dropHint:"Glissez les tags ici<br>ou tapez pour sélectionner",
+    btnGenerate:"✨ Générer", btnRandom:"🎲 Aléatoire", btnReset:"🔄 Réinitialiser",
+    btnSave:"💾 Sauvegarder", loading:"⏳ Génération... (20-30 secondes)",
+    loginTitle:"Connexion", loginSub:"Bienvenue sur tag-art",
+    tabLogin:"Connexion", tabSignup:"S'inscrire (gratuit)",
+    signupNote:"🎉 Commencez gratuitement! 3 générations par jour",
+    emailPlaceholder:"Adresse e-mail", passPlaceholder:"Mot de passe",
+    pass2Placeholder:"Mot de passe (6 caractères min.)", btnDoLogin:"Connexion", btnDoSignup:"S'inscrire",
+    freeLockMsg:"🔒 Plan GRATUIT: seul le style 'Anime'.",
+    freeLockLink:"⭐ Passez à PRO pour tous les styles",
+    otherInputPlaceholder:"Saisie libre", otherInputLabel:"✏️ Autre",
+    swipeSkipCat:"⏭️ Passer la catégorie",
+    swipeComplete:"🎉 Sélection terminée!",
+    swipeGenerateBtn:"✨ Générer avec ces tags",
+    swipeContinueBtn:"Continuer la sélection",
+    catLabels:{
+      gender:"👤 Genre", age:"🎂 Âge", body:"💪 Corps", skin:"🎨 Peau",
+      hair:"💇 Cheveux", color:"🎨 Couleur", eyes:"👁️ Yeux", face:"😊 Expression",
+      attr:"✨ Attribut", outfit:"👗 Tenue", acc:"👓 Accessoire",
+      pose:"🤸 Pose", bg:"🖼️ Fond", style:"🎨 Style"
     },
-    tagLabels: {
-      "boy":"👦 Masculin","girl":"👧 Féminin","neutral":"🧑 Neutre",
-      "short hair":"✂️ Court","long hair":"💁 Long","black hair":"🖤 Noir",
-      "blonde hair":"💛 Blond","smile":"😊 Sourire","serious":"😐 Sérieux",
-      "anime style":"🎌 Anime","pixel art":"🕹️ Pixel Art","business avatar":"💼 Professionnel"
-    }
+    tagLabels:{"boy":"👦 Masculin","girl":"👧 Féminin","anime style":"🎌 Anime","pixel art":"🕹️ Pixel Art"}
   },
   de: {
-    headerSub: "Icon-Generator",
-    btnLogin: "Anmelden", btnSignup: "✨ Kostenlos registrieren", btnUpgrade: "⭐ Upgraden",
-    btnHistory: "📷 Verlauf", btnLogout: "Abmelden",
-    modeTagSelect: "🏷️ Tag-Auswahl", modeSwipe: "👆 Wischen",
-    selectedTitle: "✅ Ausgewählte Tags",
-    dropHint: "Tags hier ablegen<br>oder antippen zum Auswählen",
-    btnGenerate: "✨ Generieren", btnRandom: "🎲 Zufällig", btnReset: "🔄 Zurücksetzen",
-    btnSave: "💾 Bild speichern",
-    loading: "⏳ Generiere... (20-30 Sekunden)",
-    loginTitle: "Anmelden", loginSub: "Willkommen bei tag-art",
-    tabLogin: "Anmelden", tabSignup: "Registrieren (kostenlos)",
-    signupNote: "🎉 Kostenlos starten! 3 Mal täglich generieren",
-    emailPlaceholder: "E-Mail-Adresse", passPlaceholder: "Passwort",
-    pass2Placeholder: "Passwort (mind. 6 Zeichen)",
-    btnDoLogin: "Anmelden", btnDoSignup: "Kostenlos registrieren",
-    planTitle: "Plan wählen", planSub: "Für mehr Generierungen",
-    planFreeFeatures: "✔ 3 Generierungen/Tag<br>✔ Alle Tags verfügbar",
-    planProFeatures: "✔ 20 Generierungen/Tag<br>✔ Alle Tags<br>✔ Jederzeit kündbar",
-    planCreditFeatures: "✔ 10 Generierungs-Credits<br>✔ Kein Ablaufdatum<br>✔ Jederzeit kaufen",
-    btnProUpgrade: "Auf Pro upgraden →",
-    btnCreditBuy: "10 Credits kaufen (¥150) →",
-    freeLockMsg: "🔒 KOSTENLOS: nur 'Anime'-Stil verfügbar.",
-    freeLockLink: "⭐ Auf PRO upgraden für alle Stile",
-    otherInputPlaceholder: "Freie Eingabe (jede Sprache)",
-    otherInputLabel: "✏️ Sonstiges",
-    catLabels: {
-      gender:"👤 Geschlecht", age:"🎂 Alter", body:"💪 Körper", hair:"💇 Haare", color:"🎨 Haarfarbe",
-      eyes:"👁️ Augen", face:"😊 Ausdruck", attr:"✨ Attribut", outfit:"👗 Outfit",
-      acc:"👓 Accessoire", pose:"🤸 Pose", bg:"🖼️ Hintergrund", style:"🎨 Stil"
+    headerSub:"Icon-Generator", btnLogin:"Anmelden", btnSignup:"✨ Registrieren",
+    btnUpgrade:"⭐ Upgraden", btnHistory:"📷 Verlauf", btnLogout:"Abmelden",
+    modeTagSelect:"🏷️ Tags", modeSwipe:"👆 Wischen",
+    selectedTitle:"✅ Ausgewählte Tags", dropHint:"Tags hier ablegen<br>oder antippen",
+    btnGenerate:"✨ Generieren", btnRandom:"🎲 Zufällig", btnReset:"🔄 Zurücksetzen",
+    btnSave:"💾 Bild speichern", loading:"⏳ Generiere... (20-30 Sekunden)",
+    loginTitle:"Anmelden", loginSub:"Willkommen bei tag-art",
+    tabLogin:"Anmelden", tabSignup:"Registrieren (kostenlos)",
+    signupNote:"🎉 Kostenlos starten! 3 Mal täglich",
+    emailPlaceholder:"E-Mail-Adresse", passPlaceholder:"Passwort",
+    pass2Placeholder:"Passwort (mind. 6 Zeichen)", btnDoLogin:"Anmelden", btnDoSignup:"Registrieren",
+    freeLockMsg:"🔒 KOSTENLOS: nur 'Anime'-Stil.",
+    freeLockLink:"⭐ Auf PRO upgraden für alle Stile",
+    otherInputPlaceholder:"Freie Eingabe", otherInputLabel:"✏️ Sonstiges",
+    swipeSkipCat:"⏭️ Kategorie überspringen",
+    swipeComplete:"🎉 Auswahl abgeschlossen!",
+    swipeGenerateBtn:"✨ Mit diesen Tags generieren",
+    swipeContinueBtn:"Weiter auswählen",
+    catLabels:{
+      gender:"👤 Geschlecht", age:"🎂 Alter", body:"💪 Körper", skin:"🎨 Hautton",
+      hair:"💇 Haare", color:"🎨 Haarfarbe", eyes:"👁️ Augen", face:"😊 Ausdruck",
+      attr:"✨ Attribut", outfit:"👗 Outfit", acc:"👓 Accessoire",
+      pose:"🤸 Pose", bg:"🖼️ Hintergrund", style:"🎨 Stil"
     },
-    tagLabels: {
-      "boy":"👦 Männlich","girl":"👧 Weiblich","neutral":"🧑 Neutral",
-      "short hair":"✂️ Kurz","long hair":"💁 Lang","black hair":"🖤 Schwarz",
-      "blonde hair":"💛 Blond","smile":"😊 Lächeln","serious":"😐 Ernst",
-      "anime style":"🎌 Anime","pixel art":"🕹️ Pixelkunst","business avatar":"💼 Business"
-    }
+    tagLabels:{"boy":"👦 Männlich","girl":"👧 Weiblich","anime style":"🎌 Anime","pixel art":"🕹️ Pixelkunst"}
   },
   ru: {
-    headerSub: "Генератор иконок",
-    btnLogin: "Войти", btnSignup: "✨ Регистрация", btnUpgrade: "⭐ Улучшить",
-    btnHistory: "📷 История", btnLogout: "Выйти",
-    modeTagSelect: "🏷️ Выбор тегов", modeSwipe: "👆 Свайп",
-    selectedTitle: "✅ Выбранные теги",
-    dropHint: "Перетащите теги сюда<br>или нажмите для выбора",
-    btnGenerate: "✨ Создать", btnRandom: "🎲 Случайно", btnReset: "🔄 Сброс",
-    btnSave: "💾 Сохранить",
-    loading: "⏳ Генерация... (20-30 секунд)",
-    loginTitle: "Войти", loginSub: "Добро пожаловать в tag-art",
-    tabLogin: "Войти", tabSignup: "Регистрация (бесплатно)",
-    signupNote: "🎉 Начните бесплатно! 3 генерации в день",
-    emailPlaceholder: "Электронная почта", passPlaceholder: "Пароль",
-    pass2Placeholder: "Пароль (мин. 6 символов)",
-    btnDoLogin: "Войти", btnDoSignup: "Зарегистрироваться бесплатно",
-    planTitle: "Выберите план", planSub: "Для большего количества генераций",
-    planFreeFeatures: "✔ 3 генерации/день<br>✔ Все теги доступны",
-    planProFeatures: "✔ 20 генераций/день<br>✔ Все теги<br>✔ Отмена в любое время",
-    planCreditFeatures: "✔ 10 кредитов<br>✔ Без срока действия<br>✔ Купить в любое время",
-    btnProUpgrade: "Перейти на Pro →",
-    btnCreditBuy: "Купить 10 кредитов (¥150) →",
-    freeLockMsg: "🔒 БЕСПЛАТНЫЙ план: только стиль 'Аниме'.",
-    freeLockLink: "⭐ Перейдите на PRO для всех стилей",
-    otherInputPlaceholder: "Свободный ввод (любой язык)",
-    otherInputLabel: "✏️ Другое",
-    catLabels: {
-      gender:"👤 Пол", age:"🎂 Возраст", body:"💪 Телосложение", hair:"💇 Причёска", color:"🎨 Цвет волос",
-      eyes:"👁️ Глаза", face:"😊 Выражение", attr:"✨ Атрибут", outfit:"👗 Одежда",
-      acc:"👓 Аксессуар", pose:"🤸 Поза", bg:"🖼️ Фон", style:"🎨 Стиль"
+    headerSub:"Генератор иконок", btnLogin:"Войти", btnSignup:"✨ Регистрация",
+    btnUpgrade:"⭐ Улучшить", btnHistory:"📷 История", btnLogout:"Выйти",
+    modeTagSelect:"🏷️ Теги", modeSwipe:"👆 Свайп",
+    selectedTitle:"✅ Выбранные теги", dropHint:"Перетащите теги сюда<br>или нажмите",
+    btnGenerate:"✨ Создать", btnRandom:"🎲 Случайно", btnReset:"🔄 Сброс",
+    btnSave:"💾 Сохранить", loading:"⏳ Генерация... (20-30 секунд)",
+    loginTitle:"Войти", loginSub:"Добро пожаловать в tag-art",
+    tabLogin:"Войти", tabSignup:"Регистрация (бесплатно)",
+    signupNote:"🎉 Начните бесплатно! 3 генерации в день",
+    emailPlaceholder:"Электронная почта", passPlaceholder:"Пароль",
+    pass2Placeholder:"Пароль (мин. 6 символов)", btnDoLogin:"Войти", btnDoSignup:"Зарегистрироваться",
+    freeLockMsg:"🔒 БЕСПЛАТНЫЙ: только стиль 'Аниме'.",
+    freeLockLink:"⭐ Перейдите на PRO для всех стилей",
+    otherInputPlaceholder:"Свободный ввод", otherInputLabel:"✏️ Другое",
+    swipeSkipCat:"⏭️ Пропустить категорию",
+    swipeComplete:"🎉 Выбор завершён!",
+    swipeGenerateBtn:"✨ Создать с этими тегами",
+    swipeContinueBtn:"Продолжить выбор",
+    catLabels:{
+      gender:"👤 Пол", age:"🎂 Возраст", body:"💪 Телосложение", skin:"🎨 Тон кожи",
+      hair:"💇 Причёска", color:"🎨 Цвет волос", eyes:"👁️ Глаза", face:"😊 Выражение",
+      attr:"✨ Атрибут", outfit:"👗 Одежда", acc:"👓 Аксессуар",
+      pose:"🤸 Поза", bg:"🖼️ Фон", style:"🎨 Стиль"
     },
-    tagLabels: {
-      "boy":"👦 Мужской","girl":"👧 Женский","neutral":"🧑 Нейтральный",
-      "short hair":"✂️ Короткие","long hair":"💁 Длинные","black hair":"🖤 Чёрные",
-      "blonde hair":"💛 Светлые","smile":"😊 Улыбка","serious":"😐 Серьёзный",
-      "anime style":"🎌 Аниме","pixel art":"🕹️ Пиксель-арт","business avatar":"💼 Деловой"
-    }
+    tagLabels:{"boy":"👦 Мужской","girl":"👧 Женский","anime style":"🎌 Аниме","pixel art":"🕹️ Пиксель-арт"}
   },
   hi: {
-    headerSub: "आइकॉन जनरेटर",
-    btnLogin: "लॉगिन", btnSignup: "✨ निःशुल्क साइन अप", btnUpgrade: "⭐ अपग्रेड करें",
-    btnHistory: "📷 इतिहास", btnLogout: "लॉगआउट",
-    modeTagSelect: "🏷️ टैग चुनें", modeSwipe: "👆 स्वाइप",
-    selectedTitle: "✅ चुने गए टैग",
-    dropHint: "टैग यहाँ छोड़ें<br>या चुनने के लिए टैप करें",
-    btnGenerate: "✨ बनाएं", btnRandom: "🎲 यादृच्छिक", btnReset: "🔄 रीसेट",
-    btnSave: "💾 छवि सहेजें",
-    loading: "⏳ बना रहे हैं... (20-30 सेकंड)",
-    loginTitle: "लॉगिन", loginSub: "tag-art में आपका स्वागत है",
-    tabLogin: "लॉगिन", tabSignup: "साइन अप (निःशुल्क)",
-    signupNote: "🎉 मुफ्त शुरू करें! प्रतिदिन 3 बार बना सकते हैं",
-    emailPlaceholder: "ईमेल पता", passPlaceholder: "पासवर्ड",
-    pass2Placeholder: "पासवर्ड (6+ अक्षर)",
-    btnDoLogin: "लॉगिन", btnDoSignup: "निःशुल्क साइन अप",
-    planTitle: "प्लान चुनें", planSub: "अधिक बनाने के लिए",
-    planFreeFeatures: "✔ प्रतिदिन 3 बार<br>✔ सभी टैग उपलब्ध",
-    planProFeatures: "✔ प्रतिदिन 20 बार<br>✔ सभी टैग<br>✔ कभी भी रद्द करें",
-    planCreditFeatures: "✔ 10 क्रेडिट<br>✔ कोई समाप्ति तिथि नहीं<br>✔ कभी भी खरीदें",
-    btnProUpgrade: "Pro में अपग्रेड →",
-    btnCreditBuy: "10 क्रेडिट खरीदें (¥150) →",
-    freeLockMsg: "🔒 FREE: केवल 'एनिमे' स्टाइल उपलब्ध।",
-    freeLockLink: "⭐ सभी स्टाइल के लिए PRO अपग्रेड करें",
-    otherInputPlaceholder: "स्वतंत्र इनपुट (कोई भी भाषा)",
-    otherInputLabel: "✏️ अन्य",
-    catLabels: {
-      gender:"👤 लिंग", age:"🎂 आयु", body:"💪 शरीर", hair:"💇 बाल", color:"🎨 बालों का रंग",
-      eyes:"👁️ आँखें", face:"😊 भाव", attr:"✨ विशेषता", outfit:"👗 पोशाक",
-      acc:"👓 सहायक उपकरण", pose:"🤸 मुद्रा", bg:"🖼️ पृष्ठभूमि", style:"🎨 शैली"
+    headerSub:"आइकॉन जनरेटर", btnLogin:"लॉगिन", btnSignup:"✨ साइन अप",
+    btnUpgrade:"⭐ अपग्रेड", btnHistory:"📷 इतिहास", btnLogout:"लॉगआउट",
+    modeTagSelect:"🏷️ टैग", modeSwipe:"👆 स्वाइप",
+    selectedTitle:"✅ चुने गए टैग", dropHint:"टैग यहाँ छोड़ें<br>या टैप करें",
+    btnGenerate:"✨ बनाएं", btnRandom:"🎲 यादृच्छिक", btnReset:"🔄 रीसेट",
+    btnSave:"💾 छवि सहेजें", loading:"⏳ बना रहे हैं... (20-30 सेकंड)",
+    loginTitle:"लॉगिन", loginSub:"tag-art में आपका स्वागत है",
+    tabLogin:"लॉगिन", tabSignup:"साइन अप (निःशुल्क)",
+    signupNote:"🎉 मुफ्त शुरू करें! 3 बार/दिन",
+    emailPlaceholder:"ईमेल", passPlaceholder:"पासवर्ड",
+    pass2Placeholder:"पासवर्ड (6+ अक्षर)", btnDoLogin:"लॉगिन", btnDoSignup:"साइन अप",
+    freeLockMsg:"🔒 FREE: केवल 'एनिमे' स्टाइल।",
+    freeLockLink:"⭐ PRO अपग्रेड करें",
+    otherInputPlaceholder:"स्वतंत्र इनपुट", otherInputLabel:"✏️ अन्य",
+    swipeSkipCat:"⏭️ श्रेणी छोड़ें",
+    swipeComplete:"🎉 चयन पूर्ण!",
+    swipeGenerateBtn:"✨ बनाएं",
+    swipeContinueBtn:"जारी रखें",
+    catLabels:{
+      gender:"👤 लिंग", age:"🎂 आयु", body:"💪 शरीर", skin:"🎨 त्वचा",
+      hair:"💇 बाल", color:"🎨 बालों का रंग", eyes:"👁️ आँखें", face:"😊 भाव",
+      attr:"✨ विशेषता", outfit:"👗 पोशाक", acc:"👓 सहायक",
+      pose:"🤸 मुद्रा", bg:"🖼️ पृष्ठभूमि", style:"🎨 शैली"
     },
-    tagLabels: {
-      "boy":"👦 पुरुष","girl":"👧 महिला","neutral":"🧑 तटस्थ",
-      "short hair":"✂️ छोटे","long hair":"💁 लंबे","black hair":"🖤 काले",
-      "smile":"😊 मुस्कान","serious":"😐 गंभीर",
-      "anime style":"🎌 एनिमे","pixel art":"🕹️ पिक्सेल आर्ट","business avatar":"💼 व्यवसाय"
-    }
+    tagLabels:{"boy":"👦 पुरुष","girl":"👧 महिला","anime style":"🎌 एनिमे","pixel art":"🕹️ पिक्सेल"}
   },
   ar: {
-    headerSub: "مولّد الأيقونات",
-    btnLogin: "تسجيل الدخول", btnSignup: "✨ التسجيل مجاناً", btnUpgrade: "⭐ ترقية",
-    btnHistory: "📷 السجل", btnLogout: "تسجيل الخروج",
-    modeTagSelect: "🏷️ اختيار العلامات", modeSwipe: "👆 تمرير",
-    selectedTitle: "✅ العلامات المختارة",
-    dropHint: "اسحب العلامات هنا<br>أو انقر للاختيار",
-    btnGenerate: "✨ إنشاء", btnRandom: "🎲 عشوائي", btnReset: "🔄 إعادة تعيين",
-    btnSave: "💾 حفظ الصورة",
-    loading: "⏳ جارٍ الإنشاء... (20-30 ثانية)",
-    loginTitle: "تسجيل الدخول", loginSub: "مرحباً بك في tag-art",
-    tabLogin: "تسجيل الدخول", tabSignup: "التسجيل (مجاناً)",
-    signupNote: "🎉 ابدأ مجاناً! 3 مرات يومياً",
-    emailPlaceholder: "البريد الإلكتروني", passPlaceholder: "كلمة المرور",
-    pass2Placeholder: "كلمة المرور (6 أحرف على الأقل)",
-    btnDoLogin: "تسجيل الدخول", btnDoSignup: "التسجيل مجاناً",
-    planTitle: "اختر خطة", planSub: "لمن يريد إنشاء المزيد",
-    planFreeFeatures: "✔ 3 مرات يومياً<br>✔ جميع العلامات متاحة",
-    planProFeatures: "✔ 20 مرة يومياً<br>✔ جميع العلامات<br>✔ إلغاء في أي وقت",
-    planCreditFeatures: "✔ 10 رصيد<br>✔ لا تاريخ انتهاء<br>✔ شراء في أي وقت",
-    btnProUpgrade: "الترقية إلى Pro →",
-    btnCreditBuy: "شراء 10 أرصدة (¥150) →",
-    freeLockMsg: "🔒 مجاني: أسلوب 'أنيمي' فقط متاح.",
-    freeLockLink: "⭐ ترقية PRO لفتح جميع الأساليب",
-    otherInputPlaceholder: "إدخال حر (أي لغة)",
-    otherInputLabel: "✏️ أخرى",
-    catLabels: {
-      gender:"👤 الجنس", age:"🎂 العمر", body:"💪 الجسم", hair:"💇 الشعر", color:"🎨 لون الشعر",
-      eyes:"👁️ العيون", face:"😊 التعبير", attr:"✨ الصفة", outfit:"👗 الزي",
-      acc:"👓 الإكسسوار", pose:"🤸 الوضعية", bg:"🖼️ الخلفية", style:"🎨 الأسلوب"
+    headerSub:"مولّد الأيقونات", btnLogin:"تسجيل الدخول", btnSignup:"✨ التسجيل",
+    btnUpgrade:"⭐ ترقية", btnHistory:"📷 السجل", btnLogout:"تسجيل الخروج",
+    modeTagSelect:"🏷️ العلامات", modeSwipe:"👆 تمرير",
+    selectedTitle:"✅ العلامات المختارة", dropHint:"اسحب العلامات هنا<br>أو انقر للاختيار",
+    btnGenerate:"✨ إنشاء", btnRandom:"🎲 عشوائي", btnReset:"🔄 إعادة تعيين",
+    btnSave:"💾 حفظ الصورة", loading:"⏳ جارٍ الإنشاء... (20-30 ثانية)",
+    loginTitle:"تسجيل الدخول", loginSub:"مرحباً بك في tag-art",
+    tabLogin:"تسجيل الدخول", tabSignup:"التسجيل (مجاناً)",
+    signupNote:"🎉 ابدأ مجاناً! 3 مرات يومياً",
+    emailPlaceholder:"البريد الإلكتروني", passPlaceholder:"كلمة المرور",
+    pass2Placeholder:"كلمة المرور (6+ أحرف)", btnDoLogin:"تسجيل", btnDoSignup:"التسجيل",
+    freeLockMsg:"🔒 مجاني: أسلوب 'أنيمي' فقط.",
+    freeLockLink:"⭐ ترقية PRO",
+    otherInputPlaceholder:"إدخال حر", otherInputLabel:"✏️ أخرى",
+    swipeSkipCat:"⏭️ تخطي الفئة",
+    swipeComplete:"🎉 اكتمل الاختيار!",
+    swipeGenerateBtn:"✨ إنشاء",
+    swipeContinueBtn:"متابعة الاختيار",
+    catLabels:{
+      gender:"👤 الجنس", age:"🎂 العمر", body:"💪 الجسم", skin:"🎨 لون البشرة",
+      hair:"💇 الشعر", color:"🎨 لون الشعر", eyes:"👁️ العيون", face:"😊 التعبير",
+      attr:"✨ الصفة", outfit:"👗 الزي", acc:"👓 الإكسسوار",
+      pose:"🤸 الوضعية", bg:"🖼️ الخلفية", style:"🎨 الأسلوب"
     },
-    tagLabels: {
-      "boy":"👦 ذكر","girl":"👧 أنثى","neutral":"🧑 محايد",
-      "short hair":"✂️ قصير","long hair":"💁 طويل","black hair":"🖤 أسود",
-      "smile":"😊 ابتسامة","serious":"😐 جاد",
-      "anime style":"🎌 أنيمي","pixel art":"🕹️ بكسل آرت","business avatar":"💼 عمل"
-    }
+    tagLabels:{"boy":"👦 ذكر","girl":"👧 أنثى","anime style":"🎌 أنيمي","pixel art":"🕹️ بكسل"}
   }
 };
 
@@ -1378,59 +1060,29 @@ const i18n = {
 function setLang(lang) {
   currentLang = lang;
   const t = i18n[lang];
-
-  // 言語ラベル更新
   const langLabels = {ja:"JP",en:"EN",zh:"中文",ko:"한국어",es:"ES",fr:"FR",de:"DE",ru:"RU",hi:"हिं",ar:"عر"};
   const el = document.getElementById("langCurrentLabel");
   if (el) el.textContent = langLabels[lang] || lang.toUpperCase();
-
-  // アラビア語はRTL
   document.body.dir = lang === "ar" ? "rtl" : "ltr";
-
-  // catLabels更新
   Object.assign(catLabels, t.catLabels);
-
-  // UI更新
   const ids = {
-    "headerSub": t.headerSub,
-    "btnLogin": t.btnLogin, "btnSignup": t.btnSignup,
-    "btnUpgrade": t.btnUpgrade, "btnHistory": t.btnHistory, "btnLogout": t.btnLogout,
-    "save-btn": t.btnSave
+    "headerSub":t.headerSub,"btnLogin":t.btnLogin,"btnSignup":t.btnSignup,
+    "btnUpgrade":t.btnUpgrade,"btnHistory":t.btnHistory,"btnLogout":t.btnLogout,"save-btn":t.btnSave
   };
-  Object.entries(ids).forEach(([id, text]) => {
-    const el = document.getElementById(id);
-    if (el) el.textContent = text;
-  });
-
-  // モード切替ボタン
-  const modeTabs = document.querySelectorAll(".mode-tab");
-  if (modeTabs[0]) modeTabs[0].textContent = t.modeTagSelect;
-  if (modeTabs[1]) modeTabs[1].textContent = t.modeSwipe;
-
-  // 生成ボタン
-  document.querySelectorAll(".btn-generate").forEach(btn => btn.textContent = t.btnGenerate);
-  document.querySelectorAll(".btn-sub").forEach((btn, i) => {
-    if (i % 2 === 0) btn.textContent = t.btnRandom;
-    else btn.textContent = t.btnReset;
-  });
-
-  // 選択中タグタイトル
-  document.querySelectorAll(".selected-panel h3").forEach(el => el.textContent = t.selectedTitle);
-
-  // ローディング
-  document.getElementById("loading").textContent = t.loading;
-
-  // タブとUI再描画
-  buildCatTabs();
-  renderTagList(currentCat, currentSubGroup);
-  renderSelectedZone();
-  buildStyleFirst();
+  Object.entries(ids).forEach(([id,text])=>{ const el=document.getElementById(id); if(el) el.textContent=text; });
+  document.querySelectorAll(".mode-tab").forEach((t2,i)=>{ if(i===0) t2.textContent=t.modeTagSelect; else t2.textContent=t.modeSwipe; });
+  document.querySelectorAll(".btn-generate").forEach(btn=>btn.textContent=t.btnGenerate);
+  document.querySelectorAll(".btn-sub").forEach((btn,i)=>{ if(i%2===0) btn.textContent=t.btnRandom; else btn.textContent=t.btnReset; });
+  document.querySelectorAll(".selected-panel h3").forEach(el=>el.textContent=t.selectedTitle);
+  document.getElementById("loading").textContent=t.loading;
+  const skipBtn = document.querySelector(".swipe-skip-cat-btn");
+  if(skipBtn) skipBtn.textContent = t.swipeSkipCat;
+  buildCatTabs(); renderTagList(currentCat,currentSubGroup); renderSelectedZone(); buildStyleFirst();
 }
 
 function getLabelForTag(tag) {
   const t = i18n[currentLang];
   if (t.tagLabels && t.tagLabels[tag]) return t.tagLabels[tag];
-  // fallback: allTagGroupsのlabel
   for (const cat in allTagGroups) {
     const found = getFlatTags(cat).find(t2 => t2.tag === tag);
     if (found) return found.label;
@@ -1443,7 +1095,6 @@ function toggleLangDropdown() {
   const dd = document.getElementById("langDropdown");
   if (dd) dd.style.display = dd.style.display === "none" ? "block" : "none";
 }
-// 外クリックでドロップダウンを閉じる
 document.addEventListener("click", function(e) {
   const wrapper = document.getElementById("langDropdownWrapper");
   if (wrapper && !wrapper.contains(e.target)) {
@@ -1453,8 +1104,7 @@ document.addEventListener("click", function(e) {
 });
 
 function init() {
-  buildCatTabs(); switchCat("gender"); initDragDrop(); initSwipe();
-  buildStyleFirst();
+  buildCatTabs(); switchCat("gender"); initDragDrop(); initSwipe(); buildStyleFirst();
   const tabs = document.getElementById("catTabs");
   if (tabs) { tabs.addEventListener("scroll", updateScrollBtns); setTimeout(updateScrollBtns, 100); }
 }
@@ -1471,449 +1121,489 @@ function buildStyleFirst() {
     const label = (t.tagLabels && t.tagLabels[s.tag]) ? t.tagLabels[s.tag] : s.label;
     const lockIcon = isLocked ? " 🔒" : "";
     const selCls = isSelected ? "style-first-btn selected" : "style-first-btn";
-    const onclk = isLocked ? "showPlanModal()" : "selectStyleFirst('" + s.tag.replace(/'/g,"\'") + "')";
+    const onclk = isLocked ? "showPlanModal()" : "selectStyleFirst('" + s.tag.replace(/'/g,"\\'") + "')";
     const opacity = isLocked ? "opacity:0.45;" : "";
     return "<button class='" + selCls + "' onclick=\"" + onclk + "\" style='" + opacity + "'>" + label + lockIcon + "</button>";
   }).join("");
 }
-
 function selectStyleFirst(tag) {
   selectedStyle = selectedStyle === tag ? "" : tag;
-  buildStyleFirst();
-  renderSelectedZone();
-  // カテゴリタブのスタイルバッジも更新
-  updateCatTabBadge("style");
+  buildStyleFirst(); renderSelectedZone(); updateCatTabBadge("style");
 }
 
 // ===== 認証モーダル =====
-function showAuthModal(tab) {
-  document.getElementById("authModal").classList.add("show");
-  switchAuthTab(tab || "login");
-}
-function hideAuthModal() {
-  document.getElementById("authModal").classList.remove("show");
-  document.getElementById("authMsg").innerText = "";
-}
+function showAuthModal(tab) { document.getElementById("authModal").classList.add("show"); switchAuthTab(tab||"login"); }
+function hideAuthModal() { document.getElementById("authModal").classList.remove("show"); document.getElementById("authMsg").innerText=""; }
 function switchAuthTab(tab) {
-  document.getElementById("authFormLogin").style.display = tab === "login" ? "block" : "none";
-  document.getElementById("authFormSignup").style.display = tab === "signup" ? "block" : "none";
-  document.getElementById("tabLogin").classList.toggle("active", tab === "login");
-  document.getElementById("tabSignup").classList.toggle("active", tab === "signup");
+  document.getElementById("authFormLogin").style.display = tab==="login"?"block":"none";
+  document.getElementById("authFormSignup").style.display = tab==="signup"?"block":"none";
+  document.getElementById("tabLogin").classList.toggle("active", tab==="login");
+  document.getElementById("tabSignup").classList.toggle("active", tab==="signup");
 }
 
 // ===== プランモーダル =====
 function showPlanModal() {
   if (!currentUser) { showAuthModal("signup"); return; }
   const info = document.getElementById("currentPlanInfo");
-  if (userPlan === "pro") {
-    info.innerHTML = "現在のプラン：<strong style='color:#764ba2'>PRO</strong>（1日20回）";
-  } else {
-    const credits = userCredits > 0 ? `（クレジット残：${userCredits}回）` : "";
-    info.innerHTML = `現在のプラン：FREE（1日3回）${credits}`;
-  }
+  if (userPlan==="pro") { info.innerHTML="現在のプラン：<strong style='color:#764ba2'>PRO</strong>（1日20回）"; }
+  else { const credits=userCredits>0?`（クレジット残：${userCredits}回）`:""; info.innerHTML=`現在のプラン：FREE（1日3回）${credits}`; }
   document.getElementById("planModal").classList.add("show");
 }
 function hidePlanModal() { document.getElementById("planModal").classList.remove("show"); }
 
-// オーバーレイ（背景）クリックで閉じる
-document.getElementById("authModal").addEventListener("click", function(e) {
-  if (e.target === this) hideAuthModal();
-});
-document.getElementById("planModal").addEventListener("click", function(e) {
-  if (e.target === this) hidePlanModal();
-});
+document.getElementById("authModal").addEventListener("click", function(e){ if(e.target===this) hideAuthModal(); });
+document.getElementById("planModal").addEventListener("click", function(e){ if(e.target===this) hidePlanModal(); });
 
 // ===== Stripe決済 =====
 async function startCheckout(mode) {
   if (!currentUser) { hidePlanModal(); showAuthModal("signup"); return; }
-  const priceId = mode === "subscription" ? PRICE_PRO : PRICE_CREDIT;
+  const priceId = mode==="subscription"?PRICE_PRO:PRICE_CREDIT;
   try {
-    const res = await fetch(WORKER_URL + "/create-checkout", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ priceId, userId: currentUser.id, userEmail: currentUser.email, mode })
-    });
+    const res = await fetch(WORKER_URL+"/create-checkout",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({priceId,userId:currentUser.id,userEmail:currentUser.email,mode})});
     const data = await res.json();
-    if (data.url) {
-      window.location.href = data.url;
-    } else {
-      alert("決済ページの取得に失敗しました。\n詳細: " + JSON.stringify(data));
-    }
-  } catch(e) {
-    alert("エラーが発生しました: " + e.message);
-  }
+    if (data.url) { window.location.href=data.url; }
+    else { alert("決済ページの取得に失敗しました。\n詳細: "+JSON.stringify(data)); }
+  } catch(e) { alert("エラーが発生しました: "+e.message); }
 }
 
 // ===== タブスクロール =====
 function scrollTabs(dir) {
-  const tabs = document.getElementById("catTabs");
-  if (tabs) { tabs.scrollBy({ left: dir * 120, behavior: "smooth" }); setTimeout(updateScrollBtns, 320); }
+  const tabs=document.getElementById("catTabs");
+  if(tabs){tabs.scrollBy({left:dir*120,behavior:"smooth"});setTimeout(updateScrollBtns,320);}
 }
 function updateScrollBtns() {
-  const tabs = document.getElementById("catTabs");
-  const btnL = document.getElementById("catScrollLeft");
-  const btnR = document.getElementById("catScrollRight");
-  if (!tabs||!btnL||!btnR) return;
-  btnL.disabled = tabs.scrollLeft <= 0;
-  btnR.disabled = tabs.scrollLeft + tabs.clientWidth >= tabs.scrollWidth - 4;
+  const tabs=document.getElementById("catTabs"),btnL=document.getElementById("catScrollLeft"),btnR=document.getElementById("catScrollRight");
+  if(!tabs||!btnL||!btnR) return;
+  btnL.disabled=tabs.scrollLeft<=0;
+  btnR.disabled=tabs.scrollLeft+tabs.clientWidth>=tabs.scrollWidth-4;
 }
 
 // ===== カテゴリタブ =====
 function buildCatTabs() {
-  const tabs = document.getElementById("catTabs");
-  tabs.innerHTML = Object.keys(allTagGroups).map((key, i) =>
+  const tabs=document.getElementById("catTabs");
+  tabs.innerHTML=Object.keys(allTagGroups).map((key,i)=>
     `<button class="cat-tab ${i===0?'active':''}" id="cattab-${key}" onclick="switchCat('${key}')">
       ${catLabels[key]}<span class="sel-dot"></span>
     </button>`
   ).join("");
 }
 function switchCat(cat) {
-  currentCat = cat; currentSubGroup = 0;
-  document.querySelectorAll(".cat-tab").forEach(t => t.classList.toggle("active", t.id === `cattab-${cat}`));
-  buildSubTabs(cat); renderTagList(cat, 0);
+  currentCat=cat; currentSubGroup=0;
+  document.querySelectorAll(".cat-tab").forEach(t=>t.classList.toggle("active",t.id===`cattab-${cat}`));
+  buildSubTabs(cat); renderTagList(cat,0);
 }
 
 // ===== サブタブ =====
 function buildSubTabs(cat) {
-  const wrapper = document.getElementById("subTabsWrapper");
-  const groups = allTagGroups[cat].groups;
-  if (groups.length <= 1) { wrapper.style.display = "none"; return; }
-  wrapper.style.display = "flex";
-  wrapper.innerHTML = groups.map((g, i) =>
-    `<button class="sub-tab ${i===0?'active':''}" onclick="switchSubGroup(${i})">${g.label}</button>`
-  ).join("");
+  const wrapper=document.getElementById("subTabsWrapper"),groups=allTagGroups[cat].groups;
+  if(groups.length<=1){wrapper.style.display="none";return;}
+  wrapper.style.display="flex";
+  wrapper.innerHTML=groups.map((g,i)=>`<button class="sub-tab ${i===0?'active':''}" onclick="switchSubGroup(${i})">${g.label}</button>`).join("");
 }
 function switchSubGroup(idx) {
-  currentSubGroup = idx;
-  document.querySelectorAll(".sub-tab").forEach((t, i) => t.classList.toggle("active", i === idx));
-  renderTagList(currentCat, idx);
+  currentSubGroup=idx;
+  document.querySelectorAll(".sub-tab").forEach((t,i)=>t.classList.toggle("active",i===idx));
+  renderTagList(currentCat,idx);
 }
 
 // ===== タグ一覧 =====
-function renderTagList(cat, groupIdx) {
-  const area = document.getElementById("tagListArea");
-  const isStyle = cat === "style";
-  const group = allTagGroups[cat].groups[groupIdx];
-  const isFreestyle = isStyle && userPlan !== "pro";
-  const t = i18n[currentLang];
+function renderTagList(cat,groupIdx) {
+  const area=document.getElementById("tagListArea");
+  const isStyle=cat==="style";
+  const group=allTagGroups[cat].groups[groupIdx];
+  const isFreestyle=isStyle&&userPlan!=="pro";
+  const t=i18n[currentLang];
 
-  // ロックバナー
-  let lockBanner = "";
-  if (isFreestyle) {
-    lockBanner = "<div style='background:#fff8f0;border:1.5px solid #ffe0b2;border-radius:10px;padding:10px 12px;margin-bottom:12px;font-size:12px;color:#e65100;text-align:center;'>"
-      + t.freeLockMsg + "<br>"
-      + "<span onclick='showPlanModal()' style='color:#764ba2;font-weight:700;cursor:pointer;text-decoration:underline;'>" + t.freeLockLink + "</span>"
-      + "</div>";
+  let lockBanner="";
+  if(isFreestyle){
+    lockBanner="<div style='background:#fff8f0;border:1.5px solid #ffe0b2;border-radius:10px;padding:10px 12px;margin-bottom:12px;font-size:12px;color:#e65100;text-align:center;'>"
+      +t.freeLockMsg+"<br>"
+      +"<span onclick='showPlanModal()' style='color:#764ba2;font-weight:700;cursor:pointer;text-decoration:underline;'>"+t.freeLockLink+"</span>"
+      +"</div>";
   }
 
-  // グループラベル（英語の場合は英語グループ名）
-  const groupLabels = {
-    ja: { "すべて":"すべて","若い系":"若い系","大人系":"大人系","特殊系":"特殊系","短め系":"短め系","長め系":"長め系","まとめ髪系":"まとめ髪系","特徴系":"特徴系","ナチュラル系":"ナチュラル系","ビビッド系":"ビビッド系","カラー系":"カラー系","ポジティブ系":"ポジティブ系","クール系":"クール系","ネガティブ系":"ネガティブ系","動物系":"動物系","神話・魔法系":"神話・魔法系","学校・日常系":"学校・日常系","和装系":"和装系","ファンタジー系":"ファンタジー系","フォーマル系":"フォーマル系","顔・頭系":"顔・頭系","首・体系":"首・体系","手系":"手系","立ちポーズ系":"立ちポーズ系","動きポーズ系":"動きポーズ系","座り・寝系":"座り・寝系","シンプル系":"シンプル系","自然系":"自然系","都市・建物系":"都市・建物系","小柄系":"小柄系","標準系":"標準系","大柄系":"大柄系","アニメ系":"アニメ系","アート系":"アート系" },
-    en: { "すべて":"All","若い系":"Young","大人系":"Adult","特殊系":"Special","短め系":"Short","長め系":"Long","まとめ髪系":"Updo","特徴系":"Unique","ナチュラル系":"Natural","ビビッド系":"Vivid","カラー系":"Color","ポジティブ系":"Positive","クール系":"Cool","ネガティブ系":"Negative","動物系":"Animal","神話・魔法系":"Mythical","学校・日常系":"Casual","和装系":"Japanese","ファンタジー系":"Fantasy","フォーマル系":"Formal","顔・頭系":"Face/Head","首・体系":"Neck/Body","手系":"Hands","立ちポーズ系":"Standing","動きポーズ系":"Action","座り・寝系":"Sitting/Lying","シンプル系":"Simple","自然系":"Nature","都市・建物系":"Urban","小柄系":"Small","標準系":"Average","大柄系":"Large","アニメ系":"Anime","アート系":"Art" }
+  const groupLabels={
+    ja:{"すべて":"すべて","若い系":"若い系","大人系":"大人系","特殊系":"特殊系","短め系":"短め系","長め系":"長め系","まとめ髪系":"まとめ髪系","特徴系":"特徴系","ナチュラル系":"ナチュラル系","ビビッド系":"ビビッド系","明るい系":"明るい系","標準系":"標準系","ダーク系":"ダーク系","ファンタジー系":"ファンタジー系","カラー系":"カラー系","ポジティブ系":"ポジティブ系","クール系":"クール系","ネガティブ系":"ネガティブ系","動物系":"動物系","神話・魔法系":"神話・魔法系","学校・日常系":"学校・日常系","和装系":"和装系","フォーマル系":"フォーマル系","顔・頭系":"顔・頭系","首・体系":"首・体系","手系":"手系","立ちポーズ系":"立ちポーズ系","動きポーズ系":"動きポーズ系","座り・寝系":"座り・寝系","シンプル系":"シンプル系","自然系":"自然系","都市・建物系":"都市・建物系","小柄系":"小柄系","大柄系":"大柄系","アニメ系":"アニメ系","アート系":"アート系"},
+    en:{"すべて":"All","若い系":"Young","大人系":"Adult","特殊系":"Special","短め系":"Short","長め系":"Long","まとめ髪系":"Updo","特徴系":"Unique","ナチュラル系":"Natural","ビビッド系":"Vivid","明るい系":"Light","標準系":"Medium","ダーク系":"Dark","ファンタジー系":"Fantasy","カラー系":"Color","ポジティブ系":"Positive","クール系":"Cool","ネガティブ系":"Negative","動物系":"Animal","神話・魔法系":"Mythical","学校・日常系":"Casual","和装系":"Japanese","フォーマル系":"Formal","顔・頭系":"Face/Head","首・体系":"Neck/Body","手系":"Hands","立ちポーズ系":"Standing","動きポーズ系":"Action","座り・寝系":"Sitting","シンプル系":"Simple","自然系":"Nature","都市・建物系":"Urban","小柄系":"Small","大柄系":"Large","アニメ系":"Anime","アート系":"Art"}
   };
-  const groupLabel = (groupLabels[currentLang]||groupLabels.ja)[group.label] || group.label;
+  const groupLabel=(groupLabels[currentLang]||groupLabels.ja)[group.label]||group.label;
 
-  let html = "<div class='cat-label'>" + catLabels[cat] + " — " + groupLabel + "</div>" + lockBanner + "<div class='tag-grid'>";
-  group.tags.forEach(tag => {
-    const isSelected = isStyle ? selectedStyle === tag.tag : selected[cat] === tag.tag;
-    const isAttrBase = cat === "attr" && attrState.base === tag.detailKey;
-    const isLocked = isFreestyle && tag.tag !== "anime style";
-    let cls = (isSelected||isAttrBase) ? (isStyle?"tag-btn style-selected":"tag-btn selected") : "tag-btn";
-    const esc = tag.tag.replace(/\\/g,"\\\\").replace(/'/g,"\\'");
-    const dk = tag.detailKey||"";
-    let onclk = isLocked
-      ? "showPlanModal()"
-      : "tapSelect('" + cat + "','" + esc + "'," + isStyle + "," + (!!tag.isGradient) + "," + (!!tag.isOddai) + "," + (!!tag.hasDetail) + ",'" + dk + "')";
-    const lockIcon = isLocked ? " 🔒" : "";
-    const opacityStyle = isLocked ? " style='opacity:0.45;'" : "";
-    const displayLabel = getLabelForTag(tag.tag);
-    html += "<button class='" + cls + "' data-tag='" + tag.tag + "' data-cat='" + cat + "' data-isstyle='" + isStyle + "' onclick='" + onclk + "' draggable='false'" + opacityStyle + ">" + displayLabel + lockIcon + "</button>";
+  let html="<div class='cat-label'>"+catLabels[cat]+" — "+groupLabel+"</div>"+lockBanner+"<div class='tag-grid'>";
+  group.tags.forEach(tag=>{
+    const isSelected=isStyle?selectedStyle===tag.tag:selected[cat]===tag.tag;
+    const isAttrBase=cat==="attr"&&attrState.base===tag.detailKey;
+    const isLocked=isFreestyle&&tag.tag!=="anime style";
+    let cls=(isSelected||isAttrBase)?(isStyle?"tag-btn style-selected":"tag-btn selected"):"tag-btn";
+    const esc=tag.tag.replace(/\\/g,"\\\\").replace(/'/g,"\\'");
+    const dk=tag.detailKey||"";
+    let onclk=isLocked?"showPlanModal()":"tapSelect('"+cat+"','"+esc+"',"+isStyle+","+(!!tag.isGradient)+","+(!!tag.isOddai)+","+(!!tag.hasDetail)+",'"+dk+"')";
+    const lockIcon=isLocked?" 🔒":"";
+    const opacityStyle=isLocked?" style='opacity:0.45;'":"";
+    const displayLabel=getLabelForTag(tag.tag);
+    html+="<button class='"+cls+"' data-tag='"+tag.tag+"' data-cat='"+cat+"' data-isstyle='"+isStyle+"' onclick='"+onclk+"' draggable='false'"+opacityStyle+">"+displayLabel+lockIcon+"</button>";
   });
-  html += "</div>";
-  if (cat==="eyes"&&eyesState.mode==="oddai") html += buildOddaiPanel();
-  if (cat==="color"&&colorState.mode==="gradient") html += buildGradientPanel();
-  if (cat==="attr"&&attrState.base&&attrDetails[attrState.base]) html += buildAttrDetailPanel(attrState.base);
+  html+="</div>";
+  if(cat==="eyes"&&eyesState.mode==="oddai") html+=buildOddaiPanel();
+  if(cat==="color"&&colorState.mode==="gradient") html+=buildGradientPanel();
+  if(cat==="attr"&&attrState.base&&attrDetails[attrState.base]) html+=buildAttrDetailPanel(attrState.base);
 
-  // その他入力欄（スタイル以外に表示）
-  if (!isStyle) {
-    const otherId = "otherInput_" + cat;
-    const otherVal = selected["other_" + cat] || "";
-    html += "<div style='margin-top:12px;'>"
-      + "<div style='font-size:11px;color:var(--text-muted);font-weight:600;margin-bottom:6px;'>" + t.otherInputLabel + "</div>"
-      + "<div style='display:flex;gap:6px;'>"
-      + "<input id='" + otherId + "' type='text' placeholder='" + t.otherInputPlaceholder + "' value='" + otherVal.replace(/'/g,"&#39;") + "'"
-      + " style='flex:1;padding:8px 12px;border:1.5px solid var(--border);border-radius:20px;font-size:13px;outline:none;'"
-      + " oninput=\"updateOtherInput('" + cat + "',this.value)\">"
-      + "</div></div>";
+  if(!isStyle){
+    const otherId="otherInput_"+cat;
+    const otherVal=selected["other_"+cat]||"";
+    html+="<div style='margin-top:12px;'>"
+      +"<div style='font-size:11px;color:var(--text-muted);font-weight:600;margin-bottom:6px;'>"+t.otherInputLabel+"</div>"
+      +"<div style='display:flex;gap:6px;'>"
+      +"<input id='"+otherId+"' type='text' placeholder='"+t.otherInputPlaceholder+"' value='"+otherVal.replace(/'/g,"&#39;")+"'"
+      +" style='flex:1;padding:8px 12px;border:1.5px solid var(--border);border-radius:20px;font-size:13px;outline:none;'"
+      +" oninput=\"updateOtherInput('"+cat+"',this.value)\">"
+      +"</div></div>";
   }
 
-  area.innerHTML = html;
-  area.querySelectorAll(".tag-btn").forEach(btn => {
-    btn.addEventListener("mousedown", onDragStart);
-    btn.addEventListener("touchstart", onTouchStart, {passive: false});
+  area.innerHTML=html;
+  area.querySelectorAll(".tag-btn").forEach(btn=>{
+    btn.addEventListener("mousedown",onDragStart);
+    btn.addEventListener("touchstart",onTouchStart,{passive:false});
   });
 }
 
-// その他入力の更新（翻訳は生成時にWorker経由で行う）
-let otherInputTimer = null;
-function updateOtherInput(cat, value) {
+let otherInputTimer=null;
+function updateOtherInput(cat,value){
   clearTimeout(otherInputTimer);
-  otherInputTimer = setTimeout(() => {
-    if (value.trim()) {
-      selected["other_" + cat] = value.trim();
-    } else {
-      delete selected["other_" + cat];
-    }
+  otherInputTimer=setTimeout(()=>{
+    if(value.trim()){selected["other_"+cat]=value.trim();}else{delete selected["other_"+cat];}
     renderSelectedZone();
-  }, 500);
+  },500);
 }
 
 // ===== 段階選択パネル =====
-function buildOddaiPanel() {
-  const l=eyesState.left, r=eyesState.right;
+function buildOddaiPanel(){
+  const l=eyesState.left,r=eyesState.right;
   let html=`<div class="substep-panel"><div class="substep-title">👁️ オッドアイ — 左右の色を選んでください</div><div class="substep-label">左目</div><div class="substep-row">`;
-  eyeColors.forEach(c => { html+=`<button class="tag-btn ${l===c.tag?'selected':''}" style="font-size:12px;padding:6px 10px" onclick="setOddaiColor('left','${c.tag}')">${c.label}</button>`; });
+  eyeColors.forEach(c=>{html+=`<button class="tag-btn ${l===c.tag?'selected':''}" style="font-size:12px;padding:6px 10px" onclick="setOddaiColor('left','${c.tag}')">${c.label}</button>`;});
   html+=`</div><div class="substep-label">右目</div><div class="substep-row">`;
-  eyeColors.forEach(c => { html+=`<button class="tag-btn ${r===c.tag?'selected':''}" style="font-size:12px;padding:6px 10px" onclick="setOddaiColor('right','${c.tag}')">${c.label}</button>`; });
+  eyeColors.forEach(c=>{html+=`<button class="tag-btn ${r===c.tag?'selected':''}" style="font-size:12px;padding:6px 10px" onclick="setOddaiColor('right','${c.tag}')">${c.label}</button>`;});
   return html+`</div></div>`;
 }
-function buildGradientPanel() {
-  const c1=colorState.col1, c2=colorState.col2;
+function buildGradientPanel(){
+  const c1=colorState.col1,c2=colorState.col2;
   let html=`<div class="substep-panel"><div class="substep-title">🎨 グラデーション — 2色を選んでください</div><div class="substep-label">メインカラー</div><div class="substep-row">`;
-  hairColorsSub.forEach(c => { html+=`<button class="tag-btn ${c1===c.tag?'selected':''}" style="font-size:12px;padding:6px 10px" onclick="setGradientColor(1,'${c.tag}')">${c.label}</button>`; });
+  hairColorsSub.forEach(c=>{html+=`<button class="tag-btn ${c1===c.tag?'selected':''}" style="font-size:12px;padding:6px 10px" onclick="setGradientColor(1,'${c.tag}')">${c.label}</button>`;});
   html+=`</div><div class="substep-label">サブカラー</div><div class="substep-row">`;
-  hairColorsSub.forEach(c => { html+=`<button class="tag-btn ${c2===c.tag?'selected':''}" style="font-size:12px;padding:6px 10px" onclick="setGradientColor(2,'${c.tag}')">${c.label}</button>`; });
+  hairColorsSub.forEach(c=>{html+=`<button class="tag-btn ${c2===c.tag?'selected':''}" style="font-size:12px;padding:6px 10px" onclick="setGradientColor(2,'${c.tag}')">${c.label}</button>`;});
   return html+`</div></div>`;
 }
-function buildAttrDetailPanel(detailKey) {
+function buildAttrDetailPanel(detailKey){
   const details=attrDetails[detailKey];
   const titleMap={dragon:"🐉 ドラゴンの種類",ninetails:"🦊 九尾の種類"};
   let html=`<div class="substep-panel"><div class="substep-title">${titleMap[detailKey]||"詳細を選んでください"}</div><div class="substep-row">`;
-  details.forEach(d => { const esc=d.tag.replace(/'/g,"\\'"); html+=`<button class="tag-btn ${attrState.detail===d.tag?'selected':''}" style="font-size:12px;padding:6px 10px" onclick="setAttrDetail('${detailKey}','${esc}')">${d.label}</button>`; });
+  details.forEach(d=>{const esc=d.tag.replace(/'/g,"\\'");html+=`<button class="tag-btn ${attrState.detail===d.tag?'selected':''}" style="font-size:12px;padding:6px 10px" onclick="setAttrDetail('${detailKey}','${esc}')">${d.label}</button>`;});
   return html+`</div></div>`;
 }
-function setOddaiColor(side, colorTag) {
-  if(side==="left") eyesState.left=colorTag; else eyesState.right=colorTag;
-  selected["eyes"]=eyesState.left&&eyesState.right?`heterochromia, left eye ${eyesState.left}, right eye ${eyesState.right}`:"heterochromia";
-  updateCatTabBadge("eyes"); renderTagList(currentCat,currentSubGroup); renderSelectedZone();
-}
-function setGradientColor(num, colorTag) {
-  if(num===1) colorState.col1=colorTag; else colorState.col2=colorTag;
-  selected["color"]=colorState.col1&&colorState.col2?`gradient hair, ${colorState.col1} to ${colorState.col2} ombre`:`gradient hair, ${colorState.col1||colorState.col2} ombre`;
-  updateCatTabBadge("color"); renderTagList(currentCat,currentSubGroup); renderSelectedZone();
-}
-function setAttrDetail(detailKey, detailTag) {
-  attrState.detail=detailTag; selected["attr"]=detailTag;
-  updateCatTabBadge("attr"); renderTagList(currentCat,currentSubGroup); renderSelectedZone();
-}
+function setOddaiColor(side,colorTag){if(side==="left")eyesState.left=colorTag;else eyesState.right=colorTag;selected["eyes"]=eyesState.left&&eyesState.right?`heterochromia, left eye ${eyesState.left}, right eye ${eyesState.right}`:"heterochromia";updateCatTabBadge("eyes");renderTagList(currentCat,currentSubGroup);renderSelectedZone();}
+function setGradientColor(num,colorTag){if(num===1)colorState.col1=colorTag;else colorState.col2=colorTag;selected["color"]=colorState.col1&&colorState.col2?`gradient hair, ${colorState.col1} to ${colorState.col2} ombre`:`gradient hair, ${colorState.col1||colorState.col2} ombre`;updateCatTabBadge("color");renderTagList(currentCat,currentSubGroup);renderSelectedZone();}
+function setAttrDetail(detailKey,detailTag){attrState.detail=detailTag;selected["attr"]=detailTag;updateCatTabBadge("attr");renderTagList(currentCat,currentSubGroup);renderSelectedZone();}
 
 // ===== タップ選択 =====
-function tapSelect(cat, tag, isStyle, isGradient, isOddai, hasDetail, detailKey) {
-  if(isStyle) { selectedStyle=selectedStyle===tag?"":tag; }
-  else if(isOddai) { if(eyesState.mode==="oddai"){eyesState={mode:"normal",left:"",right:""};delete selected[cat];}else{eyesState={mode:"oddai",left:"",right:""};selected[cat]="heterochromia";} }
-  else if(isGradient) { if(colorState.mode==="gradient"){colorState={mode:"normal",col1:"",col2:""};delete selected[cat];}else{colorState={mode:"gradient",col1:"",col2:""};selected[cat]="gradient hair";} }
-  else if(hasDetail) { if(attrState.base===detailKey){attrState={base:"",detail:""};delete selected[cat];}else{attrState={base:detailKey,detail:""};selected[cat]=tag;} }
-  else {
-    if(cat==="eyes") eyesState={mode:"normal",left:"",right:""};
-    if(cat==="color") colorState={mode:"normal",col1:"",col2:""};
-    if(cat==="attr") attrState={base:"",detail:""};
-    if(selected[cat]===tag) delete selected[cat]; else selected[cat]=tag;
+function tapSelect(cat,tag,isStyle,isGradient,isOddai,hasDetail,detailKey){
+  if(isStyle){selectedStyle=selectedStyle===tag?"":tag;}
+  else if(isOddai){if(eyesState.mode==="oddai"){eyesState={mode:"normal",left:"",right:""};delete selected[cat];}else{eyesState={mode:"oddai",left:"",right:""};selected[cat]="heterochromia";}}
+  else if(isGradient){if(colorState.mode==="gradient"){colorState={mode:"normal",col1:"",col2:""};delete selected[cat];}else{colorState={mode:"gradient",col1:"",col2:""};selected[cat]="gradient hair";}}
+  else if(hasDetail){if(attrState.base===detailKey){attrState={base:"",detail:""};delete selected[cat];}else{attrState={base:detailKey,detail:""};selected[cat]=tag;}}
+  else{
+    if(cat==="eyes")eyesState={mode:"normal",left:"",right:""};
+    if(cat==="color")colorState={mode:"normal",col1:"",col2:""};
+    if(cat==="attr")attrState={base:"",detail:""};
+    if(selected[cat]===tag)delete selected[cat];else selected[cat]=tag;
   }
-  updateCatTabBadge(cat); renderTagList(cat,currentSubGroup); renderSelectedZone();
+  updateCatTabBadge(cat);renderTagList(cat,currentSubGroup);renderSelectedZone();
 }
 
-// ===== バッジ =====
-function updateCatTabBadge(cat) {
-  const tab=document.getElementById(`cattab-${cat}`); if(!tab) return;
-  tab.classList.toggle("has-selection", cat==="style"?!!selectedStyle:!!selected[cat]);
-}
-function updateAllBadges() { Object.keys(allTagGroups).forEach(cat=>updateCatTabBadge(cat)); }
+function updateCatTabBadge(cat){const tab=document.getElementById(`cattab-${cat}`);if(!tab)return;tab.classList.toggle("has-selection",cat==="style"?!!selectedStyle:!!selected[cat]);}
+function updateAllBadges(){Object.keys(allTagGroups).forEach(cat=>updateCatTabBadge(cat));}
 
 // ===== 選択済みゾーン =====
-function renderSelectedZone() {
+function renderSelectedZone(){
   updateAllBadges();
-  ["selectedDropZone","selectedDropZoneSwipe"].forEach(zoneId => {
-    const zone=document.getElementById(zoneId); if(!zone) return;
+  ["selectedDropZone","selectedDropZoneSwipe"].forEach(zoneId=>{
+    const zone=document.getElementById(zoneId);if(!zone)return;
     let chips=[];
-    for(let cat in selected) {
+    for(let cat in selected){
       const tag=selected[cat];
-      // other_* キーはその他入力として別表示
-      if(cat.startsWith("other_")) {
-        const baseCat = cat.replace("other_","");
-        const catEmoji = (catLabels[baseCat]||"✏️").split(" ")[0];
+      if(cat.startsWith("other_")){
+        const baseCat=cat.replace("other_","");
+        const catEmoji=(catLabels[baseCat]||"✏️").split(" ")[0];
         chips.push(`<div class="selected-tag-chip" style="background:linear-gradient(135deg,#43e97b,#38f9d7);color:#333;" onclick="removeSelected('${cat}',false)"><span class="cat-badge">${catEmoji}</span>✏️ ${tag}<span class="remove-x">×</span></div>`);
         continue;
       }
       const label=getLabelForSelected(cat,tag);
       chips.push(`<div class="selected-tag-chip" onclick="removeSelected('${cat}',false)"><span class="cat-badge">${(catLabels[cat]||"").split(" ")[0]}</span>${label}<span class="remove-x">×</span></div>`);
     }
-    if(selectedStyle) {
-      const label=getLabelByTag(selectedStyle,"style");
-      chips.push(`<div class="selected-tag-chip style-chip" onclick="removeSelected('style',true)"><span class="cat-badge">🎨</span>${label}<span class="remove-x">×</span></div>`);
-    }
-    if(chips.length===0) { zone.classList.add("empty-hint"); zone.innerHTML='<div class="drop-hint-text">' + i18n[currentLang].dropHint + '</div>'; }
-    else { zone.classList.remove("empty-hint"); zone.innerHTML=chips.join(""); }
+    if(selectedStyle){const label=getLabelByTag(selectedStyle,"style");chips.push(`<div class="selected-tag-chip style-chip" onclick="removeSelected('style',true)"><span class="cat-badge">🎨</span>${label}<span class="remove-x">×</span></div>`);}
+    if(chips.length===0){zone.classList.add("empty-hint");zone.innerHTML='<div class="drop-hint-text">'+i18n[currentLang].dropHint+'</div>';}
+    else{zone.classList.remove("empty-hint");zone.innerHTML=chips.join("");}
   });
 }
-function getLabelForSelected(cat, tag) {
-  if(cat==="eyes"&&tag.startsWith("heterochromia")) {
-    if(eyesState.left&&eyesState.right) { const lL=eyeColors.find(c=>c.tag===eyesState.left)?.label||eyesState.left, rL=eyeColors.find(c=>c.tag===eyesState.right)?.label||eyesState.right; return `👁️ オッドアイ（左:${lL} 右:${rL}）`; }
-    return "👁️ オッドアイ（色未選択）";
-  }
-  if(cat==="color"&&tag.startsWith("gradient hair")) {
-    if(colorState.col1&&colorState.col2) { const c1=hairColorsSub.find(c=>c.tag===colorState.col1)?.label||colorState.col1, c2=hairColorsSub.find(c=>c.tag===colorState.col2)?.label||colorState.col2; return `🎨 グラデ（${c1}→${c2}）`; }
-    return "🎨 グラデーション（色未選択）";
-  }
-  if(cat==="attr"&&attrState.detail) { const allD=Object.values(attrDetails).flat(), found=allD.find(d=>d.tag===tag); return found?found.label:getLabelByTag(tag,cat); }
+function getLabelForSelected(cat,tag){
+  if(cat==="eyes"&&tag.startsWith("heterochromia")){if(eyesState.left&&eyesState.right){const lL=eyeColors.find(c=>c.tag===eyesState.left)?.label||eyesState.left,rL=eyeColors.find(c=>c.tag===eyesState.right)?.label||eyesState.right;return `👁️ オッドアイ（左:${lL} 右:${rL}）`;}return "👁️ オッドアイ（色未選択）";}
+  if(cat==="color"&&tag.startsWith("gradient hair")){if(colorState.col1&&colorState.col2){const c1=hairColorsSub.find(c=>c.tag===colorState.col1)?.label||colorState.col1,c2=hairColorsSub.find(c=>c.tag===colorState.col2)?.label||colorState.col2;return `🎨 グラデ（${c1}→${c2}）`;}return "🎨 グラデーション（色未選択）";}
+  if(cat==="attr"&&attrState.detail){const allD=Object.values(attrDetails).flat(),found=allD.find(d=>d.tag===tag);return found?found.label:getLabelByTag(tag,cat);}
   return getLabelByTag(tag,cat);
 }
-function getLabelByTag(tag, catHint) {
-  const cats=catHint?[catHint]:Object.keys(allTagGroups);
-  for(const cat of cats) { const found=getFlatTags(cat).find(t=>t.tag===tag); if(found) return found.label; }
-  return tag;
-}
-function removeSelected(cat, isStyle) {
-  if(isStyle) { selectedStyle=""; }
-  else { if(cat==="eyes") eyesState={mode:"normal",left:"",right:""}; if(cat==="color") colorState={mode:"normal",col1:"",col2:""}; if(cat==="attr") attrState={base:"",detail:""}; delete selected[cat]; }
-  if(cat===currentCat) renderTagList(currentCat,currentSubGroup);
-  updateCatTabBadge(cat); renderSelectedZone();
+function getLabelByTag(tag,catHint){const cats=catHint?[catHint]:Object.keys(allTagGroups);for(const cat of cats){const found=getFlatTags(cat).find(t=>t.tag===tag);if(found)return found.label;}return tag;}
+function removeSelected(cat,isStyle){
+  if(isStyle){selectedStyle="";}
+  else{if(cat==="eyes")eyesState={mode:"normal",left:"",right:""};if(cat==="color")colorState={mode:"normal",col1:"",col2:""};if(cat==="attr")attrState={base:"",detail:""};delete selected[cat];}
+  if(cat===currentCat)renderTagList(currentCat,currentSubGroup);
+  updateCatTabBadge(cat);renderSelectedZone();
 }
 
 // ===== ドラッグ&ドロップ =====
-let dragTag=null, dragCat=null, dragIsStyle=false, ghostEl;
-function initDragDrop() {
+let dragTag=null,dragCat=null,dragIsStyle=false,ghostEl;
+function initDragDrop(){
   ghostEl=document.getElementById("dragGhost");
   const zone=document.getElementById("selectedDropZone");
   zone.addEventListener("dragover",e=>{e.preventDefault();zone.classList.add("drag-over");});
   zone.addEventListener("dragleave",()=>zone.classList.remove("drag-over"));
   zone.addEventListener("drop",e=>{e.preventDefault();zone.classList.remove("drag-over");commitDrop();});
 }
-function onDragStart(e) { const btn=e.currentTarget; dragTag=btn.dataset.tag; dragCat=btn.dataset.cat; dragIsStyle=btn.dataset.isstyle==="true"; ghostEl.textContent=btn.textContent.trim(); ghostEl.style.display="block"; document.addEventListener("mousemove",onDragMove); document.addEventListener("mouseup",onDragEnd); }
-function onDragMove(e) { ghostEl.style.left=e.clientX+"px"; ghostEl.style.top=e.clientY+"px"; const zone=document.getElementById("selectedDropZone"),rect=zone.getBoundingClientRect(); zone.classList.toggle("drag-over",e.clientX>=rect.left&&e.clientX<=rect.right&&e.clientY>=rect.top&&e.clientY<=rect.bottom); }
-function onDragEnd(e) { ghostEl.style.display="none"; document.removeEventListener("mousemove",onDragMove); document.removeEventListener("mouseup",onDragEnd); const zone=document.getElementById("selectedDropZone"),rect=zone.getBoundingClientRect(); if(e.clientX>=rect.left&&e.clientX<=rect.right&&e.clientY>=rect.top&&e.clientY<=rect.bottom){zone.classList.remove("drag-over");commitDrop();} zone.classList.remove("drag-over"); }
-function onTouchStart(e) { e.preventDefault(); const btn=e.currentTarget; dragTag=btn.dataset.tag; dragCat=btn.dataset.cat; dragIsStyle=btn.dataset.isstyle==="true"; ghostEl.textContent=btn.textContent.trim(); ghostEl.style.display="block"; document.addEventListener("touchmove",onTouchMove,{passive:false}); document.addEventListener("touchend",onTouchEnd); }
-function onTouchMove(e) { e.preventDefault(); const t=e.touches[0]; ghostEl.style.left=t.clientX+"px"; ghostEl.style.top=t.clientY+"px"; const zone=document.getElementById("selectedDropZone"),rect=zone.getBoundingClientRect(); zone.classList.toggle("drag-over",t.clientX>=rect.left&&t.clientX<=rect.right&&t.clientY>=rect.top&&t.clientY<=rect.bottom); }
-function onTouchEnd(e) { ghostEl.style.display="none"; document.removeEventListener("touchmove",onTouchMove); document.removeEventListener("touchend",onTouchEnd); const t=e.changedTouches[0],zone=document.getElementById("selectedDropZone"),rect=zone.getBoundingClientRect(); if(t.clientX>=rect.left&&t.clientX<=rect.right&&t.clientY>=rect.top&&t.clientY<=rect.bottom){zone.classList.remove("drag-over");commitDrop();} zone.classList.remove("drag-over"); }
-function commitDrop() { if(!dragTag) return; if(dragIsStyle) selectedStyle=dragTag; else selected[dragCat]=dragTag; updateCatTabBadge(dragCat); renderTagList(currentCat,currentSubGroup); renderSelectedZone(); dragTag=null; dragCat=null; }
+function onDragStart(e){const btn=e.currentTarget;dragTag=btn.dataset.tag;dragCat=btn.dataset.cat;dragIsStyle=btn.dataset.isstyle==="true";ghostEl.textContent=btn.textContent.trim();ghostEl.style.display="block";document.addEventListener("mousemove",onDragMove);document.addEventListener("mouseup",onDragEnd);}
+function onDragMove(e){ghostEl.style.left=e.clientX+"px";ghostEl.style.top=e.clientY+"px";const zone=document.getElementById("selectedDropZone"),rect=zone.getBoundingClientRect();zone.classList.toggle("drag-over",e.clientX>=rect.left&&e.clientX<=rect.right&&e.clientY>=rect.top&&e.clientY<=rect.bottom);}
+function onDragEnd(e){ghostEl.style.display="none";document.removeEventListener("mousemove",onDragMove);document.removeEventListener("mouseup",onDragEnd);const zone=document.getElementById("selectedDropZone"),rect=zone.getBoundingClientRect();if(e.clientX>=rect.left&&e.clientX<=rect.right&&e.clientY>=rect.top&&e.clientY<=rect.bottom){zone.classList.remove("drag-over");commitDrop();}zone.classList.remove("drag-over");}
+function onTouchStart(e){e.preventDefault();const btn=e.currentTarget;dragTag=btn.dataset.tag;dragCat=btn.dataset.cat;dragIsStyle=btn.dataset.isstyle==="true";ghostEl.textContent=btn.textContent.trim();ghostEl.style.display="block";document.addEventListener("touchmove",onTouchMove,{passive:false});document.addEventListener("touchend",onTouchEnd);}
+function onTouchMove(e){e.preventDefault();const t=e.touches[0];ghostEl.style.left=t.clientX+"px";ghostEl.style.top=t.clientY+"px";const zone=document.getElementById("selectedDropZone"),rect=zone.getBoundingClientRect();zone.classList.toggle("drag-over",t.clientX>=rect.left&&t.clientX<=rect.right&&t.clientY>=rect.top&&t.clientY<=rect.bottom);}
+function onTouchEnd(e){ghostEl.style.display="none";document.removeEventListener("touchmove",onTouchMove);document.removeEventListener("touchend",onTouchEnd);const t=e.changedTouches[0],zone=document.getElementById("selectedDropZone"),rect=zone.getBoundingClientRect();if(t.clientX>=rect.left&&t.clientX<=rect.right&&t.clientY>=rect.top&&t.clientY<=rect.bottom){zone.classList.remove("drag-over");commitDrop();}zone.classList.remove("drag-over");}
+function commitDrop(){if(!dragTag)return;if(dragIsStyle)selectedStyle=dragTag;else selected[dragCat]=dragTag;updateCatTabBadge(dragCat);renderTagList(currentCat,currentSubGroup);renderSelectedZone();dragTag=null;dragCat=null;}
 
-// ===== スワイプ =====
-const swipeCatKeys=Object.keys(allTagGroups);
+// ===== スワイプモード（改善版） =====
+const swipeCatKeys = Object.keys(allTagGroups).filter(k => k !== "style"); // styleはスキップ
 let swipeCatIndex=0, swipeCardIndex=0;
-function initSwipe() {
-  document.getElementById("swipeCatTabs").innerHTML=swipeCatKeys.map((key,i)=>`<button class="swipe-cat-tab ${i===0?'active':''}" onclick="loadSwipeCat(${i})">${catLabels[key]}</button>`).join("");
+
+function initSwipe(){
+  renderSwipeCatTabs();
   loadSwipeCat(0);
 }
-function loadSwipeCat(index) { swipeCatIndex=index; swipeCardIndex=0; document.querySelectorAll(".swipe-cat-tab").forEach((t,i)=>t.classList.toggle("active",i===index)); renderSwipeCards(); }
-function getUnselectedCards() { const catKey=swipeCatKeys[swipeCatIndex],already=catKey==="style"?selectedStyle:selected[catKey]; return getFlatTags(catKey).filter(c=>c.tag!==already); }
-function renderSwipeCards() {
-  const stack=document.getElementById("cardStack"),cards=getUnselectedCards(),remaining=cards.slice(swipeCardIndex,swipeCardIndex+3);
+
+function renderSwipeCatTabs(){
+  const t = i18n[currentLang];
+  document.getElementById("swipeCatTabs").innerHTML = swipeCatKeys.map((key,i)=>{
+    const hasSelection = !!selected[key];
+    return `<button class="swipe-cat-tab ${i===0?'active':''}" id="swipetab-${key}" onclick="loadSwipeCat(${i})">
+      ${catLabels[key]}
+      <span style="font-size:10px;display:block;margin-top:1px;opacity:0.8">${hasSelection?"✅":""}</span>
+    </button>`;
+  }).join("");
+}
+
+function loadSwipeCat(index){
+  swipeCatIndex=index; swipeCardIndex=0;
+  document.querySelectorAll(".swipe-cat-tab").forEach((t,i)=>t.classList.toggle("active",i===index));
+  renderSwipeCards();
+}
+
+function getUnselectedCards(){
+  const catKey=swipeCatKeys[swipeCatIndex];
+  const already=selected[catKey];
+  return getFlatTags(catKey).filter(c=>c.tag!==already);
+}
+
+function renderSwipeCards(){
+  const stack=document.getElementById("cardStack");
+  const catKey=swipeCatKeys[swipeCatIndex];
+  const cards=getUnselectedCards();
+  const remaining=cards.slice(swipeCardIndex,swipeCardIndex+3);
+
   stack.innerHTML="";
-  if(remaining.length===0) { const catKey=swipeCatKeys[swipeCatIndex],current=catKey==="style"?selectedStyle:selected[catKey]; stack.innerHTML=`<div style="text-align:center;padding:60px 0;color:#aaa;font-size:14px">${current?"✅ "+getLabelByTag(current,catKey):"✅ 完了！"}<br>次のカテゴリーへ</div>`; return; }
-  [...remaining].reverse().forEach((card,i) => {
-    const isTop=i===remaining.length-1, div=document.createElement("div");
+
+  if(remaining.length===0){
+    const current=selected[catKey];
+    const currentLabel=current?getLabelByTag(current,catKey):null;
+    stack.innerHTML=`
+      <div style="text-align:center;padding:30px 10px;color:var(--text-muted);font-size:14px;">
+        ${currentLabel
+          ?`<div style="font-size:32px;margin-bottom:8px;">✅</div>
+            <div style="font-weight:700;color:var(--text);font-size:15px;margin-bottom:4px;">${currentLabel}</div>
+            <div style="font-size:12px;">を選択しました</div>`
+          :`<div style="font-size:32px;margin-bottom:8px;">⏭️</div>
+            <div style="font-size:13px;">スキップしました</div>`
+        }
+        <button onclick="moveToNextCat()" style="margin-top:14px;padding:10px 24px;background:linear-gradient(135deg,var(--primary),var(--primary-dark));color:white;border:none;border-radius:20px;font-size:13px;font-weight:600;cursor:pointer;">
+          次のカテゴリーへ →
+        </button>
+      </div>`;
+    // 最後のカテゴリなら完了パネル表示
+    if(swipeCatIndex>=swipeCatKeys.length-1) setTimeout(showSwipeCompletePanel, 400);
+    return;
+  }
+
+  [...remaining].reverse().forEach((card,i)=>{
+    const isTop=i===remaining.length-1;
+    const div=document.createElement("div");
     div.className="swipe-card"+(isTop?" top":"");
     const emoji=card.label.match(/^(\S+)/)?.[1]||"✨";
-    div.innerHTML=`<div class="like-overlay">追加！</div><div class="nope-overlay">スキップ</div><div class="card-emoji">${emoji}</div><div class="card-label">${card.label}</div><div class="card-sublabel">${card.tag.substring(0,28)}</div>`;
+    const labelText=card.label.replace(/^\S+\s*/,"");
+    div.innerHTML=`
+      <div class="like-overlay">追加！</div>
+      <div class="nope-overlay">スキップ</div>
+      <div class="card-emoji">${emoji}</div>
+      <div class="card-label">${labelText||card.label}</div>
+      <div class="card-sublabel">${catLabels[catKey]||""}</div>
+    `;
     if(isTop) setupSwipeDrag(div,card);
     stack.appendChild(div);
   });
 }
-function setupSwipeDrag(el,card) {
+
+function setupSwipeDrag(el,card){
   let startX=0,isDragging=false;
   const onStart=x=>{startX=x;isDragging=true;};
   const onMove=x=>{if(!isDragging)return;const d=x-startX;el.style.transform=`translateX(${d}px) rotate(${d*0.05}deg)`;el.querySelector(".like-overlay").style.opacity=d>30?Math.min(d/100,1):0;el.querySelector(".nope-overlay").style.opacity=d<-30?Math.min(-d/100,1):0;};
-  const onEnd=x=>{if(!isDragging)return;isDragging=false;const d=x-startX;el.style.transform="";el.querySelector(".like-overlay").style.opacity=0;el.querySelector(".nope-overlay").style.opacity=0;if(d>60)doSwipeRight(card);else if(d<-60)doSwipeLeft();};
+  const onEnd=x=>{
+    if(!isDragging)return;isDragging=false;
+    const d=x-startX;
+    el.style.transform="";
+    el.querySelector(".like-overlay").style.opacity=0;
+    el.querySelector(".nope-overlay").style.opacity=0;
+    if(d>60) doSwipeRight(card);
+    else if(d<-60) doSwipeLeft();
+  };
   el.addEventListener("mousedown",e=>onStart(e.clientX));
-  document.addEventListener("mousemove",e=>onMove(e.clientX));
+  document.addEventListener("mousemove",e=>{if(isDragging)onMove(e.clientX);});
   document.addEventListener("mouseup",e=>onEnd(e.clientX));
   el.addEventListener("touchstart",e=>onStart(e.touches[0].clientX),{passive:true});
   el.addEventListener("touchmove",e=>onMove(e.touches[0].clientX),{passive:true});
   el.addEventListener("touchend",e=>onEnd(e.changedTouches[0].clientX));
 }
-function doSwipeLeft() { swipeCardIndex++; if(swipeCardIndex>=getUnselectedCards().length) autoNextCat(); else renderSwipeCards(); }
-function doSwipeRight(card) { const catKey=swipeCatKeys[swipeCatIndex]; if(catKey==="style") selectedStyle=card.tag; else selected[catKey]=card.tag; updateCatTabBadge(catKey); swipeCardIndex++; renderSelectedZone(); autoNextCat(); }
-function autoNextCat() { const next=swipeCatIndex+1; if(next<swipeCatKeys.length) setTimeout(()=>loadSwipeCat(next),300); else renderSwipeCards(); }
-function swipeLeft() { if(swipeCardIndex<getUnselectedCards().length) doSwipeLeft(); }
-function swipeRight() { const c=getUnselectedCards(); if(swipeCardIndex<c.length) doSwipeRight(c[swipeCardIndex]); }
+
+function doSwipeLeft(){
+  swipeCardIndex++;
+  renderSwipeCards();
+}
+
+function doSwipeRight(card){
+  const catKey=swipeCatKeys[swipeCatIndex];
+  selected[catKey]=card.tag;
+  updateCatTabBadge(catKey);
+  updateSwipeCatTabStatus();
+  renderSelectedZone();
+  // 選択したら即座に完了表示（次のカテゴリへボタン）
+  swipeCardIndex=getUnselectedCards().length + 999; // カード切れ状態にする
+  renderSwipeCards();
+}
+
+function skipCurrentCat(){
+  const cards=getUnselectedCards();
+  swipeCardIndex=cards.length; // カード全スキップ
+  renderSwipeCards();
+}
+
+function moveToNextCat(){
+  const next=swipeCatIndex+1;
+  if(next<swipeCatKeys.length){
+    loadSwipeCat(next);
+  } else {
+    showSwipeCompletePanel();
+  }
+}
+
+function showSwipeCompletePanel(){
+  if(document.getElementById("swipeCompletePanel")) return;
+  const t=i18n[currentLang];
+  const panel=document.createElement("div");
+  panel.id="swipeCompletePanel";
+  panel.style.cssText="background:linear-gradient(135deg,var(--primary),var(--primary-dark));color:white;border-radius:16px;padding:20px;text-align:center;margin-top:16px;";
+  const selectedCount=Object.keys(selected).filter(k=>!k.startsWith("other_")).length;
+  const styleLabel=selectedStyle?getLabelByTag(selectedStyle,"style"):"未選択";
+  panel.innerHTML=`
+    <div style="font-size:32px;margin-bottom:8px;">🎉</div>
+    <div style="font-size:16px;font-weight:700;margin-bottom:6px;">${t.swipeComplete||"タグの選択が完了しました！"}</div>
+    <div style="font-size:13px;opacity:0.85;margin-bottom:4px;">選択タグ数：${selectedCount}個</div>
+    <div style="font-size:13px;opacity:0.85;margin-bottom:16px;">スタイル：${styleLabel}</div>
+    <button onclick="generate();document.getElementById('swipeCompletePanel').remove();" style="padding:13px;background:white;color:var(--primary-dark);border:none;border-radius:12px;font-size:15px;font-weight:700;cursor:pointer;box-shadow:0 4px 14px rgba(0,0,0,0.15);width:100%;margin-bottom:8px;">
+      ${t.swipeGenerateBtn||"✨ この内容で生成する"}
+    </button>
+    <button onclick="document.getElementById('swipeCompletePanel').remove();" style="padding:8px;background:transparent;color:rgba(255,255,255,0.75);border:none;font-size:13px;cursor:pointer;width:100%;">
+      ${t.swipeContinueBtn||"続けてタグを選ぶ"}
+    </button>
+  `;
+  document.getElementById("swipeMode").appendChild(panel);
+  panel.scrollIntoView({behavior:"smooth",block:"center"});
+}
+
+function updateSwipeCatTabStatus(){
+  swipeCatKeys.forEach(key=>{
+    const statusEl=document.querySelector(`#swipetab-${key} span`);
+    if(!statusEl)return;
+    statusEl.textContent=selected[key]?"✅":"";
+  });
+}
+
+function swipeLeft(){const c=getUnselectedCards();if(swipeCardIndex<c.length)doSwipeLeft();}
+function swipeRight(){const c=getUnselectedCards();if(swipeCardIndex<c.length)doSwipeRight(c[swipeCardIndex]);}
 
 // ===== モード切替 =====
-function switchMode(mode) {
+function switchMode(mode){
   document.getElementById("dragMode").style.display=mode==="drag"?"block":"none";
   document.getElementById("swipeMode").style.display=mode==="swipe"?"block":"none";
   document.querySelectorAll(".mode-tab").forEach((t,i)=>t.classList.toggle("active",(i===0)===(mode==="drag")));
 }
 
 // ===== ランダム・リセット =====
-function randomGenerate() {
+function randomGenerate(){
   selected={}; selectedStyle="";
   eyesState={mode:"normal",left:"",right:""}; colorState={mode:"normal",col1:"",col2:""}; attrState={base:"",detail:""};
   const pick=arr=>arr[Math.floor(Math.random()*arr.length)];
   ["gender","hair","color","face"].forEach(cat=>{selected[cat]=pick(getFlatTags(cat)).tag;});
-  ["age","body","eyes","attr","outfit","acc","pose","bg"].forEach(cat=>{if(Math.random()>0.5) selected[cat]=pick(getFlatTags(cat)).tag;});
+  ["age","body","skin","eyes","attr","outfit","acc","pose","bg"].forEach(cat=>{if(Math.random()>0.6)selected[cat]=pick(getFlatTags(cat)).tag;});
   selectedStyle=pick(getFlatTags("style")).tag;
-  renderTagList(currentCat,currentSubGroup); updateAllBadges(); renderSelectedZone();
+  renderTagList(currentCat,currentSubGroup); updateAllBadges(); renderSelectedZone(); buildStyleFirst();
 }
-function resetAll() {
+function resetAll(){
   selected={}; selectedStyle="";
   eyesState={mode:"normal",left:"",right:""}; colorState={mode:"normal",col1:"",col2:""}; attrState={base:"",detail:""};
-  renderTagList(currentCat,currentSubGroup); updateAllBadges(); renderSelectedZone();
+  renderTagList(currentCat,currentSubGroup); updateAllBadges(); renderSelectedZone(); buildStyleFirst();
   document.getElementById("resultCard").style.display="none";
   document.getElementById("loading").style.display="none";
   document.getElementById("save-btn").style.display="none";
+  const panel=document.getElementById("swipeCompletePanel");
+  if(panel)panel.remove();
 }
 
 // ===== 生成 =====
-async function generate() {
-  if(!currentUser) { showAuthModal("login"); return; }
+async function generate(){
+  if(!currentUser){showAuthModal("login");return;}
   const today=new Date().toISOString().split("T")[0];
   const {data}=await sb.from("usage").select("count").eq("user_id",currentUser.id).eq("date",today).single();
   const count=data?data.count:0;
-  const limit = userPlan==="pro" ? 20 : (userCredits>0 ? 999 : 3);
-  if(count>=limit && userCredits<=0) {
-    showPlanModal(); return;
-  }
+  const limit=userPlan==="pro"?20:(userCredits>0?999:3);
+  if(count>=limit&&userCredits<=0){showPlanModal();return;}
   if(Object.keys(selected).length===0&&!selectedStyle){alert("タグを選択してください");return;}
 
-  // その他入力（other_*キー）を除いた通常タグ
-  const normalTags = Object.entries(selected)
-    .filter(([k]) => !k.startsWith("other_"))
-    .map(([,v]) => v).join(", ");
+  const normalTags=Object.entries(selected).filter(([k])=>!k.startsWith("other_")).map(([,v])=>v).join(", ");
+  const otherTexts=Object.entries(selected).filter(([k])=>k.startsWith("other_")).map(([,v])=>v);
 
-  // その他入力テキストを収集
-  const otherTexts = Object.entries(selected)
-    .filter(([k]) => k.startsWith("other_"))
-    .map(([,v]) => v);
-
-  // その他入力を翻訳してからプロンプトに追加
-  let translatedOther = "";
-  if (otherTexts.length > 0) {
-    try {
-      const transRes = await fetch(WORKER_URL + "/translate", {
-        method: "POST",
-        headers: {"Content-Type": "application/json"},
-        body: JSON.stringify({texts: otherTexts})
-      });
-      const transData = await transRes.json();
-      translatedOther = transData.translated || otherTexts.join(", ");
-    } catch(e) {
-      translatedOther = otherTexts.join(", ");
-    }
+  let translatedOther="";
+  if(otherTexts.length>0){
+    try{
+      const transRes=await fetch(WORKER_URL+"/translate",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({texts:otherTexts})});
+      const transData=await transRes.json();
+      translatedOther=transData.translated||otherTexts.join(", ");
+    }catch(e){translatedOther=otherTexts.join(", ");}
   }
 
-  const tags = [normalTags, translatedOther].filter(Boolean).join(", ");
+  const tags=[normalTags,translatedOther].filter(Boolean).join(", ");
   const style=selectedStyle||"anime style";
   const workerUrl=WORKER_URL+"/?prompt="+encodeURIComponent(tags)+"&style="+encodeURIComponent(style);
 
   document.getElementById("loading").style.display="block";
   document.getElementById("resultCard").style.display="none";
 
-  try {
+  try{
     const res=await fetch(workerUrl);
     const json=await res.json();
     const storageUrl=json.url;
-    if(!storageUrl) throw new Error("URLが取得できませんでした");
+    if(!storageUrl)throw new Error("URLが取得できませんでした");
 
-    if(data) await sb.from("usage").update({count:count+1}).eq("user_id",currentUser.id).eq("date",today);
+    if(data)await sb.from("usage").update({count:count+1}).eq("user_id",currentUser.id).eq("date",today);
     else await sb.from("usage").insert({user_id:currentUser.id,date:today,count:1});
 
     const remaining=limit-count-1;
@@ -1931,38 +1621,36 @@ async function generate() {
     };
     img.onerror=()=>{document.getElementById("loading").style.display="none";alert("画像表示に失敗しました。");};
     img.src=storageUrl;
-  } catch(e) {
+  }catch(e){
     document.getElementById("loading").style.display="none";
     alert("生成に失敗しました。\n詳細: "+e.message);
   }
 }
 
-function saveImage() { const a=document.createElement("a"); a.href=document.getElementById("img").src; a.download="icon.jpg"; a.click(); }
+function saveImage(){const a=document.createElement("a");a.href=document.getElementById("img").src;a.download="icon.jpg";a.click();}
 
 // ===== 認証 =====
-async function login() {
-  const email=document.getElementById("loginEmail").value;
-  const pass=document.getElementById("loginPass").value;
+async function login(){
+  const email=document.getElementById("loginEmail").value,pass=document.getElementById("loginPass").value;
   const {error}=await sb.auth.signInWithPassword({email,password:pass});
-  if(error) { document.getElementById("authMsg").innerText="ログイン失敗: "+error.message; }
+  if(error){document.getElementById("authMsg").innerText="ログイン失敗: "+error.message;}
   else hideAuthModal();
 }
-async function signup() {
-  const email=document.getElementById("signupEmail").value;
-  const pass=document.getElementById("signupPass").value;
+async function signup(){
+  const email=document.getElementById("signupEmail").value,pass=document.getElementById("signupPass").value;
   const {error}=await sb.auth.signUp({email,password:pass});
-  if(error) { document.getElementById("authMsg").innerText="登録失敗: "+error.message; }
-  else { document.getElementById("authMsg").style.color="#4caf50"; document.getElementById("authMsg").innerText="✅ 確認メールを送りました！メールを確認してください。"; }
+  if(error){document.getElementById("authMsg").innerText="登録失敗: "+error.message;}
+  else{document.getElementById("authMsg").style.color="#4caf50";document.getElementById("authMsg").innerText="✅ 確認メールを送りました！";}
 }
-async function logout() { await sb.auth.signOut(); currentUser=null; userPlan="free"; userCredits=0; updateAuthUI(); }
+async function logout(){await sb.auth.signOut();currentUser=null;userPlan="free";userCredits=0;updateAuthUI();}
 
-function updateAuthUI() {
-  if(currentUser) {
+function updateAuthUI(){
+  if(currentUser){
     document.getElementById("authArea").style.display="none";
     document.getElementById("userInfo").style.display="flex";
     document.getElementById("userEmail").textContent=currentUser.email;
     loadUserPlan();
-  } else {
+  }else{
     document.getElementById("authArea").style.display="flex";
     document.getElementById("userInfo").style.display="none";
     document.getElementById("countText").innerText="本日の残り回数：3回（ログイン後）";
@@ -1970,48 +1658,32 @@ function updateAuthUI() {
   }
 }
 
-async function loadUserPlan() {
-  try {
+async function loadUserPlan(){
+  try{
     const res=await fetch(WORKER_URL+"/check-plan",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({userId:currentUser.id})});
     const data=await res.json();
-    userPlan=data.plan||"free";
-    userCredits=data.credits||0;
-  } catch(e) { userPlan="free"; userCredits=0; }
-
-  // バッジ表示
+    userPlan=data.plan||"free"; userCredits=data.credits||0;
+  }catch(e){userPlan="free";userCredits=0;}
   const badge=document.getElementById("planBadge");
-  if(userPlan==="pro") { badge.textContent="PRO ⭐"; badge.className="plan-badge pro"; }
-  else { badge.textContent="FREE"; badge.className="plan-badge"; }
-
-  // アップグレードボタン（Proならキャンセル案内に変更）
+  if(userPlan==="pro"){badge.textContent="PRO ⭐";badge.className="plan-badge pro";}
+  else{badge.textContent="FREE";badge.className="plan-badge";}
   const upgradeBtn=document.querySelector("#userInfo .hbtn");
-  if(userPlan==="pro") upgradeBtn.textContent="✅ Pro会員";
-
-  buildStyleFirst();
-  renderTagList(currentCat, currentSubGroup);
-  loadCount();
+  if(userPlan==="pro")upgradeBtn.textContent="✅ Pro会員";
+  buildStyleFirst(); renderTagList(currentCat,currentSubGroup); loadCount();
 }
 
-async function loadCount() {
+async function loadCount(){
   const today=new Date().toISOString().split("T")[0];
   const {data}=await sb.from("usage").select("count").eq("user_id",currentUser.id).eq("date",today).single();
-  const count=data?data.count:0;
-  const limit=userPlan==="pro"?20:3;
-  const remaining=Math.max(0,limit-count);
+  const count=data?data.count:0,limit=userPlan==="pro"?20:3,remaining=Math.max(0,limit-count);
   let text=`本日の残り回数：${remaining}回`;
-  if(userCredits>0) text+=`（クレジット：${userCredits}回）`;
+  if(userCredits>0)text+=`（クレジット：${userCredits}回）`;
   document.getElementById("countText").innerText=text;
   document.getElementById("countTextSwipe").innerText=text;
 }
 
-// ===== Supabase認証イベント =====
-sb.auth.getSession().then(({data})=>{
-  if(data.session){currentUser=data.session.user;updateAuthUI();}
-});
-sb.auth.onAuthStateChange((event,session)=>{
-  currentUser=session?session.user:null;
-  updateAuthUI();
-});
+sb.auth.getSession().then(({data})=>{if(data.session){currentUser=data.session.user;updateAuthUI();}});
+sb.auth.onAuthStateChange((event,session)=>{currentUser=session?session.user:null;updateAuthUI();});
 
 init();
 </script>
