@@ -174,7 +174,28 @@
     .btn-sub:hover { background: #e8eaf6; border-color: var(--primary); color: var(--primary-dark); }
 
     .result-section { margin-top: 16px; }
-    #loading { display: none; text-align: center; padding: 24px; color: var(--primary); font-size: 14px; font-weight: 600; }
+    #loading { display: none; text-align: center; padding: 20px 24px 0; color: var(--primary); font-size: 14px; font-weight: 600; }
+    .loading-ad-area {
+      margin: 16px auto 0; max-width: 600px;
+      background: white; border-radius: 12px;
+      padding: 14px; box-shadow: var(--shadow);
+      text-align: center;
+    }
+    .loading-ad-label {
+      font-size: 10px; color: var(--text-muted); margin-bottom: 8px;
+      text-transform: uppercase; letter-spacing: 0.8px;
+    }
+    .loading-progress {
+      width: 100%; height: 4px; background: #eee;
+      border-radius: 2px; margin: 12px 0 0; overflow: hidden;
+    }
+    .loading-progress-bar {
+      height: 100%; width: 0%;
+      background: linear-gradient(90deg, var(--primary), var(--primary-dark));
+      border-radius: 2px;
+      animation: loadingProgress 28s linear forwards;
+    }
+    @keyframes loadingProgress { from{width:0%} to{width:95%} }
     .result-card { display: none; background: var(--card); border-radius: var(--radius); box-shadow: var(--shadow); padding: 16px; text-align: center; }
     .result-card img { width: 100%; max-width: 320px; border-radius: 12px; box-shadow: 0 4px 20px rgba(0,0,0,0.12); }
     #save-btn { display: none; margin-top: 14px; padding: 11px 28px; background: linear-gradient(135deg, #43e97b, #38f9d7); color: white; border: none; border-radius: 10px; font-size: 14px; font-weight: 700; cursor: pointer; transition: all 0.2s; }
@@ -237,6 +258,7 @@
       <span id="userEmail"></span>
       <span class="plan-badge" id="planBadge">FREE</span>
       <button class="hbtn" onclick="showPlanModal()" id="btnUpgrade">⭐ アップグレード</button>
+      <button class="hbtn" onclick="showCancelModal()" id="btnCancel" style="display:none;background:rgba(255,100,100,0.35);">解約</button>
       <button class="hbtn" onclick="location.href='history.html'" id="btnHistory">📷 履歴</button>
       <button class="hbtn" onclick="logout()" id="btnLogout">ログアウト</button>
     </div>
@@ -312,6 +334,32 @@
       <div class="plan-features">✔ 10回分の生成クレジット<br>✔ 有効期限なし<br>✔ 何度でも購入可能</div>
       <button class="plan-btn credit-btn" onclick="startCheckout('payment')">10回分を購入（¥150）→</button>
     </div>
+  </div>
+</div>
+
+<!-- 解約確認モーダル -->
+<div class="modal-overlay" id="cancelModal">
+  <div class="modal-box" style="max-width:360px;">
+    <button class="modal-close" onclick="hideCancelModal()">×</button>
+    <div class="modal-logo">⚠️</div>
+    <h2 class="modal-title" style="font-size:18px;">Proプランを解約する</h2>
+    <div id="cancelTestSection" style="display:none;background:#fff3cd;border:1.5px solid #ffc107;border-radius:10px;padding:10px;margin-bottom:14px;font-size:12px;color:#856404;text-align:center;">
+      🔧 <strong>テストモード</strong>：即時停止が有効です
+    </div>
+    <p style="font-size:13px;color:#666;line-height:1.7;margin-bottom:16px;text-align:center;">
+      解約すると、<strong>現在の請求期間終了時</strong>にProプランが終了します。<br>
+      それまでは引き続きPro機能をご利用いただけます。
+    </p>
+    <button onclick="cancelSubscription('period_end')" style="width:100%;padding:13px;background:#f44336;color:white;border:none;border-radius:12px;font-size:14px;font-weight:700;cursor:pointer;margin-bottom:8px;">
+      解約する（期間末に停止）
+    </button>
+    <button id="cancelImmediateBtn" onclick="cancelSubscription('immediate')" style="display:none;width:100%;padding:13px;background:#333;color:white;border:none;border-radius:12px;font-size:14px;font-weight:700;cursor:pointer;margin-bottom:8px;">
+      🔧 即時停止（テスト用）
+    </button>
+    <button onclick="hideCancelModal()" style="width:100%;padding:10px;background:transparent;color:#999;border:none;font-size:13px;cursor:pointer;">
+      キャンセル（解約しない）
+    </button>
+    <p id="cancelMsg" style="text-align:center;color:#e44;font-size:13px;margin-top:8px;min-height:18px;"></p>
   </div>
 </div>
 
@@ -391,20 +439,27 @@
   </div>
 
   <div class="result-section">
-    <div id="loading">⏳ 生成中...（20〜30秒かかります）</div>
+    <div id="loading">
+      ⏳ 生成中...（20〜30秒かかります）
+      <div class="loading-ad-area">
+        <div class="loading-ad-label">スポンサー広告</div>
+        <!-- 忍者AdMax 広告コード（登録後にここに貼る） -->
+        <!-- 例: <script src="https://adm.shinobi.jp/s/YOUR_AD_CODE"></script> -->
+        <div id="ninjaAdPlaceholder" style="min-height:90px;background:#f8f9ff;border-radius:8px;display:flex;align-items:center;justify-content:center;color:#ccc;font-size:12px;">
+          広告スペース（忍者AdMax）
+        </div>
+        <div class="loading-progress"><div class="loading-progress-bar" id="loadingBar"></div></div>
+      </div>
+    </div>
     <div class="result-card" id="resultCard">
       <img id="img"><br>
       <button id="save-btn" onclick="saveImage()">💾 画像を保存する</button>
-      
     </div>
   </div>
 </div>
 
 <!-- A-ads 広告エリア（フッター上） -->
 <div style="text-align:center;padding:16px;background:white;border-top:1px solid var(--border);">
-  <!-- admax -->
-<script src="https://adm.shinobi.jp/s/47de0638480aa59d661cdf143b5a9a60"></script>
-<!-- admax -->
   <!-- A-ads のコードをここに貼る -->
   <!-- <iframe data-aa="YOUR_ID" src="//ad.a-ads.com/YOUR_ID?size=728x90" style="width:728px;max-width:100%;height:90px;border:0;"></iframe> -->
 </div>
@@ -1155,10 +1210,50 @@ function showPlanModal() {
 }
 function hidePlanModal() { document.getElementById("planModal").classList.remove("show"); }
 
+function showCancelModal(){
+  document.getElementById("cancelModal").classList.add("show");
+  document.getElementById("cancelMsg").innerText="";
+  // テストモード判定（Stripeテストキー使用中 or URLにtest=1がある場合）
+  const isTestMode = PRICE_PRO.startsWith("price_test_") || location.search.includes("test=1") || location.hostname==="localhost" || location.hostname.includes("127.0.0.1");
+  document.getElementById("cancelTestSection").style.display = isTestMode ? "block" : "none";
+  document.getElementById("cancelImmediateBtn").style.display = isTestMode ? "block" : "none";
+}
+function hideCancelModal(){ document.getElementById("cancelModal").classList.remove("show"); }
+document.getElementById("cancelModal").addEventListener("click",function(e){if(e.target===this)hideCancelModal();});
+
+async function cancelSubscription(mode){
+  if(!currentUser){return;}
+  document.getElementById("cancelMsg").innerText="処理中...";
+  try{
+    const res=await fetch(WORKER_URL+"/cancel-subscription",{
+      method:"POST",
+      headers:{"Content-Type":"application/json"},
+      body:JSON.stringify({userId:currentUser.id,mode})
+    });
+    const data=await res.json();
+    if(data.success){
+      if(mode==="immediate"){
+        userPlan="free";
+        document.getElementById("cancelMsg").style.color="#4caf50";
+        document.getElementById("cancelMsg").innerText="✅ 即時停止しました。FREEプランに切り替わりました。";
+        setTimeout(()=>{hideCancelModal();updateAuthUI();buildStyleFirst();renderTagList(currentCat,currentSubGroup);},2000);
+      }else{
+        document.getElementById("cancelMsg").style.color="#4caf50";
+        document.getElementById("cancelMsg").innerText="✅ 解約受付しました。期間末にFREEプランへ移行します。";
+        setTimeout(()=>hideCancelModal(),3000);
+      }
+    }else{
+      document.getElementById("cancelMsg").style.color="#e44";
+      document.getElementById("cancelMsg").innerText="エラー: "+(data.error||"解約処理に失敗しました");
+    }
+  }catch(e){
+    document.getElementById("cancelMsg").style.color="#e44";
+    document.getElementById("cancelMsg").innerText="通信エラー: "+e.message;
+  }
+}
+
 document.getElementById("authModal").addEventListener("click", function(e){ if(e.target===this) hideAuthModal(); });
 document.getElementById("planModal").addEventListener("click", function(e){ if(e.target===this) hidePlanModal(); });
-
-// ===== Stripe決済 =====
 async function startCheckout(mode) {
   if (!currentUser) { hidePlanModal(); showAuthModal("signup"); return; }
   const priceId = mode==="subscription"?PRICE_PRO:PRICE_CREDIT;
@@ -1600,6 +1695,9 @@ async function generate(){
 
   document.getElementById("loading").style.display="block";
   document.getElementById("resultCard").style.display="none";
+  // プログレスバーをリセットしてアニメーション再起動
+  const bar=document.getElementById("loadingBar");
+  if(bar){bar.style.animation="none";bar.offsetHeight;bar.style.animation="loadingProgress 28s linear forwards";}
 
   try{
     const res=await fetch(workerUrl);
@@ -1671,8 +1769,15 @@ async function loadUserPlan(){
   const badge=document.getElementById("planBadge");
   if(userPlan==="pro"){badge.textContent="PRO ⭐";badge.className="plan-badge pro";}
   else{badge.textContent="FREE";badge.className="plan-badge";}
-  const upgradeBtn=document.querySelector("#userInfo .hbtn");
-  if(userPlan==="pro")upgradeBtn.textContent="✅ Pro会員";
+  const upgradeBtn=document.getElementById("btnUpgrade");
+  const cancelBtn=document.getElementById("btnCancel");
+  if(userPlan==="pro"){
+    if(upgradeBtn)upgradeBtn.textContent="✅ Pro会員";
+    if(cancelBtn)cancelBtn.style.display="inline-block";
+  }else{
+    if(upgradeBtn)upgradeBtn.textContent="⭐ アップグレード";
+    if(cancelBtn)cancelBtn.style.display="none";
+  }
   buildStyleFirst(); renderTagList(currentCat,currentSubGroup); loadCount();
 }
 
