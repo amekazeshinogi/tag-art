@@ -1811,5 +1811,28 @@ sb.auth.onAuthStateChange((event,session)=>{currentUser=session?session.user:nul
 
 init();
 </script>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+<script>
+const supabase = window.supabase.createClient(
+  "https://eoademoyfyopqfnljhyf.supabase.co",
+  "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImVvYWRlbW95ZnlvcHFmbmxqaHlmIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzM0OTIyODIsImV4cCI6MjA4OTA2ODI4Mn0.EXk-W1fcaZ8g_b2avAjMIzOJhszdAUWssbivZhCyPFs"
+);
+
+// テスト投稿
+async function testInsert() {
+  const { error } = await supabase
+    .from("posts")
+    .insert([{ content: "テスト投稿です" }]);
+
+  if (error) {
+    alert("エラー: " + error.message);
+  } else {
+    alert("投稿成功！");
+  }
+}
+</script>
+
+<button onclick="testInsert()">テスト投稿</button>
 </body>
 </html>
