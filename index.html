@@ -2005,6 +2005,19 @@ setInterval(async () => {
 }, 2000);
 
 </script>
+<script>
+/* サイドバーの開閉 */
+function toggleSidebar() {
+  const sb = document.getElementById("sidebar");
+  sb.classList.toggle("open");
+}
+
+/* 言語ドロップダウンの開閉 */
+function toggleLangDropdown() {
+  const dd = document.getElementById("langDropdown");
+  dd.style.display = dd.style.display === "block" ? "none" : "block";
+}
+</script>
 
 </body>
 </html>
