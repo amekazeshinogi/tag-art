@@ -54,54 +54,92 @@ body {
   box-shadow: 0 2px 12px rgba(102,126,234,0.3);
 }
 
-/* ===== サイドバー（PC） ===== */
-.sidebar {
+/* ===== Copilot風サイドバー ===== */
+.sidebar-modern {
   position: fixed;
   left: 0;
   top: 0;
-  width: 180px;
+  width: 210px;
   height: 100vh;
-  background: #ffffff;
-  border-right: 1px solid #ddd;
-  padding: 20px 10px;
+  background: #ffffffcc; /* 半透明で上品 */
+  backdrop-filter: blur(14px);
+  border-right: 1px solid rgba(0,0,0,0.05);
+  padding: 22px 16px;
   display: flex;
   flex-direction: column;
-  gap: 10px;
+  gap: 20px;
   z-index: 200;
   transition: left 0.3s ease;
+  box-shadow: 4px 0 20px rgba(0,0,0,0.05);
 }
 
-.sidebar-logo {
-  font-size: 22px;
-  font-weight: bold;
-  margin-bottom: 20px;
+/* ロゴ部分 */
+.sb-header {
+  display: flex;
+  align-items: center;
+  gap: 10px;
   cursor: pointer;
+}
+.sb-logo {
+  font-size: 24px;
+}
+.sb-title {
+  font-size: 20px;
+  font-weight: 700;
   color: #333;
 }
 
-.sidebtn {
+/* メニュー */
+.sb-menu {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.sb-item {
   width: 100%;
-  padding: 10px 12px;
+  padding: 12px 14px;
   border: none;
-  border-radius: 8px;
-  background: #f3f3f3;
+  border-radius: 10px;
+  background: #ffffff;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.05);
   cursor: pointer;
   text-align: left;
-  font-size: 14px;
+  font-size: 15px;
   transition: 0.2s;
 }
-.sidebtn:hover { background: #e7e7e7; }
 
-.sidebar-bottom { margin-top: auto; }
-
-.sidebtn.logout {
-  background: rgba(255, 100, 100, 0.2);
-}
-.sidebtn.logout:hover {
-  background: rgba(255, 100, 100, 0.35);
+.sb-item:hover {
+  background: #f7f7f7;
+  transform: translateX(4px);
 }
 
-/* ===== ハンバーガーメニュー（スマホ） ===== */
+/* フッター */
+.sb-footer {
+  margin-top: auto;
+}
+
+.sb-item.logout {
+  background: rgba(255, 80, 80, 0.15);
+}
+.sb-item.logout:hover {
+  background: rgba(255, 80, 80, 0.25);
+}
+
+/* ===== スマホ対応 ===== */
+@media (max-width: 768px) {
+  .sidebar-modern {
+    left: -240px;
+  }
+  .sidebar-modern.open {
+    left: 0;
+  }
+  body {
+    margin-left: 0;
+  }
+}
+
+/* ハンバーガー */
 .hamburger {
   display: none;
   font-size: 28px;
@@ -115,35 +153,10 @@ body {
   color: #fff;
   border-radius: 6px;
 }
-
-/* ===== スマホ対応 ===== */
 @media (max-width: 768px) {
-
-  /* サイドバーを隠す */
-  .sidebar {
-    left: -200px;
-  }
-  .sidebar.open {
-    left: 0;
-  }
-
-  /* ハンバーガー表示 */
-  .hamburger {
-    display: block;
-  }
-
-  /* メインコンテンツを全幅に */
-  body {
-    margin-left: 0;
-  }
-
-  /* ヘッダー調整 */
-  .header {
-    flex-direction: column;
-    align-items: flex-start;
-    gap: 10px;
-  }
+  .hamburger { display: block; }
 }
+
     
     /* 広告バナーエリア */
     #adBanner {
@@ -339,23 +352,26 @@ body {
   </style>
 </head>
 <body>
-<!-- ハンバーガーメニュー（スマホ表示） -->
-<div class="hamburger" onclick="toggleSidebar()">
-  ☰
-</div>
+<!-- ハンバーガーメニュー（スマホ） -->
+<div class="hamburger" onclick="toggleSidebar()">☰</div>
 
-<!-- サイドバー（白背景・統一版） -->
-<div id="sidebar" class="sidebar">
-  <div class="sidebar-logo" onclick="location.href='index.html'">tag-art</div>
+<!-- Copilot風サイドバー -->
+<div id="sidebar" class="sidebar-modern">
+  <div class="sb-header" onclick="location.href='index.html'">
+    <div class="sb-logo">✨</div>
+    <div class="sb-title">tag-art</div>
+  </div>
 
-  <button class="sidebtn" onclick="location.href='index.html'">🏠 作成</button>
-  <button class="sidebtn" onclick="location.href='gallery.html'">🖼 ギャラリー</button>
-  <button class="sidebtn" onclick="location.href='history.html'">📷 履歴</button>
-  <button class="sidebtn" onclick="showPlanModal()">⭐ プラン</button>
-  <button class="sidebtn" onclick="location.href='settings.html'">⚙️ 設定</button>
+  <div class="sb-menu">
+    <button class="sb-item" onclick="location.href='index.html'">🏠 作成</button>
+    <button class="sb-item" onclick="location.href='gallery.html'">🖼 ギャラリー</button>
+    <button class="sb-item" onclick="location.href='history.html'">📷 履歴</button>
+    <button class="sb-item" onclick="showPlanModal()">⭐ プラン</button>
+    <button class="sb-item" onclick="location.href='settings.html'">⚙️ 設定</button>
+  </div>
 
-  <div class="sidebar-bottom">
-    <button class="sidebtn logout" onclick="logout()">🚪 ログアウト</button>
+  <div class="sb-footer">
+    <button class="sb-item logout" onclick="logout()">🚪 ログアウト</button>
   </div>
 </div>
 
