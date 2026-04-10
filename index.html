@@ -52,7 +52,65 @@
     #userEmail { font-size: 11px; opacity: 0.85; max-width: 120px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
     .plan-badge { font-size: 10px; font-weight: 700; padding: 3px 8px; border-radius: 8px; background: rgba(255,255,255,0.25); }
     .plan-badge.pro { background: linear-gradient(135deg,#ffd700,#ff9800); color: #333; }
+    
+/* ===== サイドバー ===== */
+.sidebar {
+  position: fixed;
+  left: 0;
+  top: 0;
+  width: 180px;
+  height: 100vh;
+  background: #ffffff;
+  border-right: 1px solid #ddd;
+  padding: 20px 10px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  z-index: 200;
+}
 
+.sidebar-logo {
+  font-size: 22px;
+  font-weight: bold;
+  margin-bottom: 20px;
+  cursor: pointer;
+  color: #333;
+}
+
+.sidebtn {
+  width: 100%;
+  padding: 10px 12px;
+  border: none;
+  border-radius: 8px;
+  background: #f3f3f3;
+  cursor: pointer;
+  text-align: left;
+  font-size: 14px;
+  transition: 0.2s;
+}
+
+.sidebtn:hover {
+  background: #e7e7e7;
+}
+
+.sidebar-bottom {
+  margin-top: auto;
+}
+
+.sidebtn.logout {
+  background: rgba(255, 100, 100, 0.2);
+}
+
+.sidebtn.logout:hover {
+  background: rgba(255, 100, 100, 0.35);
+}
+
+/* ===== メインコンテンツを右にずらす ===== */
+body {
+  margin-left: 190px;
+}
+
+    
     /* 広告バナーエリア */
     #adBanner {
   text-align: center; padding: 4px 0;
@@ -247,6 +305,19 @@
   </style>
 </head>
 <body>
+<div class="sidebar">
+  <div class="sidebar-logo" onclick="location.href='index.html'">tag-art</div>
+
+  <button class="sidebtn" onclick="location.href='index.html'">🏠 作成</button>
+  <button class="sidebtn" onclick="location.href='gallery.html'">🖼 ギャラリー</button>
+  <button class="sidebtn" onclick="location.href='history.html'">📷 履歴</button>
+  <button class="sidebtn" onclick="showPlanModal()">⭐ プラン</button>
+  <button class="sidebtn" onclick="location.href='settings.html'">⚙️ 設定</button>
+
+  <div class="sidebar-bottom">
+    <button class="sidebtn logout" onclick="logout()">🚪 ログアウト</button>
+  </div>
+</div>
 
 <div class="header">
   <a href="index.html" class="logo">tag-art</a>
