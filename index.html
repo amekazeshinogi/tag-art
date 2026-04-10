@@ -40,7 +40,7 @@ body {
   margin-left: 190px; /* PC時のサイドバー分 */
 }
 
-/* ===== ヘッダー ===== */
+/* ===== ヘッダー（元のデザインを復元） ===== */
 .header {
   background: linear-gradient(135deg, var(--primary), var(--primary-dark));
   color: white;
@@ -50,9 +50,69 @@ body {
   justify-content: space-between;
   position: sticky;
   top: 0;
-  z-index: 100;
+  z-index: 500; /* ← サイドバーより上にする */
   box-shadow: 0 2px 12px rgba(102,126,234,0.3);
 }
+
+.logo {
+  font-size: 20px;
+  font-weight: 800;
+  letter-spacing: -0.5px;
+  color: white;
+  text-decoration: none;
+}
+
+#headerSub {
+  font-size: 14px;
+  opacity: 0.8;
+  margin-left: 6px;
+}
+
+/* 言語ドロップダウンが隠れないように */
+#langDropdown {
+  z-index: 9999 !important;
+}
+
+/* ===== サイドバー（Copilot風） ===== */
+.sidebar-modern {
+  position: fixed;
+  left: 0;
+  top: 0;
+  width: 210px;
+  height: 100vh;
+  background: #ffffffcc;
+  backdrop-filter: blur(14px);
+  border-right: 1px solid rgba(0,0,0,0.05);
+  padding: 22px 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  z-index: 300; /* ← ヘッダーより下にする */
+  transition: left 0.3s ease;
+  box-shadow: 4px 0 20px rgba(0,0,0,0.05);
+}
+
+/* PC時のレイアウト調整 */
+body {
+  margin-left: 210px;
+}
+
+/* ===== スマホ対応 ===== */
+@media (max-width: 768px) {
+  .sidebar-modern {
+    left: -240px;
+  }
+  .sidebar-modern.open {
+    left: 0;
+  }
+  body {
+    margin-left: 0;
+  }
+  .hamburger {
+    display: block;
+  }
+}
+
 
 /* ===== Copilot風サイドバー ===== */
 .sidebar-modern {
