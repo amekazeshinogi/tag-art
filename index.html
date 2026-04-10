@@ -25,60 +25,80 @@
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   
   <style>
-  /* ===== 基本リセット ===== */
-* { box-sizing: border-box; margin: 0; padding: 0; }
-:root {
-  --primary: #667eea; --primary-dark: #764ba2; --accent: #ff9800;
-  --bg: #f4f6fb; --card: #ffffff; --text: #333; --text-muted: #999;
-  --border: #e0e4ed; --shadow: 0 2px 12px rgba(102,126,234,0.10); --radius: 14px;
-}
+/* ===== 基本 ===== */
 body {
-  font-family: -apple-system, BlinkMacSystemFont, 'Hiragino Sans', sans-serif;
+  margin: 0;
   background: var(--bg);
+  font-family: -apple-system, BlinkMacSystemFont, 'Hiragino Sans', sans-serif;
   color: var(--text);
-  min-height: 100vh;
-  margin-left: 190px; /* PC時のサイドバー分 */
+  margin-left: 220px; /* PC時のサイドバー分 */
 }
 
-/* ===== ヘッダー（元のデザインを復元） ===== */
+/* ===== ヘッダー ===== */
 .header {
   background: linear-gradient(135deg, var(--primary), var(--primary-dark));
   color: white;
   padding: 12px 16px;
   display: flex;
   align-items: center;
-  justify-content: space-between;
+  gap: 10px;
   position: sticky;
   top: 0;
-  z-index: 500; /* ← サイドバーより上にする */
+  z-index: 500; /* ← サイドバーより上 */
   box-shadow: 0 2px 12px rgba(102,126,234,0.3);
 }
 
 .logo {
   font-size: 20px;
   font-weight: 800;
-  letter-spacing: -0.5px;
   color: white;
   text-decoration: none;
 }
 
-#headerSub {
-  font-size: 14px;
-  opacity: 0.8;
-  margin-left: 6px;
+.header-btns-wrapper {
+  margin-left: auto;
+  display: flex;
+  align-items: center;
+  gap: 10px;
 }
 
-/* 言語ドロップダウンが隠れないように */
-#langDropdown {
-  z-index: 9999 !important;
+.hbtn {
+  padding: 6px 14px;
+  border-radius: 8px;
+  border: none;
+  font-size: 12px;
+  font-weight: 600;
+  cursor: pointer;
+  background: rgba(255,255,255,0.25);
+  color: white;
+  transition: 0.2s;
+}
+.hbtn:hover {
+  background: rgba(255,255,255,0.4);
 }
 
-/* ===== サイドバー（Copilot風） ===== */
+/* ===== 言語ドロップダウン ===== */
+.lang-wrapper {
+  position: relative;
+}
+.lang-dropdown {
+  display: none;
+  position: absolute;
+  right: 0;
+  top: 36px;
+  background: white;
+  border-radius: 10px;
+  box-shadow: 0 4px 20px rgba(0,0,0,0.15);
+  z-index: 9999; /* ← 最前面に */
+  overflow: hidden;
+}
+
+/* ===== Copilot風サイドバー ===== */
 .sidebar-modern {
   position: fixed;
   left: 0;
   top: 0;
-  width: 210px;
+  width: 220px;
   height: 100vh;
   background: #ffffffcc;
   backdrop-filter: blur(14px);
@@ -87,69 +107,23 @@ body {
   display: flex;
   flex-direction: column;
   gap: 20px;
-  z-index: 300; /* ← ヘッダーより下にする */
+  z-index: 300;
   transition: left 0.3s ease;
   box-shadow: 4px 0 20px rgba(0,0,0,0.05);
 }
 
-/* PC時のレイアウト調整 */
-body {
-  margin-left: 210px;
-}
-
-/* ===== スマホ対応 ===== */
-@media (max-width: 768px) {
-  .sidebar-modern {
-    left: -240px;
-  }
-  .sidebar-modern.open {
-    left: 0;
-  }
-  body {
-    margin-left: 0;
-  }
-  .hamburger {
-    display: block;
-  }
-}
-
-
-/* ===== Copilot風サイドバー ===== */
-.sidebar-modern {
-  position: fixed;
-  left: 0;
-  top: 0;
-  width: 210px;
-  height: 100vh;
-  background: #ffffffcc; /* 半透明で上品 */
-  backdrop-filter: blur(14px);
-  border-right: 1px solid rgba(0,0,0,0.05);
-  padding: 22px 16px;
-  display: flex;
-  flex-direction: column;
-  gap: 20px;
-  z-index: 200;
-  transition: left 0.3s ease;
-  box-shadow: 4px 0 20px rgba(0,0,0,0.05);
-}
-
-/* ロゴ部分 */
 .sb-header {
   display: flex;
   align-items: center;
   gap: 10px;
   cursor: pointer;
 }
-.sb-logo {
-  font-size: 24px;
-}
+
 .sb-title {
   font-size: 20px;
   font-weight: 700;
-  color: #333;
 }
 
-/* メニュー */
 .sb-menu {
   display: flex;
   flex-direction: column;
@@ -168,13 +142,11 @@ body {
   font-size: 15px;
   transition: 0.2s;
 }
-
 .sb-item:hover {
   background: #f7f7f7;
   transform: translateX(4px);
 }
 
-/* フッター */
 .sb-footer {
   margin-top: auto;
 }
@@ -186,20 +158,7 @@ body {
   background: rgba(255, 80, 80, 0.25);
 }
 
-/* ===== スマホ対応 ===== */
-@media (max-width: 768px) {
-  .sidebar-modern {
-    left: -240px;
-  }
-  .sidebar-modern.open {
-    left: 0;
-  }
-  body {
-    margin-left: 0;
-  }
-}
-
-/* ハンバーガー */
+/* ===== ハンバーガー ===== */
 .hamburger {
   display: none;
   font-size: 28px;
@@ -208,14 +167,28 @@ body {
   position: fixed;
   top: 10px;
   left: 10px;
-  z-index: 300;
+  z-index: 600;
   background: #222;
   color: #fff;
   border-radius: 6px;
 }
+
+/* ===== スマホ対応 ===== */
 @media (max-width: 768px) {
-  .hamburger { display: block; }
+  body {
+    margin-left: 0;
+  }
+  .sidebar-modern {
+    left: -240px;
+  }
+  .sidebar-modern.open {
+    left: 0;
+  }
+  .hamburger {
+    display: block;
+  }
 }
+
 
     
     /* 広告バナーエリア */
@@ -415,7 +388,7 @@ body {
 <!-- ハンバーガーメニュー（スマホ） -->
 <div class="hamburger" onclick="toggleSidebar()">☰</div>
 
-<!-- Copilot風サイドバー -->
+<!-- Copilot風サイドバー（プラン表示なし） -->
 <div id="sidebar" class="sidebar-modern">
   <div class="sb-header" onclick="location.href='index.html'">
     <div class="sb-logo">✨</div>
@@ -426,7 +399,6 @@ body {
     <button class="sb-item" onclick="location.href='index.html'">🏠 作成</button>
     <button class="sb-item" onclick="location.href='gallery.html'">🖼 ギャラリー</button>
     <button class="sb-item" onclick="location.href='history.html'">📷 履歴</button>
-    <button class="sb-item" onclick="showPlanModal()">⭐ プラン</button>
     <button class="sb-item" onclick="location.href='settings.html'">⚙️ 設定</button>
   </div>
 
@@ -435,11 +407,12 @@ body {
   </div>
 </div>
 
+<!-- ヘッダー -->
 <div class="header">
   <a href="index.html" class="logo">tag-art</a>
   <span id="headerSub">キャラ作成</span>
 
-  <div style="display:flex;align-items:center;gap:6px;flex-wrap:wrap;">
+  <div class="header-btns-wrapper">
     <div class="header-btns" id="authArea">
       <button class="hbtn" onclick="showAuthModal('login')" id="btnLogin">ログイン</button>
       <button class="hbtn signup" onclick="showAuthModal('signup')" id="btnSignup">✨ 無料登録</button>
@@ -447,25 +420,21 @@ body {
 
     <div class="header-btns" id="userInfo" style="display:none;">
       <span id="userEmail"></span>
-      <span class="plan-badge" id="planBadge">FREE</span>
-      <button class="hbtn" onclick="showPlanModal()" id="btnUpgrade">⭐ アップグレード</button>
-      <button class="hbtn" onclick="showCancelModal()" id="btnCancel" style="display:none;background:rgba(255,100,100,0.35);">解約</button>
       <button class="hbtn" onclick="location.href='history.html'" id="btnHistory">📷 履歴</button>
-
-      <!-- ★ 追加した Gallery ボタン -->
       <button class="hbtn" onclick="location.href='gallery.html'" id="btnGallery">🖼 ギャラリー</button>
-
       <button class="hbtn" onclick="logout()" id="btnLogout">ログアウト</button>
     </div>
 
-    <div style="position:relative;" id="langDropdownWrapper">
-      <button class="hbtn" id="langDropdownBtn" onclick="toggleLangDropdown()" style="padding:5px 10px;font-size:12px;">🌐 <span id="langCurrentLabel">JP</span> ▾</button>
-      <div id="langDropdown" style="display:none;position:absolute;right:0;top:36px;background:white;border-radius:10px;box-shadow:0 4px 20px rgba(0,0,0,0.15);overflow:hidden;z-index:200;min-width:140px;">
-        <!-- 言語ボタンはそのまま -->
+    <!-- 言語ドロップダウン -->
+    <div class="lang-wrapper">
+      <button class="hbtn" id="langDropdownBtn" onclick="toggleLangDropdown()">🌐 <span id="langCurrentLabel">JP</span> ▾</button>
+      <div id="langDropdown" class="lang-dropdown">
+        <!-- 言語リストはそのまま -->
       </div>
     </div>
   </div>
 </div>
+
 
 <!-- 広告バナーエリア（Adsterra または A-ads のコードをここに貼る） -->
 <div id="adBanner">
