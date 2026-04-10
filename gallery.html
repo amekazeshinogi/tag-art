@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8" />
+  <title>Gallery</title>
+  <style>
+    body {
+      font-family: sans-serif;
+      background: #fafafa;
+      margin: 0;
+      padding: 20px;
+    }
+    h1 {
+      text-align: center;
+      margin-bottom: 30px;
+    }
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+      gap: 20px;
+    }
+    .item {
+      background: white;
+      border-radius: 10px;
+      padding: 10px;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+      cursor: pointer;
+      transition: 0.2s;
+    }
+    .item:hover {
+      transform: scale(1.03);
+    }
+    .item img {
+      width: 100%;
+      border-radius: 8px;
+    }
+    .meta {
+      margin-top: 8px;
+      font-size: 12px;
+      color: #555;
+    }
+    #modal {
+      display: none;
+      position: fixed;
+      inset: 0;
+      background: rgba(0,0,0,0.7);
+      justify-content: center;
+      align-items: center;
+    }
+    #modal img {
+      max-width: 90%;
+      max-height: 90%;
+      border-radius: 10px;
+    }
+  </style>
+</head>
+<body>
+
+<h1>Gallery</h1>
+
+<div class="grid" id="gallery"></div>
+
+<div id="modal" onclick="this.style.display='none'">
+  <img id="modalImg" src="">
+</div>
+
+<script type="module">
+  const SUPABASE_URL = "https://YOUR-PROJECT.supabase.co";
+  const SUPABASE_ANON_KEY = "YOUR-ANON-KEY";
+
+  const galleryEl = document.getElementById("gallery");
+
+  async function loadGallery() {
+    const res = await fetch(
+      SUPABASE_URL + "/rest/v1/gallery?select=*&is_public=eq.true&order=created_at.desc",
+      {
+        headers: {
+          apikey: SUPABASE_ANON_KEY,
+          Authorization: "Bearer " + SUPABASE_ANON_KEY
+        }
+      }
+    );
+
+    const data = await res.json();
+
+    galleryEl.innerHTML = data
+      .map(item => `
+        <div class="item" onclick="openModal('${item.image_url}')">
+          <img src="${item.image_url}" />
+          <div class="meta">
+            <div><b>Tags:</b> ${item.tags || ""}</div>
+            <div><b>Style:</b> ${item.style || ""}</div>
+            <div><b>User:</b> ${item.user_id}</div>
+          </div>
+        </div>
+      `)
+      .join("");
+  }
+
+  window.openModal = function(url) {
+    document.getElementById("modalImg").src = url;
+    document.getElementById("modal").style.display = "flex";
+  };
+
+  loadGallery();
+</script>
+
+</body>
+</html>
