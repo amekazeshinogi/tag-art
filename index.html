@@ -110,6 +110,46 @@ body {
   margin-left: 190px;
 }
 
+    /* ===== スマホ対応（幅 768px 以下） ===== */
+@media (max-width: 768px) {
+
+  /* サイドバーを隠して、ハンバーガーメニューに切り替え */
+  .sidebar {
+    position: fixed;
+    left: -200px;
+    transition: left 0.3s;
+  }
+
+  .sidebar.open {
+    left: 0;
+  }
+
+  /* メインコンテンツを全幅に */
+  body {
+    margin-left: 0;
+  }
+
+  /* ヘッダーのボタンを縦並びに */
+  .header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 10px;
+  }
+
+  .header-btns {
+    flex-wrap: wrap;
+    gap: 6px;
+  }
+
+  /* ロゴとタイトルをスマホ用に調整 */
+  .logo {
+    font-size: 20px;
+  }
+
+  #headerSub {
+    font-size: 14px;
+  }
+}
     
     /* 広告バナーエリア */
     #adBanner {
