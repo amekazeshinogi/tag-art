@@ -209,6 +209,69 @@ body {
   }
 }
 
+/* ===== PCでもサイドバーを開閉できるようにする緊急CSS ===== */
+.sidebar-modern {
+  position: fixed;
+  left: 0;
+  top: 0;
+  width: 240px;
+  height: 100vh;
+  transform: translateX(0);            /* デフォルトは表示 */
+  transition: transform 0.28s ease;
+  z-index: 300;
+  overflow-y: auto;                    /* 中身がはみ出さないようにスクロール */
+  box-sizing: border-box;
+  padding-bottom: 28px;                /* フッター（ログアウト）が見切れない余白 */
+}
+
+/* 閉じる状態（PCでも使える） */
+.sidebar-modern.closed {
+  transform: translateX(-260px);       /* 左に隠す */
+}
+
+/* 開く状態（明示） */
+.sidebar-modern.open {
+  transform: translateX(0);
+}
+
+/* ハンバーガーをPCでも表示して押せるようにする */
+.hamburger {
+  display: inline-block;
+  position: fixed;
+  top: 14px;
+  left: 14px;
+  z-index: 600;
+  background: #222;
+  color: #fff;
+  border: none;
+  padding: 8px 10px;
+  border-radius: 6px;
+  cursor: pointer;
+}
+
+/* サイドバー内フッター（ログアウト）を常に下に固定し見切れを防ぐ */
+.sidebar-modern .sb-footer {
+  margin-top: auto;
+  padding: 12px 16px 20px 16px;
+  background: transparent;
+  box-shadow: none;
+}
+
+/* ログアウトボタンの見切れ対策 */
+.sidebar-modern .sb-footer .sb-item,
+.sidebar-modern .sb-footer button {
+  width: 100%;
+  box-sizing: border-box;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+/* 画面幅が狭いときは既存の挙動を維持 */
+@media (max-width: 768px) {
+  .sidebar-modern { transform: translateX(-260px); }
+  .sidebar-modern.open { transform: translateX(0); }
+}
 
     
     /* 広告バナーエリア */
