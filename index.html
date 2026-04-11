@@ -1998,6 +1998,17 @@ init();
 })();
 </script>
 
+  <script>
+(function(){
+  function _toggleSidebar() {
+    const sb = document.getElementById("sidebar");
+    if (!sb) return;
+    sb.classList.toggle("open");
+    document.body.classList.toggle("sidebar-open");
+  }
+  if (!window.toggleSidebar) window.toggleSidebar = _toggleSidebar;
+})();
+</script>
 
 </body>
 </html>
