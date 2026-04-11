@@ -273,6 +273,50 @@ body {
   .sidebar-modern.open { transform: translateX(0); }
 }
 
+    /* ===== PC向け：サイドバー初期を閉じにし、ハンバーガーとロゴの重なりを防ぐ ===== */
+
+/* 1) デスクトップではデフォルトで閉じる（ハンバーガーで開く） */
+@media (min-width: 769px) {
+  .sidebar-modern {
+    transform: translateX(-260px);   /* デスクトップは隠す */
+    left: 0;
+    transition: transform 0.28s ease;
+  }
+  .sidebar-modern.open {
+    transform: translateX(0);        /* open クラスで表示 */
+  }
+}
+
+/* 2) ハンバーガーとヘッダーロゴの重なりを防ぐ */
+.hamburger {
+  position: fixed;
+  top: 14px;
+  left: 14px;
+  z-index: 900;       /* ヘッダーより前面に出す */
+  background: #222;
+  color: #fff;
+  border: none;
+  padding: 8px 10px;
+  border-radius: 6px;
+  cursor: pointer;
+}
+
+/* 3) ヘッダー左側（tag-art ロゴ等）をハンバーガー分だけ右にずらす */
+.header, .site-header, .topbar {
+  padding-left: 64px; /* ハンバーガー幅 + マージン分を確保 */
+  box-sizing: border-box;
+  z-index: 800;       /* ハンバーガーより背面にする */
+}
+
+/* 4) サイドバー内のフッター（ログアウト）が見切れない余白確保 */
+.sidebar-modern {
+  padding-bottom: 40px;
+  overflow-y: auto;
+}
+
+/* 5) 万が一 .closed を使っている実装があれば互換性を持たせる */
+.sidebar-modern.closed { transform: translateX(-260px); }
+
     
     /* 広告バナーエリア */
     #adBanner {
