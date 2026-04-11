@@ -25,6 +25,26 @@
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   
   <style>
+:root{
+  --bg: #f6f8fb;
+  --card: #ffffff;
+  --text: #222;
+  --text-muted: #777;
+  --primary: #667eea;
+  --primary-dark: #5a67d8;
+  --accent: #ff9800;
+  --border: #e6e9f2;
+  --radius: 12px;
+  --shadow: 0 6px 18px rgba(20,20,50,0.06);
+}
+
+/* ヘッダー内のボタン群に効くラッパー */
+.header-btns-wrapper {
+  margin-left: auto;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
 /* ===== 基本 ===== */
 body {
   margin: 0;
@@ -523,7 +543,12 @@ body {
 
   <div id="styleFirstPanel" style="background:white;border-radius:14px;box-shadow:0 2px 12px rgba(102,126,234,0.10);padding:14px;margin-bottom:14px;">
     <div style="font-size:12px;color:#999;font-weight:600;text-transform:uppercase;letter-spacing:0.8px;margin-bottom:10px;" id="styleFirstLabel">🎨 スタイルを選ぶ</div>
-    <div style="display:flex;flex-wrap:wrap;gap:8px;" id="styleFirstGrid"></div>
+  <div class="header-btns-wrapper">
+  <div class="header-btns" id="authArea"> ... </div>
+  <div class="header-btns" id="userInfo" style="display:none;"> ... </div>
+  <div style="position:relative;" id="langDropdownWrapper"> ... </div>
+</div>
+
   </div>
 
   <div class="mode-tabs">
