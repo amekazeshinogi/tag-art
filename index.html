@@ -364,6 +364,20 @@ body.sidebar-open .header {
   }
 }
 
+    /* ===== モバイル版：サイドバーを確実にスクロール可能にする ===== */
+@media (max-width: 768px) {
+  .sidebar-modern {
+    position: fixed !important;
+    top: 0;
+    left: 0;
+    height: 100vh !important;        /* 高さを明示的に固定 */
+    overflow-y: scroll !important;   /* スクロールを強制的に有効化 */
+    -webkit-overflow-scrolling: touch;
+    padding-bottom: 120px !important; /* 下部の項目が見切れない余白 */
+    box-sizing: border-box;
+  }
+}
+
     
     /* 広告バナーエリア */
     #adBanner {
