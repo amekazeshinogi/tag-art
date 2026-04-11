@@ -331,6 +331,23 @@ body {
   }
 }
 
+    /* ===== サイドバー展開時の tag-art の重なり防止 ===== */
+
+/* サイドバーが開いたとき、ヘッダー左側に余白を作る */
+.sidebar-modern.open ~ .header,
+.sidebar-modern.open ~ header,
+body.sidebar-open .header {
+  padding-left: 80px !important; /* ハンバーガー分の余白を確保 */
+}
+
+/* サイドバー内の tag-art ロゴを少し右にずらす */
+.sidebar-modern .sb-logo,
+.sidebar-modern .sb-header,
+.sidebar-modern .sb-title {
+  padding-left: 20px !important;
+  box-sizing: border-box;
+}
+
     
     /* 広告バナーエリア */
     #adBanner {
