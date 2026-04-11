@@ -348,6 +348,22 @@ body.sidebar-open .header {
   box-sizing: border-box;
 }
 
+    /* ===== モバイル版：サイドバー内の項目が見切れないようにする ===== */
+@media (max-width: 768px) {
+  .sidebar-modern {
+    overflow-y: auto !important; /* 中身をスクロール可能にする */
+    -webkit-overflow-scrolling: touch; /* スマホでスムーズスクロール */
+    padding-bottom: 80px !important; /* 下の項目が見切れない余白 */
+    box-sizing: border-box;
+  }
+
+  /* サイドバー内の各項目が縮まないようにする */
+  .sidebar-modern .sb-item {
+    min-height: 44px;
+    line-height: 44px;
+  }
+}
+
     
     /* 広告バナーエリア */
     #adBanner {
