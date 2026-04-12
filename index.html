@@ -633,9 +633,6 @@ body.sidebar-open {
 
   
   <!-- <iframe data-aa="YOUR_ID" src="//ad.a-ads.com/YOUR_ID?size=728x90" style="width:728px;max-width:100%;height:90px;border:0;"></iframe> -->
-</div>
-</div>
-
 <div id="dragGhost"></div>
 
 <footer style="text-align:center;padding:24px 16px;color:#aaa;font-size:12px;border-top:1px solid #e0e4ed;margin-top:0;background:white;">
@@ -1976,29 +1973,6 @@ init();
 </script>
 
 <script>
-/* 安全版：要素が無ければ何もしない・重複定義を防ぐ */
-(function(){
-  function _toggleSidebar() {
-    const sb = document.getElementById("sidebar");
-    if (!sb) return;
-    sb.classList.toggle("open");
-    if (window.innerWidth <= 768) {
-     
-    }
-  }
-  if (!window.toggleSidebar) window.toggleSidebar = _toggleSidebar;
-
-  function _toggleLangDropdown() {
-    const dd = document.getElementById("langDropdown");
-    if (!dd) return;
-    dd.style.display = dd.style.display === "block" ? "none" : "block";
-    dd.style.zIndex = "9999";
-  }
-  if (!window.toggleLangDropdown) window.toggleLangDropdown = _toggleLangDropdown;
-})();
-</script>
-
-  <script>
 (function(){
   function _toggleSidebar() {
     const sb = document.getElementById("sidebar");
