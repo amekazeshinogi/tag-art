@@ -1892,7 +1892,10 @@ const workerUrl =
       img.scrollIntoView({behavior:"smooth"});
       await sb.from("history").insert({user_id:currentUser.id,image_url:storageUrl,tags:selected,style});
     };
-    img.onerror=()=>{document.getElementById("loading").style.display="none";alert("画像表示に失敗しました。");};
+     img.onerror=(e)=>{
+  document.getElementById("loading").style.display="none";
+  alert("画像表示に失敗しました。\nURL: "+img.src);
+};
     img.src=storageUrl;
   }catch(e){
     document.getElementById("loading").style.display="none";
