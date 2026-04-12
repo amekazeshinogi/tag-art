@@ -1840,7 +1840,7 @@ function resetAll(){
 async function generate(){
   if(!currentUser){showAuthModal("login");return;}
   const today=new Date().toISOString().split("T")[0];
-  const {data}=await sb.from("usage").select("count").eq("user_id",currentUser.id).eq("date",today).single();
+  const {data}=await sb.from("usage").select("count").eq("user_id",currentUser.id).eq("date",today).maybeSingle();
   const count=data?data.count:0;
   const limit=userPlan==="pro"?20:(userCredits>0?999:3);
   if(count>=limit&&userCredits<=0){showPlanModal();return;}
@@ -1958,7 +1958,7 @@ if(userPlan==="pro"){
 
 async function loadCount(){
   const today=new Date().toISOString().split("T")[0];
-  const {data}=await sb.from("usage").select("count").eq("user_id",currentUser.id).eq("date",today).single();
+  const {data}=await sb.from("usage").select("count").eq("user_id",currentUser.id).eq("date",today).maybeSingle();
   const count=data?data.count:0,limit=userPlan==="pro"?20:3,remaining=Math.max(0,limit-count);
   let text=`本日の残り回数：${remaining}回`;
   if(userCredits>0)text+=`（クレジット：${userCredits}回）`;
