@@ -1944,18 +1944,20 @@ async function loadUserPlan(){
     const data=await res.json();
     userPlan=data.plan||"free"; userCredits=data.credits||0;
   }catch(e){userPlan="free";userCredits=0;}
-  const badge=document.getElementById("planBadge");
+ const badge=document.getElementById("planBadge");
+if(badge){
   if(userPlan==="pro"){badge.textContent="PRO ⭐";badge.className="plan-badge pro";}
   else{badge.textContent="FREE";badge.className="plan-badge";}
-  const upgradeBtn=document.getElementById("btnUpgrade");
-  const cancelBtn=document.getElementById("btnCancel");
-  if(userPlan==="pro"){
-    if(upgradeBtn)upgradeBtn.textContent="✅ Pro会員";
-    if(cancelBtn)cancelBtn.style.display="inline-block";
-  }else{
-    if(upgradeBtn)upgradeBtn.textContent="⭐ アップグレード";
-    if(cancelBtn)cancelBtn.style.display="none";
-  }
+}
+const upgradeBtn=document.getElementById("btnUpgrade");
+const cancelBtn=document.getElementById("btnCancel");
+if(userPlan==="pro"){
+  if(upgradeBtn)upgradeBtn.textContent="✅ Pro会員";
+  if(cancelBtn)cancelBtn.style.display="inline-block";
+}else{
+  if(upgradeBtn)upgradeBtn.textContent="⭐ アップグレード";
+  if(cancelBtn)cancelBtn.style.display="none";
+}
   buildStyleFirst(); renderTagList(currentCat,currentSubGroup); loadCount();
 }
 
