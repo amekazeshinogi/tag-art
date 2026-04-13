@@ -1900,10 +1900,10 @@ try{
   alert("画像表示に失敗しました。\nURL: "+img.src);
 };
     img.src=storageUrl;
-  }catch(e){
-    document.getElementById("loading").style.display="none";
-    alert("生成に失敗しました。\n詳細: "+e.message);
-  }
+}catch(e){
+  document.getElementById("loading").style.display="none";
+  alert("生成に失敗しました。\n詳細: "+e.message+"\nWorker URL: "+workerUrl);
+}
 }
 
 function saveImage(){const a=document.createElement("a");a.href=document.getElementById("img").src;a.download="icon.jpg";a.click();}
