@@ -1870,11 +1870,14 @@ const workerUrl =
   const bar=document.getElementById("loadingBar");
   if(bar){bar.style.animation="none";bar.offsetHeight;bar.style.animation="loadingProgress 28s linear forwards";}
 
-  try{
-    const res=await fetch(workerUrl);
-    const json=await res.json();
-    const storageUrl=json.url;
-    if(!storageUrl)throw new Error("URLが取得できませんでした");
+try{
+  const res=await fetch(workerUrl);
+  const json=await res.json();
+  if(!res.ok){
+    throw new Error("Worker error: " + JSON.stringify(json));
+  }
+  const storageUrl=json.url;
+  if(!storageUrl)throw new Error("URLが取得できませんでした: " + JSON.stringify(json));
 
     if(data)await sb.from("usage").update({count:count+1}).eq("user_id",currentUser.id).eq("date",today);
     else await sb.from("usage").insert({user_id:currentUser.id,date:today,count:1});
