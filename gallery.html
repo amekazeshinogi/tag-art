@@ -2,77 +2,217 @@
 <html lang="ja">
 <head>
   <meta charset="UTF-8" />
-  <title>Gallery</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>ギャラリー | アイコン生成AI</title>
   <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
     body {
-      font-family: sans-serif;
-      background: #fafafa;
-      margin: 0;
-      padding: 20px;
+      font-family: 'Helvetica Neue', sans-serif;
+      background: #f0f2f5;
+      color: #333;
+      min-height: 100vh;
+      padding-bottom: 40px;
     }
-    h1 {
+    header {
+      background: linear-gradient(135deg, #667eea, #764ba2);
+      color: white;
+      padding: 16px 20px;
       text-align: center;
-      margin-bottom: 30px;
     }
+    header h1 { font-size: 22px; margin-bottom: 4px; }
+    header p { font-size: 12px; opacity: 0.85; }
+
+    .nav-bar {
+      background: white;
+      padding: 10px 15px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      box-shadow: 0 1px 4px rgba(0,0,0,0.08);
+    }
+    .nav-bar a {
+      font-size: 13px;
+      color: #667eea;
+      text-decoration: none;
+    }
+    .nav-bar a:hover { text-decoration: underline; }
+
+    .container {
+      max-width: 900px;
+      margin: 20px auto;
+      padding: 0 15px;
+    }
+
+    #loading-msg {
+      text-align: center;
+      color: #888;
+      padding: 40px;
+      font-size: 15px;
+    }
+
     .grid {
       display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
-      gap: 20px;
+      grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+      gap: 16px;
     }
+
     .item {
       background: white;
-      border-radius: 10px;
+      border-radius: 12px;
       padding: 10px;
-      box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+      box-shadow: 0 2px 8px rgba(0,0,0,0.08);
       cursor: pointer;
-      transition: 0.2s;
+      transition: transform 0.2s, box-shadow 0.2s;
     }
     .item:hover {
       transform: scale(1.03);
+      box-shadow: 0 4px 16px rgba(0,0,0,0.13);
     }
     .item img {
       width: 100%;
       border-radius: 8px;
+      display: block;
+      aspect-ratio: 1;
+      object-fit: cover;
+      background: #f0f2f5;
     }
     .meta {
       margin-top: 8px;
-      font-size: 12px;
+      font-size: 11px;
+      color: #666;
+      line-height: 1.7;
+    }
+    .meta .tag-list {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 4px;
+      margin-top: 5px;
+    }
+    .meta .tag-chip {
+      background: #f0f2f5;
+      border-radius: 20px;
+      padding: 2px 8px;
+      font-size: 11px;
       color: #555;
     }
+    .meta .style-chip {
+      background: #e8d5ff;
+      border-radius: 20px;
+      padding: 2px 8px;
+      font-size: 11px;
+      color: #764ba2;
+    }
+    .meta .user-name {
+      margin-top: 5px;
+      color: #999;
+      font-size: 11px;
+    }
+
+    /* モーダル */
     #modal {
       display: none;
       position: fixed;
       inset: 0;
-      background: rgba(0,0,0,0.7);
+      background: rgba(0,0,0,0.75);
       justify-content: center;
       align-items: center;
+      z-index: 100;
     }
+    #modal.show { display: flex; }
     #modal img {
-      max-width: 90%;
-      max-height: 90%;
-      border-radius: 10px;
+      max-width: 90vw;
+      max-height: 90vh;
+      border-radius: 12px;
+      box-shadow: 0 8px 32px rgba(0,0,0,0.4);
+    }
+    #modal-close {
+      position: absolute;
+      top: 20px;
+      right: 20px;
+      background: white;
+      border: none;
+      border-radius: 50%;
+      width: 36px;
+      height: 36px;
+      font-size: 18px;
+      cursor: pointer;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.2);
+    }
+
+    .empty-msg {
+      text-align: center;
+      color: #aaa;
+      padding: 60px 20px;
+      font-size: 15px;
     }
   </style>
 </head>
 <body>
 
-<h1>Gallery</h1>
+<header>
+  <h1>🎨 アイコン生成AI</h1>
+  <p>みんなの作品ギャラリー</p>
+</header>
 
-<div class="grid" id="gallery"></div>
-
-<div id="modal" onclick="this.style.display='none'">
-  <img id="modalImg" src="">
+<div class="nav-bar">
+  <a href="index.html">← トップに戻る</a>
 </div>
 
-<script type="module">
+<div class="container">
+  <div id="loading-msg">⏳ 読み込み中...</div>
+  <div class="grid" id="gallery"></div>
+  <div class="empty-msg" id="empty-msg" style="display:none">まだ作品がありません</div>
+</div>
+
+<div id="modal" onclick="closeModal()">
+  <button id="modal-close" onclick="closeModal()">✕</button>
+  <img id="modal-img" src="" onclick="event.stopPropagation()">
+</div>
+
+<script>
   const SUPABASE_URL = "https://eoademoyfyopqfnljhyf.supabase.co";
   const SUPABASE_ANON_KEY = "sb_publishable_KuwA-05ihmrblfTcxAK2LQ_D7bepSL-";
 
-  const galleryEl = document.getElementById("gallery");
+  // タグ英語→日本語変換マップ
+  const tagMap = {
+    "boy": "男性", "girl": "女性", "neutral": "中性",
+    "short hair": "ショート", "long hair": "ロング", "twin tails": "ツインテール",
+    "ponytail": "ポニーテール", "bob cut": "ボブ", "wavy hair": "ウェーブ",
+    "blonde hair": "金髪", "black hair": "黒髪", "brown hair": "茶髪",
+    "white hair": "白髪", "pink hair": "ピンク", "blue hair": "ブルー",
+    "silver hair": "シルバー", "red hair": "赤髪", "purple hair": "紫髪",
+    "gradient hair": "グラデーション",
+    "smile": "笑顔", "serious": "真剣", "wink": "ウィンク",
+    "surprised": "驚き", "cool expression": "クール", "happy": "嬉しい",
+    "blue eyes": "青い目", "red eyes": "赤い目", "green eyes": "緑の目",
+    "heterochromia": "オッドアイ", "big eyes": "大きい目",
+    "cat ears": "猫耳", "fox ears": "狐耳", "angel wings": "天使",
+    "demon horns": "悪魔", "elf ears": "エルフ", "dragon": "ドラゴン",
+    "nine tails": "九尾",
+    "school uniform": "制服", "casual clothes": "カジュアル", "suit": "スーツ",
+    "kimono": "着物", "hoodie": "パーカー", "maid outfit": "メイド服",
+    "glasses": "メガネ", "hat": "帽子", "earrings": "ピアス",
+    "ribbon": "リボン", "mask": "マスク", "headband": "カチューシャ",
+    "fantasy background": "ファンタジー", "cyberpunk background": "サイバーパンク",
+    "nature background": "自然", "white background": "白背景",
+    "gradient background": "グラデーション背景",
+    "cute icon": "かわいい", "simple flat icon": "シンプル", "anime style": "アニメ",
+    "business avatar": "ビジネス", "pixel art": "ドット絵", "realistic": "リアル",
+    "soft illustration": "ゆるい"
+  };
+
+  function toJapanese(str) {
+    if (!str) return "";
+    return str.split(",").map(s => {
+      const key = s.trim().toLowerCase();
+      return tagMap[key] || s.trim();
+    }).join(", ");
+  }
 
   async function loadGallery() {
+    // galleryとprofilesを結合して取得
     const res = await fetch(
-      SUPABASE_URL + "/rest/v1/gallery?select=*&is_public=eq.true&order=created_at.desc",
+      SUPABASE_URL + "/rest/v1/gallery?select=*,profiles(username)&is_public=eq.true&order=created_at.desc",
       {
         headers: {
           apikey: SUPABASE_ANON_KEY,
@@ -80,30 +220,59 @@
         }
       }
     );
-
     const data = await res.json();
 
-    galleryEl.innerHTML = data
-      .map(item => `
+    document.getElementById("loading-msg").style.display = "none";
+
+    if (!data || data.length === 0) {
+      document.getElementById("empty-msg").style.display = "block";
+      return;
+    }
+
+    const galleryEl = document.getElementById("gallery");
+    galleryEl.innerHTML = data.map(item => {
+      const username = item.profiles?.username || "匿名";
+      const tagsJa = toJapanese(item.tags);
+      const styleJa = toJapanese(item.style);
+
+      // タグをチップで表示
+      const tagChips = tagsJa
+        ? tagsJa.split(",").map(t =>
+            `<span class="tag-chip">${t.trim()}</span>`
+          ).join("")
+        : "";
+      const styleChip = styleJa
+        ? `<span class="style-chip">🎨 ${styleJa}</span>`
+        : "";
+
+      return `
         <div class="item" onclick="openModal('${item.image_url}')">
-          <img src="${item.image_url}" />
+          <img src="${item.image_url}" loading="lazy" alt="生成画像">
           <div class="meta">
-            <div><b>Tags:</b> ${item.tags || ""}</div>
-            <div><b>Style:</b> ${item.style || ""}</div>
-            <div><b>User:</b> ${item.user_id}</div>
+            <div class="tag-list">${tagChips}${styleChip}</div>
+            <div class="user-name">👤 ${username}</div>
           </div>
         </div>
-      `)
-      .join("");
+      `;
+    }).join("");
   }
 
-  window.openModal = function(url) {
-    document.getElementById("modalImg").src = url;
-    document.getElementById("modal").style.display = "flex";
-  };
+  function openModal(url) {
+    document.getElementById("modal-img").src = url;
+    document.getElementById("modal").classList.add("show");
+  }
+
+  function closeModal() {
+    document.getElementById("modal").classList.remove("show");
+    document.getElementById("modal-img").src = "";
+  }
+
+  // キーボードでモーダルを閉じる
+  document.addEventListener("keydown", e => {
+    if (e.key === "Escape") closeModal();
+  });
 
   loadGallery();
 </script>
-
 </body>
 </html>
