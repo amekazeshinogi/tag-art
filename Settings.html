@@ -1,0 +1,358 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>設定 | アイコン生成AI</title>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: 'Helvetica Neue', sans-serif;
+      background: #f0f2f5;
+      color: #333;
+      min-height: 100vh;
+      padding-bottom: 40px;
+    }
+    header {
+      background: linear-gradient(135deg, #667eea, #764ba2);
+      color: white;
+      padding: 16px 20px;
+      text-align: center;
+    }
+    header h1 { font-size: 22px; margin-bottom: 4px; }
+    header p { font-size: 12px; opacity: 0.85; }
+
+    .nav-bar {
+      background: white;
+      padding: 10px 15px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      box-shadow: 0 1px 4px rgba(0,0,0,0.08);
+    }
+    .nav-bar a {
+      font-size: 13px;
+      color: #667eea;
+      text-decoration: none;
+    }
+
+    .container {
+      max-width: 500px;
+      margin: 20px auto;
+      padding: 0 15px;
+    }
+
+    .card {
+      background: white;
+      border-radius: 12px;
+      padding: 20px;
+      margin-bottom: 15px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+    }
+    .card h2 {
+      font-size: 15px;
+      color: #555;
+      margin-bottom: 15px;
+      padding-bottom: 10px;
+      border-bottom: 1px solid #f0f2f5;
+    }
+
+    .field {
+      margin-bottom: 15px;
+    }
+    .field label {
+      display: block;
+      font-size: 13px;
+      color: #888;
+      margin-bottom: 6px;
+    }
+    .field input[type="text"],
+    .field input[type="email"] {
+      width: 100%;
+      padding: 12px;
+      border: 1px solid #ddd;
+      border-radius: 8px;
+      font-size: 14px;
+      color: #333;
+      background: #fafafa;
+    }
+    .field input:focus {
+      outline: none;
+      border-color: #667eea;
+      background: white;
+    }
+    .field .hint {
+      font-size: 11px;
+      color: #bbb;
+      margin-top: 4px;
+    }
+
+    .toggle-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 12px;
+    }
+    .toggle-row .label-area {
+      font-size: 14px;
+    }
+    .toggle-row .sub {
+      font-size: 11px;
+      color: #aaa;
+      margin-top: 2px;
+    }
+
+    /* トグルスイッチ */
+    .toggle {
+      position: relative;
+      width: 46px;
+      height: 26px;
+      flex-shrink: 0;
+    }
+    .toggle input { display: none; }
+    .toggle-slider {
+      position: absolute;
+      inset: 0;
+      background: #ddd;
+      border-radius: 26px;
+      cursor: pointer;
+      transition: 0.3s;
+    }
+    .toggle-slider::before {
+      content: "";
+      position: absolute;
+      width: 20px;
+      height: 20px;
+      background: white;
+      border-radius: 50%;
+      top: 3px;
+      left: 3px;
+      transition: 0.3s;
+      box-shadow: 0 1px 4px rgba(0,0,0,0.2);
+    }
+    .toggle input:checked + .toggle-slider { background: #667eea; }
+    .toggle input:checked + .toggle-slider::before { transform: translateX(20px); }
+
+    .btn-primary {
+      width: 100%;
+      padding: 14px;
+      background: linear-gradient(135deg, #667eea, #764ba2);
+      color: white;
+      border: none;
+      border-radius: 10px;
+      font-size: 15px;
+      font-weight: bold;
+      cursor: pointer;
+      margin-top: 5px;
+    }
+    .btn-primary:disabled {
+      opacity: 0.6;
+      cursor: not-allowed;
+    }
+    .btn-danger {
+      width: 100%;
+      padding: 12px;
+      background: white;
+      color: #e44;
+      border: 1.5px solid #e44;
+      border-radius: 10px;
+      font-size: 14px;
+      cursor: pointer;
+      margin-top: 8px;
+    }
+
+    #msg {
+      text-align: center;
+      font-size: 13px;
+      margin-top: 10px;
+      min-height: 20px;
+    }
+    #msg.success { color: #4CAF50; }
+    #msg.error { color: #e44; }
+
+    .plan-badge {
+      display: inline-block;
+      padding: 3px 10px;
+      border-radius: 20px;
+      font-size: 12px;
+      font-weight: bold;
+      background: #f0f2f5;
+      color: #888;
+    }
+    .plan-badge.pro {
+      background: linear-gradient(135deg, #667eea, #764ba2);
+      color: white;
+    }
+
+    #not-logged-in {
+      text-align: center;
+      padding: 60px 20px;
+      color: #aaa;
+    }
+    #not-logged-in button {
+      margin-top: 15px;
+      padding: 12px 30px;
+      background: linear-gradient(135deg, #667eea, #764ba2);
+      color: white;
+      border: none;
+      border-radius: 10px;
+      font-size: 14px;
+      cursor: pointer;
+    }
+  </style>
+</head>
+<body>
+
+<header>
+  <h1>⚙️ 設定</h1>
+  <p>アカウント・ギャラリー設定</p>
+</header>
+
+<div class="nav-bar">
+  <a href="index.html">← トップに戻る</a>
+</div>
+
+<div class="container">
+
+  <div id="not-logged-in" style="display:none">
+    <p>設定を変更するにはログインが必要です</p>
+    <button onclick="window.location.href='index.html'">ログインページへ</button>
+  </div>
+
+  <div id="settings-content">
+
+    <!-- アカウント情報 -->
+    <div class="card">
+      <h2>👤 アカウント情報</h2>
+      <div class="field">
+        <label>メールアドレス</label>
+        <input type="email" id="email-display" readonly style="color:#aaa;cursor:default">
+      </div>
+      <div class="field">
+        <label>プラン</label>
+        <div id="plan-display" style="margin-top:4px"><span class="plan-badge">読み込み中...</span></div>
+      </div>
+    </div>
+
+    <!-- プロフィール設定 -->
+    <div class="card">
+      <h2>✏️ プロフィール設定</h2>
+      <div class="field">
+        <label>表示名（ギャラリーに表示されます）</label>
+        <input type="text" id="username-input" placeholder="例：あめねこ" maxlength="20">
+        <div class="hint">未設定の場合は「匿名」と表示されます（最大20文字）</div>
+      </div>
+      <button class="btn-primary" id="save-username-btn" onclick="saveUsername()">保存する</button>
+      <div id="msg"></div>
+    </div>
+
+    <!-- ギャラリー設定 -->
+    <div class="card">
+      <h2>🖼️ ギャラリー設定</h2>
+      <div class="toggle-row">
+        <div class="label-area">
+          <div>生成画像を自動でギャラリーに投稿</div>
+          <div class="sub">OFFにすると生成画像はギャラリーに表示されません</div>
+        </div>
+        <label class="toggle">
+          <input type="checkbox" id="gallery-toggle" onchange="saveGallerySetting()">
+          <span class="toggle-slider"></span>
+        </label>
+      </div>
+    </div>
+
+    <!-- 危険ゾーン -->
+    <div class="card">
+      <h2>⚠️ その他</h2>
+      <button class="btn-danger" onclick="logout()">ログアウト</button>
+    </div>
+
+  </div>
+</div>
+
+<script>
+  const SUPABASE_URL = "https://eoademoyfyopqfnljhyf.supabase.co";
+  const SUPABASE_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImVvYWRlbW95ZnlvcHFmbmxqaHlmIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzM0OTIyODIsImV4cCI6MjA4OTA2ODI4Mn0.EXk-W1fcaZ8g_b2avAjMIzOJhszdAUWssbivZhCyPFs";
+  const sb = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+
+  let currentUser = null;
+
+  async function init() {
+    const { data } = await sb.auth.getSession();
+    if (!data.session) {
+      document.getElementById("settings-content").style.display = "none";
+      document.getElementById("not-logged-in").style.display = "block";
+      return;
+    }
+    currentUser = data.session.user;
+    document.getElementById("email-display").value = currentUser.email;
+    await loadProfile();
+  }
+
+  async function loadProfile() {
+    const { data } = await sb
+      .from("profiles")
+      .select("username, plan, auto_gallery")
+      .eq("id", currentUser.id)
+      .maybeSingle();
+
+    // プラン表示
+    const plan = data?.plan || "free";
+    const planEl = document.getElementById("plan-display");
+    planEl.innerHTML = plan === "pro"
+      ? '<span class="plan-badge pro">✨ Pro</span>'
+      : '<span class="plan-badge">FREE</span>';
+
+    // ユーザー名
+    if (data?.username) {
+      document.getElementById("username-input").value = data.username;
+    }
+
+    // ギャラリー自動投稿
+    const autoGallery = data?.auto_gallery !== false; // デフォルトtrue
+    document.getElementById("gallery-toggle").checked = autoGallery;
+  }
+
+  async function saveUsername() {
+    const username = document.getElementById("username-input").value.trim();
+    const btn = document.getElementById("save-username-btn");
+    const msg = document.getElementById("msg");
+
+    btn.disabled = true;
+    msg.className = "";
+    msg.textContent = "保存中...";
+
+    const { error } = await sb
+      .from("profiles")
+      .upsert({ id: currentUser.id, username: username || null })
+      .eq("id", currentUser.id);
+
+    if (error) {
+      msg.className = "error";
+      msg.textContent = "保存に失敗しました: " + error.message;
+    } else {
+      msg.className = "success";
+      msg.textContent = "✅ 保存しました！";
+      setTimeout(() => { msg.textContent = ""; }, 3000);
+    }
+    btn.disabled = false;
+  }
+
+  async function saveGallerySetting() {
+    const autoGallery = document.getElementById("gallery-toggle").checked;
+    await sb
+      .from("profiles")
+      .upsert({ id: currentUser.id, auto_gallery: autoGallery })
+      .eq("id", currentUser.id);
+  }
+
+  async function logout() {
+    await sb.auth.signOut();
+    window.location.href = "index.html";
+  }
+
+  init();
+</script>
+</body>
+</html>
