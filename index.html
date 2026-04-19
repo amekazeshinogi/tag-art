@@ -1888,13 +1888,31 @@ try{
     document.getElementById("countTextSwipe").innerText=countText;
 
     const img=document.getElementById("img");
-    img.onload=async()=>{
-      document.getElementById("loading").style.display="none";
-      document.getElementById("resultCard").style.display="block";
-      document.getElementById("save-btn").style.display="inline-block";
-      img.scrollIntoView({behavior:"smooth"});
-      await sb.from("history").insert({user_id:currentUser.id,image_url:storageUrl,tags:selected,style});
-    };
+ img.onload=async()=>{
+  document.getElementById("loading").style.display="none";
+  document.getElementById("resultCard").style.display="block";
+  document.getElementById("save-btn").style.display="inline-block";
+  img.scrollIntoView({behavior:"smooth"});
+  // 履歴保存
+  await sb.from("history").insert({user_id:currentUser.id,image_url:storageUrl,tags:selected,style});
+  // ギャラリー自動投稿（auto_galleryがtrueの場合のみ）
+  try {
+    const {data: profile} = await sb.from("profiles").select("auto_gallery").eq("id",currentUser.id).maybeSingle();
+    const autoGallery = profile?.auto_gallery !== false; // デフォルトtrue
+    if(autoGallery){
+      const tagStr = Object.entries(selected)
+        .filter(([k])=>!k.startsWith("other_"))
+        .map(([,v])=>v).join(", ");
+      await sb.from("gallery").insert({
+        user_id: currentUser.id,
+        image_url: storageUrl,
+        tags: tagStr,
+        style: style,
+        is_public: true
+      });
+    }
+  } catch(e) { console.warn("ギャラリー投稿エラー:", e); }
+};
      img.onerror=(e)=>{
   document.getElementById("loading").style.display="none";
   alert("画像表示に失敗しました。\nURL: "+img.src);
