@@ -1,4 +1,5 @@
 <!DOCTYPE html>
+
 <html lang="ja">
 <head>
   <meta charset="UTF-8" />
@@ -212,7 +213,7 @@
   async function loadGallery() {
     // galleryとprofilesを結合して取得
     const res = await fetch(
-      SUPABASE_URL + "/rest/v1/gallery?select=*,profiles(username)&is_public=eq.true&order=created_at.desc",
+      SUPABASE_URL + "/rest/v1/gallery?select=*&is_public=eq.true&order=created_at.desc",
       {
         headers: {
           apikey: SUPABASE_ANON_KEY,
@@ -231,7 +232,7 @@
 
     const galleryEl = document.getElementById("gallery");
     galleryEl.innerHTML = data.map(item => {
-      const username = item.profiles?.username || "匿名";
+      const username = "匿名ユーザー" || "匿名";
       const tagsJa = toJapanese(item.tags);
       const styleJa = toJapanese(item.style);
 
