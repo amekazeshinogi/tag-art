@@ -1,11 +1,12 @@
 <!DOCTYPE html>
+
 <html lang="ja">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-8200530873041170" crossorigin="anonymous"></script>
   <link rel="stylesheet" href="style-upgrade.css">
-  <title>è¨­å® | tag-art</title>
+  <title>設定 | tag-art</title>
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <style>
     * { box-sizing: border-box; margin: 0; padding: 0; }
@@ -38,7 +39,7 @@
       -webkit-font-smoothing: antialiased;
     }
 
-    /* ===== ãããã¼ ===== */
+    /* ===== ヘッダー ===== */
     .settings-header {
       background: var(--surface);
       border-bottom: 1px solid var(--border);
@@ -70,7 +71,7 @@
       color: var(--text);
     }
 
-    /* ===== ã¡ã¤ã³ã³ã³ãã³ã ===== */
+    /* ===== メインコンテンツ ===== */
     .settings-container {
       max-width: 640px;
       margin: 32px auto;
@@ -94,7 +95,7 @@
       border-bottom: 1px solid var(--border);
     }
 
-    /* ===== ãã©ã¼ã è¦ç´  ===== */
+    /* ===== フォーム要素 ===== */
     .setting-row {
       display: flex;
       align-items: center;
@@ -229,7 +230,7 @@
       border: 1px solid rgba(225,112,85,.2);
     }
 
-    /* ===== ã­ã°ã¤ã³ä¿ã ===== */
+    /* ===== ログイン促し ===== */
     .login-prompt {
       text-align: center;
       padding: 60px 20px;
@@ -257,7 +258,7 @@
       transform: translateY(-1px);
     }
 
-    /* ===== ã¬ã¹ãã³ã·ã ===== */
+    /* ===== レスポンシブ ===== */
     @media (max-width: 480px) {
       .settings-container { margin: 16px auto; }
       .settings-section { padding: 20px; }
@@ -270,86 +271,86 @@
 <div class="settings-header">
   <a href="index.html" class="logo">tag-art</a>
   <span style="color:var(--border)">|</span>
-  <h1>è¨­å®</h1>
+  <h1>設定</h1>
   <div style="margin-left:auto">
-    <a href="index.html">&larr; æ»ã</a>
+    <a href="index.html">&larr; 戻る</a>
   </div>
 </div>
 
-<!-- ã­ã°ã¤ã³æ¸ã¿ã¦ã¼ã¶ã¼åã -->
+<!-- ログイン済みユーザー向け -->
 <div class="settings-container" id="settingsMain" style="display:none">
 
-  <!-- ã¢ã«ã¦ã³ãæå ± -->
+  <!-- アカウント情報 -->
   <div class="settings-section">
-    <h2>ã¢ã«ã¦ã³ã</h2>
+    <h2>アカウント</h2>
     <div class="setting-row">
-      <span class="setting-label">ã¡ã¼ã«ã¢ãã¬ã¹</span>
+      <span class="setting-label">メールアドレス</span>
       <span class="setting-value" id="userEmail">-</span>
     </div>
     <div class="setting-row">
       <span class="setting-label">
-        ãã©ã³
-        <small>ç¾å¨ã®ãå©ç¨ãã©ã³</small>
+        プラン
+        <small>現在のご利用プラン</small>
       </span>
       <span class="setting-value" id="userPlan">FREE</span>
     </div>
   </div>
 
-  <!-- è¨èªè¨­å® -->
+  <!-- 言語設定 -->
   <div class="settings-section">
-    <h2>è¡¨ç¤ºè¨èª</h2>
+    <h2>表示言語</h2>
     <div class="setting-row">
       <span class="setting-label">
-        ã¤ã³ã¿ã¼ãã§ã¼ã¹è¨èª
-        <small>UIã®è¡¨ç¤ºè¨èªãå¤æ´ãã¾ã</small>
+        インターフェース言語
+        <small>UIの表示言語を変更します</small>
       </span>
       <select class="setting-select" id="langSelect" onchange="changeLang(this.value)">
-        <option value="ja">æ¥æ¬èª</option>
+        <option value="ja">日本語</option>
         <option value="en">English</option>
-        <option value="zh">ä¸­æ</option>
-        <option value="ko">íêµ­ì´</option>
-        <option value="es">EspaÃ±ol</option>
-        <option value="fr">FranÃ§ais</option>
+        <option value="zh">中文</option>
+        <option value="ko">한국어</option>
+        <option value="es">Español</option>
+        <option value="fr">Français</option>
         <option value="de">Deutsch</option>
-        <option value="ru">Ð ÑÑÑÐºÐ¸Ð¹</option>
+        <option value="ru">Русский</option>
       </select>
     </div>
   </div>
 
-  <!-- ãã¹ã¯ã¼ãå¤æ´ -->
+  <!-- パスワード変更 -->
   <div class="settings-section">
-    <h2>ãã¹ã¯ã¼ãå¤æ´</h2>
+    <h2>パスワード変更</h2>
     <div class="input-group">
-      <label for="newPass">æ°ãããã¹ã¯ã¼ã</label>
-      <input type="password" class="setting-input" id="newPass" placeholder="6æå­ä»¥ä¸">
+      <label for="newPass">新しいパスワード</label>
+      <input type="password" class="setting-input" id="newPass" placeholder="6文字以上">
     </div>
     <div class="input-group">
-      <label for="newPassConfirm">æ°ãããã¹ã¯ã¼ãï¼ç¢ºèªï¼</label>
-      <input type="password" class="setting-input" id="newPassConfirm" placeholder="ããä¸åº¦å¥å">
+      <label for="newPassConfirm">新しいパスワード（確認）</label>
+      <input type="password" class="setting-input" id="newPassConfirm" placeholder="もう一度入力">
     </div>
-    <button class="btn-primary" onclick="changePassword()">ãã¹ã¯ã¼ããæ´æ°</button>
+    <button class="btn-primary" onclick="changePassword()">パスワードを更新</button>
     <div class="msg" id="passMsg"></div>
   </div>
 
-  <!-- ã­ã°ã¢ã¦ã -->
+  <!-- ログアウト -->
   <div class="settings-section">
-    <h2>ã»ãã·ã§ã³</h2>
+    <h2>セッション</h2>
     <div class="setting-row">
       <span class="setting-label">
-        ã­ã°ã¢ã¦ã
-        <small>ãã®ããã¤ã¹ããã­ã°ã¢ã¦ããã¾ã</small>
+        ログアウト
+        <small>このデバイスからログアウトします</small>
       </span>
-      <button class="btn-danger" onclick="doLogout()">ã­ã°ã¢ã¦ã</button>
+      <button class="btn-danger" onclick="doLogout()">ログアウト</button>
     </div>
   </div>
 </div>
 
-<!-- æªã­ã°ã¤ã³ã¦ã¼ã¶ã¼åã -->
+<!-- 未ログインユーザー向け -->
 <div class="settings-container" id="loginPrompt" style="display:none">
   <div class="settings-section">
     <div class="login-prompt">
-      <p>è¨­å®ãå¤æ´ããã«ã¯ã­ã°ã¤ã³ãå¿è¦ã§ã</p>
-      <a href="index.html">tag-art ã«æ»ã</a>
+      <p>設定を変更するにはログインが必要です</p>
+      <a href="index.html">tag-art に戻る</a>
     </div>
   </div>
 </div>
@@ -366,13 +367,13 @@
       document.getElementById("settingsMain").style.display = "block";
       document.getElementById("userEmail").textContent = user.email || "-";
 
-      // ãã©ã³åå¾
+      // プラン取得
       const { data: profile } = await sb.from("profiles").select("plan").eq("id", user.id).single();
       if (profile && profile.plan) {
         document.getElementById("userPlan").textContent = profile.plan.toUpperCase();
       }
 
-      // ä¿å­æ¸ã¿è¨èªè¨­å®ãå¾©å
+      // 保存済み言語設定を復元
       const savedLang = localStorage.getItem("tag-art-lang") || "ja";
       document.getElementById("langSelect").value = savedLang;
     } else {
@@ -382,7 +383,7 @@
 
   function changeLang(lang) {
     localStorage.setItem("tag-art-lang", lang);
-    showMsg("passMsg", "success", "è¨èªè¨­å®ãä¿å­ãã¾ãããããããã¼ã¸ã«åæ ããã¾ãã");
+    showMsg("passMsg", "success", "言語設定を保存しました。トップページに反映されます。");
   }
 
   async function changePassword() {
@@ -391,19 +392,19 @@
     const msgEl = document.getElementById("passMsg");
 
     if (!newPass || newPass.length < 6) {
-      showMsg("passMsg", "error", "ãã¹ã¯ã¼ãã¯6æå­ä»¥ä¸ã§å¥åãã¦ãã ãã");
+      showMsg("passMsg", "error", "パスワードは6文字以上で入力してください");
       return;
     }
     if (newPass !== confirm) {
-      showMsg("passMsg", "error", "ãã¹ã¯ã¼ããä¸è´ãã¾ãã");
+      showMsg("passMsg", "error", "パスワードが一致しません");
       return;
     }
 
     const { error } = await sb.auth.updateUser({ password: newPass });
     if (error) {
-      showMsg("passMsg", "error", "æ´æ°å¤±æ: " + error.message);
+      showMsg("passMsg", "error", "更新失敗: " + error.message);
     } else {
-      showMsg("passMsg", "success", "ãã¹ã¯ã¼ããæ´æ°ãã¾ãã");
+      showMsg("passMsg", "success", "パスワードを更新しました");
       document.getElementById("newPass").value = "";
       document.getElementById("newPassConfirm").value = "";
     }
