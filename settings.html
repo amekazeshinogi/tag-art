@@ -1,0 +1,428 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-8200530873041170" crossorigin="anonymous"></script>
+  <link rel="stylesheet" href="style-upgrade.css">
+  <title>è¨­å® | tag-art</title>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --primary: #6C5CE7;
+      --primary-dark: #4834d4;
+      --primary-light: #a29bfe;
+      --bg: #fafafa;
+      --surface: #fff;
+      --text: #2d3436;
+      --text-secondary: #636e72;
+      --text-muted: #b2bec3;
+      --border: #e9ecef;
+      --radius: 12px;
+      --radius-sm: 8px;
+      --radius-lg: 16px;
+      --shadow-sm: 0 1px 3px rgba(0,0,0,.06);
+      --shadow-md: 0 4px 16px rgba(108,92,231,.1);
+      --font: 'Noto Sans JP', -apple-system, sans-serif;
+      --success: #00b894;
+      --danger: #e17055;
+    }
+
+    body {
+      font-family: var(--font);
+      background: var(--bg);
+      color: var(--text);
+      min-height: 100vh;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    /* ===== ãããã¼ ===== */
+    .settings-header {
+      background: var(--surface);
+      border-bottom: 1px solid var(--border);
+      padding: 0 24px;
+      height: 60px;
+      display: flex;
+      align-items: center;
+      gap: 16px;
+    }
+    .settings-header a {
+      color: var(--text-secondary);
+      text-decoration: none;
+      font-size: 14px;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      transition: color .2s;
+    }
+    .settings-header a:hover { color: var(--primary); }
+    .settings-header .logo {
+      font-weight: 700;
+      font-size: 20px;
+      color: var(--primary);
+      letter-spacing: -.02em;
+    }
+    .settings-header h1 {
+      font-size: 16px;
+      font-weight: 500;
+      color: var(--text);
+    }
+
+    /* ===== ã¡ã¤ã³ã³ã³ãã³ã ===== */
+    .settings-container {
+      max-width: 640px;
+      margin: 32px auto;
+      padding: 0 20px;
+    }
+
+    .settings-section {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-lg);
+      padding: 28px;
+      margin-bottom: 20px;
+      box-shadow: var(--shadow-sm);
+    }
+    .settings-section h2 {
+      font-size: 15px;
+      font-weight: 600;
+      color: var(--text);
+      margin-bottom: 20px;
+      padding-bottom: 12px;
+      border-bottom: 1px solid var(--border);
+    }
+
+    /* ===== ãã©ã¼ã è¦ç´  ===== */
+    .setting-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 12px 0;
+    }
+    .setting-row + .setting-row {
+      border-top: 1px solid #f0f0f0;
+    }
+    .setting-label {
+      font-size: 14px;
+      color: var(--text);
+    }
+    .setting-label small {
+      display: block;
+      font-size: 12px;
+      color: var(--text-muted);
+      margin-top: 2px;
+    }
+    .setting-value {
+      font-size: 14px;
+      color: var(--text-secondary);
+    }
+
+    select.setting-select {
+      padding: 8px 32px 8px 12px;
+      border: 1px solid var(--border);
+      border-radius: var(--radius-sm);
+      background: var(--surface);
+      color: var(--text);
+      font-size: 14px;
+      font-family: var(--font);
+      cursor: pointer;
+      appearance: none;
+      background-image: url("data:image/svg+xml,%3Csvg width='10' height='6' viewBox='0 0 10 6' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M1 1l4 4 4-4' stroke='%23636e72' fill='none' stroke-width='1.5' stroke-linecap='round'/%3E%3C/svg%3E");
+      background-repeat: no-repeat;
+      background-position: right 10px center;
+    }
+    select.setting-select:focus {
+      outline: none;
+      border-color: var(--primary);
+      box-shadow: 0 0 0 3px rgba(108,92,231,.1);
+    }
+
+    .setting-input {
+      width: 100%;
+      padding: 10px 14px;
+      border: 1px solid var(--border);
+      border-radius: var(--radius-sm);
+      font-size: 14px;
+      font-family: var(--font);
+      color: var(--text);
+      background: var(--surface);
+      transition: border-color .2s;
+    }
+    .setting-input:focus {
+      outline: none;
+      border-color: var(--primary);
+      box-shadow: 0 0 0 3px rgba(108,92,231,.1);
+    }
+    .setting-input:disabled {
+      background: #f5f5f5;
+      color: var(--text-muted);
+    }
+
+    .input-group {
+      margin-bottom: 14px;
+    }
+    .input-group label {
+      display: block;
+      font-size: 13px;
+      color: var(--text-secondary);
+      margin-bottom: 6px;
+      font-weight: 500;
+    }
+
+    .btn-primary {
+      background: var(--primary);
+      color: #fff;
+      border: none;
+      border-radius: var(--radius-sm);
+      padding: 10px 24px;
+      font-size: 14px;
+      font-weight: 500;
+      font-family: var(--font);
+      cursor: pointer;
+      transition: all .2s;
+    }
+    .btn-primary:hover {
+      background: var(--primary-dark);
+      transform: translateY(-1px);
+    }
+    .btn-primary:disabled {
+      opacity: .5;
+      cursor: not-allowed;
+      transform: none;
+    }
+
+    .btn-danger {
+      background: transparent;
+      color: var(--danger);
+      border: 1px solid var(--danger);
+      border-radius: var(--radius-sm);
+      padding: 10px 24px;
+      font-size: 14px;
+      font-weight: 500;
+      font-family: var(--font);
+      cursor: pointer;
+      transition: all .2s;
+    }
+    .btn-danger:hover {
+      background: rgba(225,112,85,.08);
+    }
+
+    .msg {
+      font-size: 13px;
+      padding: 10px 14px;
+      border-radius: var(--radius-sm);
+      margin-top: 12px;
+      display: none;
+    }
+    .msg.success {
+      display: block;
+      background: rgba(0,184,148,.08);
+      color: var(--success);
+      border: 1px solid rgba(0,184,148,.2);
+    }
+    .msg.error {
+      display: block;
+      background: rgba(225,112,85,.08);
+      color: var(--danger);
+      border: 1px solid rgba(225,112,85,.2);
+    }
+
+    /* ===== ã­ã°ã¤ã³ä¿ã ===== */
+    .login-prompt {
+      text-align: center;
+      padding: 60px 20px;
+    }
+    .login-prompt p {
+      font-size: 15px;
+      color: var(--text-secondary);
+      margin-bottom: 20px;
+    }
+    .login-prompt a {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      background: var(--primary);
+      color: #fff;
+      text-decoration: none;
+      padding: 12px 28px;
+      border-radius: var(--radius-sm);
+      font-size: 14px;
+      font-weight: 500;
+      transition: all .2s;
+    }
+    .login-prompt a:hover {
+      background: var(--primary-dark);
+      transform: translateY(-1px);
+    }
+
+    /* ===== ã¬ã¹ãã³ã·ã ===== */
+    @media (max-width: 480px) {
+      .settings-container { margin: 16px auto; }
+      .settings-section { padding: 20px; }
+      .setting-row { flex-direction: column; align-items: flex-start; gap: 8px; }
+    }
+  </style>
+</head>
+<body>
+
+<div class="settings-header">
+  <a href="index.html" class="logo">tag-art</a>
+  <span style="color:var(--border)">|</span>
+  <h1>è¨­å®</h1>
+  <div style="margin-left:auto">
+    <a href="index.html">&larr; æ»ã</a>
+  </div>
+</div>
+
+<!-- ã­ã°ã¤ã³æ¸ã¿ã¦ã¼ã¶ã¼åã -->
+<div class="settings-container" id="settingsMain" style="display:none">
+
+  <!-- ã¢ã«ã¦ã³ãæå ± -->
+  <div class="settings-section">
+    <h2>ã¢ã«ã¦ã³ã</h2>
+    <div class="setting-row">
+      <span class="setting-label">ã¡ã¼ã«ã¢ãã¬ã¹</span>
+      <span class="setting-value" id="userEmail">-</span>
+    </div>
+    <div class="setting-row">
+      <span class="setting-label">
+        ãã©ã³
+        <small>ç¾å¨ã®ãå©ç¨ãã©ã³</small>
+      </span>
+      <span class="setting-value" id="userPlan">FREE</span>
+    </div>
+  </div>
+
+  <!-- è¨èªè¨­å® -->
+  <div class="settings-section">
+    <h2>è¡¨ç¤ºè¨èª</h2>
+    <div class="setting-row">
+      <span class="setting-label">
+        ã¤ã³ã¿ã¼ãã§ã¼ã¹è¨èª
+        <small>UIã®è¡¨ç¤ºè¨èªãå¤æ´ãã¾ã</small>
+      </span>
+      <select class="setting-select" id="langSelect" onchange="changeLang(this.value)">
+        <option value="ja">æ¥æ¬èª</option>
+        <option value="en">English</option>
+        <option value="zh">ä¸­æ</option>
+        <option value="ko">íêµ­ì´</option>
+        <option value="es">EspaÃ±ol</option>
+        <option value="fr">FranÃ§ais</option>
+        <option value="de">Deutsch</option>
+        <option value="ru">Ð ÑÑÑÐºÐ¸Ð¹</option>
+      </select>
+    </div>
+  </div>
+
+  <!-- ãã¹ã¯ã¼ãå¤æ´ -->
+  <div class="settings-section">
+    <h2>ãã¹ã¯ã¼ãå¤æ´</h2>
+    <div class="input-group">
+      <label for="newPass">æ°ãããã¹ã¯ã¼ã</label>
+      <input type="password" class="setting-input" id="newPass" placeholder="6æå­ä»¥ä¸">
+    </div>
+    <div class="input-group">
+      <label for="newPassConfirm">æ°ãããã¹ã¯ã¼ãï¼ç¢ºèªï¼</label>
+      <input type="password" class="setting-input" id="newPassConfirm" placeholder="ããä¸åº¦å¥å">
+    </div>
+    <button class="btn-primary" onclick="changePassword()">ãã¹ã¯ã¼ããæ´æ°</button>
+    <div class="msg" id="passMsg"></div>
+  </div>
+
+  <!-- ã­ã°ã¢ã¦ã -->
+  <div class="settings-section">
+    <h2>ã»ãã·ã§ã³</h2>
+    <div class="setting-row">
+      <span class="setting-label">
+        ã­ã°ã¢ã¦ã
+        <small>ãã®ããã¤ã¹ããã­ã°ã¢ã¦ããã¾ã</small>
+      </span>
+      <button class="btn-danger" onclick="doLogout()">ã­ã°ã¢ã¦ã</button>
+    </div>
+  </div>
+</div>
+
+<!-- æªã­ã°ã¤ã³ã¦ã¼ã¶ã¼åã -->
+<div class="settings-container" id="loginPrompt" style="display:none">
+  <div class="settings-section">
+    <div class="login-prompt">
+      <p>è¨­å®ãå¤æ´ããã«ã¯ã­ã°ã¤ã³ãå¿è¦ã§ã</p>
+      <a href="index.html">tag-art ã«æ»ã</a>
+    </div>
+  </div>
+</div>
+
+<script>
+  const SUPABASE_URL = "https://eoademoyfyopqfnljhyf.supabase.co";
+  const SUPABASE_KEY = "sb_publishable_KuwA-05ihmrblfTcxAK2LQ_D7bepSL-";
+  const sb = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+
+  async function init() {
+    const { data: { user } } = await sb.auth.getUser();
+
+    if (user) {
+      document.getElementById("settingsMain").style.display = "block";
+      document.getElementById("userEmail").textContent = user.email || "-";
+
+      // ãã©ã³åå¾
+      const { data: profile } = await sb.from("profiles").select("plan").eq("id", user.id).single();
+      if (profile && profile.plan) {
+        document.getElementById("userPlan").textContent = profile.plan.toUpperCase();
+      }
+
+      // ä¿å­æ¸ã¿è¨èªè¨­å®ãå¾©å
+      const savedLang = localStorage.getItem("tag-art-lang") || "ja";
+      document.getElementById("langSelect").value = savedLang;
+    } else {
+      document.getElementById("loginPrompt").style.display = "block";
+    }
+  }
+
+  function changeLang(lang) {
+    localStorage.setItem("tag-art-lang", lang);
+    showMsg("passMsg", "success", "è¨èªè¨­å®ãä¿å­ãã¾ãããããããã¼ã¸ã«åæ ããã¾ãã");
+  }
+
+  async function changePassword() {
+    const newPass = document.getElementById("newPass").value;
+    const confirm = document.getElementById("newPassConfirm").value;
+    const msgEl = document.getElementById("passMsg");
+
+    if (!newPass || newPass.length < 6) {
+      showMsg("passMsg", "error", "ãã¹ã¯ã¼ãã¯6æå­ä»¥ä¸ã§å¥åãã¦ãã ãã");
+      return;
+    }
+    if (newPass !== confirm) {
+      showMsg("passMsg", "error", "ãã¹ã¯ã¼ããä¸è´ãã¾ãã");
+      return;
+    }
+
+    const { error } = await sb.auth.updateUser({ password: newPass });
+    if (error) {
+      showMsg("passMsg", "error", "æ´æ°å¤±æ: " + error.message);
+    } else {
+      showMsg("passMsg", "success", "ãã¹ã¯ã¼ããæ´æ°ãã¾ãã");
+      document.getElementById("newPass").value = "";
+      document.getElementById("newPassConfirm").value = "";
+    }
+  }
+
+  async function doLogout() {
+    await sb.auth.signOut();
+    location.href = "index.html";
+  }
+
+  function showMsg(id, type, text) {
+    const el = document.getElementById(id);
+    el.className = "msg " + type;
+    el.textContent = text;
+    el.style.display = "block";
+    setTimeout(() => { el.style.display = "none"; }, 5000);
+  }
+
+  init();
+</script>
+</body>
+</html>
