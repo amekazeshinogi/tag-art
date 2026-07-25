@@ -1,4 +1,5 @@
 /* tag-art UI Upgrade v1.0 */
+
 (function(){
 'use strict';
 var emojiRe=/[\u{1F300}-\u{1F9FF}\u{2600}-\u{26FF}\u{2700}-\u{27BF}\u{FE00}-\u{FE0F}\u{1F000}-\u{1F02F}\u{1F0A0}-\u{1F0FF}\u{1F100}-\u{1F64F}\u{1F680}-\u{1F6FF}\u{1F900}-\u{1F9FF}\u{1FA00}-\u{1FA6F}\u{1FA70}-\u{1FAFF}\u{2702}-\u{27B0}\u{200D}\u{20E3}\u{FE0F}]/gu;
@@ -27,7 +28,7 @@ function upgradeFooter(){
   var f=document.querySelector('footer');
   if(!f||f.dataset.upgraded)return;
   f.dataset.upgraded='1';
-  f.innerHTML='<div style="max-width:720px;margin:0 auto"><div style="font-weight:500;color:#2d3436;margin-bottom:8px;font-size:15px">tag-art</div><div style="font-size:13px;color:#b2bec3;margin-bottom:16px">\u30BF\u30B0\u3092\u9078\u3076\u3060\u3051\u3067\u30AA\u30EA\u30B8\u30CA\u30EBAI\u30A2\u30A4\u30B3\u30F3\u3092\u751F\u6210</div><div style="margin-bottom:16px"><a href="privacy.html" style="margin:0 12px;color:#636e72;text-decoration:none">\u30D7\u30E9\u30A4\u30D0\u30B7\u30FC\u30DD\u30EA\u30B7\u30FC</a></div><div style="font-size:12px;color:#b2bec3">\u00A9 2026 tag-art</div></div>';
+  f.innerHTML='<div style="max-width:720px;margin:0 auto"><div style="font-weight:500;color:#2d3436;margin-bottom:8px;font-size:15px">tag-art</div><div style="font-size:13px;color:#b2bec3;margin-bottom:16px">\u30BF\u30B0\u3092\u9078\u3076\u3060\u3051\u3067\u30AA\u30EA\u30B8\u30CA\u30EBAI\u30A2\u30A4\u30B3\u30F3\u3092\u751F\u6210</div><div style="margin-bottom:16px"><a href="about.html" style="margin:0 12px;color:#636e72;text-decoration:none">tag-art\u306B\u3064\u3044\u3066</a><a href="privacy.html" style="margin:0 12px;color:#636e72;text-decoration:none">\u30D7\u30E9\u30A4\u30D0\u30B7\u30FC\u30DD\u30EA\u30B7\u30FC</a></div><div style="font-size:12px;color:#b2bec3">\u00A9 2026 tag-art</div></div>';
 }
 
 function init(){insertHero();cleanEmoji();upgradeFooter();}
