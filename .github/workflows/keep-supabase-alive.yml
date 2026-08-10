@@ -10,7 +10,10 @@ jobs:
   ping:
     runs-on: ubuntu-latest
     steps:
-      - name: Ping Supabase project
+      - name: Ping Supabase REST API (real table query)
         run: |
           curl -s -o /dev/null -w "Status: %{http_code}\n" \
-            "https://eoademoyfyopqfnljhyf.supabase.co/auth/v1/health"
+            -H "apikey: sb_publishable_KuwA-05ihmrblfTcxAK2LQ_D7bepSL-" \
+            -H "Authorization: Bearer sb_publishable_KuwA-05ihmrblfTcxAK2LQ_D7bepSL-" \
+            "https://eoademoyfyopqfnljhyf.supabase.co/rest/v1/profiles?select=id&limit=1"
+
