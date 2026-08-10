@@ -375,6 +375,10 @@ body.sidebar-open {
 .swipe-skip-cat-btn:hover { border-color: var(--primary); color: var(--primary-dark); }
 
 .style-first-btn { padding: 8px 14px; background: #f0f2f8; border: 1.5px solid #e0e4ed; border-radius: 20px; font-size: 13px; color: #333; cursor: pointer; transition: all 0.18s; }
+.style-first-btn { background-size: cover; background-position: center; }
+.style-first-btn.has-preview { padding-top: 46px; position: relative; overflow: hidden; }
+.style-first-btn.has-preview::before { content: ""; position: absolute; inset: 0; background: linear-gradient(to bottom, transparent 55%, rgba(0,0,0,0.55) 100%); }
+.style-first-btn.has-preview > span { position: relative; z-index: 1; color: #fff; text-shadow: 0 1px 3px rgba(0,0,0,0.6); font-weight: 600; }
 .style-first-btn:hover { border-color: #ff9800; color: #e65100; background: #fff8f0; }
 .style-first-btn.selected { background: linear-gradient(135deg, #ff9800, #ff5722); color: white; border-color: transparent; box-shadow: 0 2px 8px rgba(255,152,0,0.35); }
 
@@ -1353,6 +1357,9 @@ function init() {
 }
 
 // ===== スタイル選択（最初の画面） =====
+const stylePreviewImages = {
+  "kemono furry animal style": "https://cdn.leonardo.ai/users/135a0ec0-72d7-4e19-b0fb-7994442e8ddb/generations/6560e5e2-2b6e-403f-84db-4b948184a590/Leonardo_Anime_XL_girl_kemono_character_furry_animal_ears_and_0.jpg?w=256"
+};
 function buildStyleFirst() {
   const grid = document.getElementById("styleFirstGrid");
   if (!grid) return;
@@ -1363,11 +1370,14 @@ function buildStyleFirst() {
     const isSelected = selectedStyle === s.tag;
     const label = (t.tagLabels && t.tagLabels[s.tag]) ? t.tagLabels[s.tag] : s.label;
     const lockIcon = isLocked ? " 🔒" : "";
-    const selCls = isSelected ? "style-first-btn selected" : "style-first-btn";
-    const onclk = isLocked ? "showPlanModal()" : "selectStyleFirst('" + s.tag.replace(/'/g,"\\'") + "')";
+    const preview = stylePreviewImages[s.tag];
+    const selCls = (isSelected ? "style-first-btn selected" : "style-first-btn") + (preview ? " has-preview" : "");
+    const onclk = isLocked ? "showPlanModal()" : "selectStyleFirst('" + s.tag.replace(/'/g,"\'") + "')";
     const opacity = isLocked ? "opacity:0.45;" : "";
-    return "<button class='" + selCls + "' onclick=\"" + onclk + "\" style='" + opacity + "'>" + label + lockIcon + "</button>";
-  }).join("");
+    const bg = preview ? ("background-image:url('" + preview + "');") : "";
+    const inner = preview ? ("<span>" + label + lockIcon + "</span>") : (label + lockIcon);
+    return "<button class='" + selCls + "' onclick=\"" + onclk + "\" style='" + opacity + bg + "'>" + inner + "</button>";
+  })  .join("");
 }
 function selectStyleFirst(tag) {
   selectedStyle = selectedStyle === tag ? "" : tag;
