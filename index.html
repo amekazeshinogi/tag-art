@@ -1374,8 +1374,8 @@ function buildStyleFirst() {
     const selCls = (isSelected ? "style-first-btn selected" : "style-first-btn") + (preview ? " has-preview" : "");
     const onclk = isLocked ? "showPlanModal()" : "selectStyleFirst('" + s.tag.replace(/'/g,"\'") + "')";
     const opacity = isLocked ? "opacity:0.45;" : "";
-    const bg = preview ? ("background-image:url('" + preview + "');") : "";
-    const inner = preview ? ("<span>" + label + lockIcon + "</span>") : (label + lockIcon);
+    const bg = preview ? ("background-image:url(" + preview + ");") : "";
+const inner = preview ? ("<span>" + label + lockIcon + "</span>") : (label + lockIcon);
     return "<button class='" + selCls + "' onclick=\"" + onclk + "\" style='" + opacity + bg + "'>" + inner + "</button>";
   })  .join("");
 }
