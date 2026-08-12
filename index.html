@@ -1372,31 +1372,25 @@ const stylePreviewImages = {
       "watercolor illustration style": "watercolor illustration, soft watercolor, artistic, painterly, japanese anime character design",
       "digital painting style": "digital painting, detailed illustration, painterly, japanese anime character design",
       "business avatar": "flat illustration, business avatar, professional, clean, anime style"
-  };
-  const stylePreviewBaseTags = "girl, short hair, black hair, black eyes, gentle smile, soft expression, casual clothes";
   function showStylePreview(evt, tag) {
       const url = stylePreviewImages[tag];
       if (!url) return;
       let tip = document.getElementById("stylePreviewTip");
       if (!tip) {
             tip = document.createElement("div");
-            tip.id = "stylePreviewTip";
-            tip.style.cssText = "position:fixed;z-index:9999;pointer-events:none;width:150px;border-radius:12px;box-shadow:0 6px 20px rgba(0,0,0,0.3);border:2px solid #fff;opacity:0;transition:opacity 0.15s;overflow:hidden;background:#1a1a1a;";
-            tip.innerHTML = "<div id='stylePreviewTipImg' style='width:150px;height:150px;background-size:cover;background-position:center;'></div><div id='stylePreviewTipTags' style='font-size:9px;line-height:1.3;color:#eee;padding:4px 6px;word-break:break-word;'></div>";
+        tip.id = "stylePreviewTip";
+        tip.style.cssText = "position:fixed;z-index:9999;pointer-events:none;width:120px;height:120px;border-radius:12px;background-size:cover;background-position:center;box-shadow:0 6px 20px rgba(0,0,0,0.3);border:2px solid #fff;opacity:0;transition:opacity 0.15s;";
             document.body.appendChild(tip);
       }
-      const imgEl = document.getElementById("stylePreviewTipImg");
-      const tagsEl = document.getElementById("stylePreviewTipTags");
       const rect = evt.currentTarget.getBoundingClientRect();
-      imgEl.style.backgroundImage = "url(" + url + ")";
-      const usedTags = stylePreviewTagsUsed[tag];
-      tagsEl.textContent = usedTags ? ("使用タグ: " + stylePreviewBaseTags + ", " + usedTags) : "";
-const spaceAbove = rect.top;
-      const tipHeight = 220;
+      const spaceAbove = rect.top;
+      const tipHeight = 132;
       const showBelow = spaceAbove < tipHeight + 10;
-      tip.style.left = Math.max(4, Math.min(window.innerWidth - 154, rect.left + rect.width / 2 - 75)) + "px";
+      tip.style.backgroundImage = "url(" + url + ")";
+      tip.style.left = Math.max(4, Math.min(window.innerWidth - 124, rect.left + rect.width / 2 - 60)) + "px";
       tip.style.top = (showBelow ? (rect.bottom + 8) : (rect.top - tipHeight)) + "px";
-    tip.style.opacity = "1";
+      tip.style.opacity = "1";
+  }
   }
   function hideStylePreview() {
       const tip = document.getElementById("stylePreviewTip");
