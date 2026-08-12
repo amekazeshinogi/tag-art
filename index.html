@@ -1353,66 +1353,21 @@ function init() {
 }
 
 // ===== スタイル選択（最初の画面） =====
-const stylePreviewImages = {
-    "kemono furry animal style": "https://cdn.leonardo.ai/users/135a0ec0-72d7-4e19-b0fb-7994442e8ddb/generations/6560e5e2-2b6e-403f-84db-4b948184a590/Leonardo_Anime_XL_girl_kemono_character_furry_animal_ears_and_0.jpg?w=256",
-    "anime style": "https://cdn.leonardo.ai/users/135a0ec0-72d7-4e19-b0fb-7994442e8ddb/generations/792be4f3-cac1-423f-8335-265060decd34/Leonardo_Anime_XL_girl_short_hair_black_hair_black_eyes_gentle_3.jpg?w=512",
-    "sketch style": "https://cdn.leonardo.ai/users/135a0ec0-72d7-4e19-b0fb-7994442e8ddb/generations/e87ce489-df7e-4d62-b43f-41b17eaa1a60/Leonardo_Anime_XL_girl_short_hair_black_hair_black_eyes_gentle_0.jpg?w=512",
-    "high quality general": "https://cdn.leonardo.ai/users/135a0ec0-72d7-4e19-b0fb-7994442e8ddb/generations/a8fe015c-3b15-4575-8073-c3c8e75710b1/Leonardo_Anime_XL_girl_short_hair_black_hair_black_eyes_gentle_0.jpg?w=512",
-    "cute characters style": "https://cdn.leonardo.ai/users/135a0ec0-72d7-4e19-b0fb-7994442e8ddb/generations/0edaffa2-e1b8-4fa1-bdf9-93f8199a4808/Leonardo_Anime_XL_girl_short_hair_black_hair_black_eyes_gentle_0.jpg?w=512",
-    "watercolor illustration style": "https://cdn.leonardo.ai/users/135a0ec0-72d7-4e19-b0fb-7994442e8ddb/generations/8426f438-a69b-4ed7-94dc-8f70a9fbd32a/Leonardo_Lightning_XL_girl_short_hair_black_hair_black_eyes_ge_0.jpg?w=512",
-    "digital painting style": "https://cdn.leonardo.ai/users/135a0ec0-72d7-4e19-b0fb-7994442e8ddb/generations/f6486952-c3a8-4f0d-af6d-87f31096972d/Leonardo_Lightning_XL_girl_short_hair_black_hair_black_eyes_ge_0.jpg?w=512",
-    "business avatar": "https://cdn.leonardo.ai/users/135a0ec0-72d7-4e19-b0fb-7994442e8ddb/generations/cc1af502-1243-4887-aefe-68a54d273f8f/Leonardo_Lightning_XL_girl_short_hair_black_hair_black_eyes_ge_0.jpg?w=512"
-};
-  const stylePreviewTagsUsed = {
-      "kemono furry animal style": "kemono character, furry, animal ears and tail, anthropomorphic, japanese anime style",
-      "anime style": "anime style, japanese anime, 2d illustration, anime coloring, clean line art, japanese manga art style",
-      "sketch style": "pencil sketch, hand drawn, line art, japanese anime style",
-      "high quality general": "highly detailed, best quality, masterpiece, japanese anime style",
-      "cute characters style": "cute character, kawaii anime character, adorable, japanese anime style",
-      "watercolor illustration style": "watercolor illustration, soft watercolor, artistic, painterly, japanese anime character design",
-      "digital painting style": "digital painting, detailed illustration, painterly, japanese anime character design",
-      "business avatar": "flat illustration, business avatar, professional, clean, anime style"
-  function showStylePreview(evt, tag) {
-      const url = stylePreviewImages[tag];
-      if (!url) return;
-      let tip = document.getElementById("stylePreviewTip");
-      if (!tip) {
-            tip = document.createElement("div");
-        tip.id = "stylePreviewTip";
-        tip.style.cssText = "position:fixed;z-index:9999;pointer-events:none;width:120px;height:120px;border-radius:12px;background-size:cover;background-position:center;box-shadow:0 6px 20px rgba(0,0,0,0.3);border:2px solid #fff;opacity:0;transition:opacity 0.15s;";
-            document.body.appendChild(tip);
-      }
-      const rect = evt.currentTarget.getBoundingClientRect();
-      const spaceAbove = rect.top;
-      const tipHeight = 132;
-      const showBelow = spaceAbove < tipHeight + 10;
-      tip.style.backgroundImage = "url(" + url + ")";
-      tip.style.left = Math.max(4, Math.min(window.innerWidth - 124, rect.left + rect.width / 2 - 60)) + "px";
-      tip.style.top = (showBelow ? (rect.bottom + 8) : (rect.top - tipHeight)) + "px";
-      tip.style.opacity = "1";
-  }
-  }
-  function hideStylePreview() {
-      const tip = document.getElementById("stylePreviewTip");
-      if (tip) tip.style.opacity = "0";
-  }
-  function buildStyleFirst() {
-  const grid = document.getElementById("styleFirstGrid");
-  if (!grid) return;
-  const styles = allTagGroups.style.groups.flatMap(g => g.tags);
-  const t = i18n[currentLang];
-  grid.innerHTML = styles.map(s => {
-    const isLocked = userPlan !== "pro" && s.tag !== "anime style";
-    const isSelected = selectedStyle === s.tag;
-    const label = (t.tagLabels && t.tagLabels[s.tag]) ? t.tagLabels[s.tag] : s.label;
-    const lockIcon = isLocked ? " \ud83d\udd12" : "";
-    const preview = stylePreviewImages[s.tag];
-    const selCls = isSelected ? "style-first-btn selected" : "style-first-btn";
-    const onclk = isLocked ? "showPlanModal()" : "selectStyleFirst('" + s.tag.replace(/'/g,"\\'") + "')";
-    const opacity = isLocked ? "opacity:0.45;" : "";
-    const hoverAttrs = preview ? (" onmouseenter=\"showStylePreview(event,'" + s.tag.replace(/'/g,"\\'") + "')\" onmouseleave=\"hideStylePreview()\"") : "";
-    return "<button class='" + selCls + "' onclick=\"" + onclk + "\" style='" + opacity + "'" + hoverAttrs + ">" + label + lockIcon + "</button>";
-  }).join("");
+function buildStyleFirst() {
+    const grid = document.getElementById("styleFirstGrid");
+    if (!grid) return;
+    const styles = allTagGroups.style.groups.flatMap(g => g.tags);
+    const t = i18n[currentLang];
+    grid.innerHTML = styles.map(s => {
+          const isLocked = userPlan !== "pro" && s.tag !== "anime style";
+          const isSelected = selectedStyle === s.tag;
+          const label = (t.tagLabels && t.tagLabels[s.tag]) ? t.tagLabels[s.tag] : s.label;
+          const lockIcon = isLocked ? " \ud83d\udd12" : "";
+          const selCls = isSelected ? "style-first-btn selected" : "style-first-btn";
+          const onclk = isLocked ? "showPlanModal()" : "selectStyleFirst('" + s.tag.replace(/'/g,"\\'") + "')";
+          const opacity = isLocked ? "opacity:0.45;" : "";
+          return "<button class='" + selCls + "' onclick=\"" + onclk + "\" style='" + opacity + "'>" + label + lockIcon + "</button>";
+    }).join("");
 }
 function selectStyleFirst(tag) {
   selectedStyle = selectedStyle === tag ? "" : tag;
