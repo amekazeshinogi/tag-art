@@ -1391,9 +1391,12 @@ const stylePreviewImages = {
       imgEl.style.backgroundImage = "url(" + url + ")";
       const usedTags = stylePreviewTagsUsed[tag];
       tagsEl.textContent = usedTags ? ("使用タグ: " + stylePreviewBaseTags + ", " + usedTags) : "";
-      tip.style.left = (rect.left + rect.width / 2 - 75) + "px";
-      tip.style.top = (rect.top - 220) + "px";
-      tip.style.opacity = "1";
+const spaceAbove = rect.top;
+      const tipHeight = 220;
+      const showBelow = spaceAbove < tipHeight + 10;
+      tip.style.left = Math.max(4, Math.min(window.innerWidth - 154, rect.left + rect.width / 2 - 75)) + "px";
+      tip.style.top = (showBelow ? (rect.bottom + 8) : (rect.top - tipHeight)) + "px";
+    tip.style.opacity = "1";
   }
   function hideStylePreview() {
       const tip = document.getElementById("stylePreviewTip");
