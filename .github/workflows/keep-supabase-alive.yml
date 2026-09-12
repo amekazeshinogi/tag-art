@@ -2,7 +2,7 @@ name: Keep Supabase Alive
 
 on:
   schedule:
-      # 3日ごとに実行(Supabase無料プランは7日で自動停止するため、バッファを確保)
+      # 3日ごとに実際に書き込む(SELECTだけではアクティビティとしてカウントされないため)
           - cron: '0 3 */3 * *'
   workflow_dispatch: {}
 
@@ -10,9 +10,14 @@ jobs:
   ping:
     runs-on: ubuntu-latest
     steps:
-      - name: Ping Supabase REST API (real table query)
+      - name: Update heartbeat row (real write, counts as activity)
+        env:
+          SERVICE_KEY: ${{ secrets.SUPABASE_SERVICE_ROLE_KEY }}
         run: |
           curl -s -o /dev/null -w "Status: %{http_code}\n" \
-            -H "apikey: sb_publishable_KuwA-05ihmrb1fTcxAK2LQ_D7bepSL-" \
-            -H "Authorization: Bearer sb_publishable_KuwA-05ihmrb1fTcxAK2LQ_D7bepSL-" \
-            "https://eoademoyfyopqfnljhyf.supabase.co/rest/v1/profiles?select=id&limit=1"
+            -X PATCH \
+            -H "apikey: $SERVICE_KEY" \
+            -H "Authorization: Bearer $SERVICE_KEY" \
+            -H "Content-Type: application/json" \
+            -d "{\"pinged_at\": \"$(date -u +%Y-%m-%dT%H:%M:%SZ)\"}" \
+            "https://eoademoyfyopqfnljhyf.supabase.co/rest/v1/heartbeat?id=eq.1"
